@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Drive Home: this is what the tab says for the five seconds the decoy is
+         on screen, together with Drive's own logo as the icon. -->
+    <title>Home - Google Drive</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/img/drive.svg">
+    <link rel="shortcut icon" type="image/svg+xml" href="/assets/img/drive.svg">
+    <style>
+        /* A self-contained tab decoy: no Google CSS, no external requests (fonts
+           included), so it renders identically offline and can never be blocked
+           by framing rules. Layout follows Drive's current Home screen. */
+        :root {
+            --ink: #1f1f1f;
+            --muted: #444746;
+            --muted-2: #5f6368;
+            --line: #dadce0;
+            --hair: #e3e3e3;
+            --hover: #f2f6fc;
+            --surface: #f0f4f9;
+            --selected: #c2e7ff;
+            --blue: #0b57d0;
+            --blue-icon: #4285f4;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            height: 100%;
+        }
+
+        body {
+            background: #fff;
+            color: var(--ink);
+            font-family: "Google Sans", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button {
+            font: inherit;
+            color: inherit;
+            background: none;
+            border: 0;
+            cursor: pointer;
+        }
+
+        a {
+            color: var(--blue);
+            text-decoration: none;
+        }
+
+        svg {
+            display: block;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* ── top bar ───────────────────────────────────────────────────────── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 64px;
+            padding: 8px 12px 8px 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: none;
+            margin-right: 8px;
+        }
+
+        .brand img {
+            width: 28px;
+            height: 25px;
+        }
+
+        .brand span {
+            font-size: 22px;
+            letter-spacing: 0;
+            color: var(--muted-2);
+            font-family: "Product Sans", "Google Sans", Roboto, Arial, sans-serif;
+        }
+
+        .spacer {
+            flex: 1 1 auto;
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: var(--muted);
+            flex: none;
+        }
+
+        .icon-btn:hover {
+            background: var(--hover);
+        }
+
+        .upgrade {
+            height: 38px;
+            padding: 0 20px;
+            margin: 0 4px;
+            border-radius: 19px;
+            background: var(--selected);
+            color: #001d35;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .upgrade:hover {
+            box-shadow: 0 1px 4px rgba(60, 64, 67, .3);
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            margin: 0 6px 0 8px;
+            border-radius: 50%;
+            background: #8b3a2f;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            display: grid;
+            place-items: center;
+            flex: none;
+        }
+
+        /* ── layout ────────────────────────────────────────────────────────── */
+        .shell {
+            display: flex;
+            align-items: stretch;
+            height: calc(100% - 64px);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 256px;
+            flex: none;
+            padding: 0 8px 24px 12px;
+            overflow-y: auto;
+        }
+
+        .new-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            height: 56px;
+            margin: 8px 0 14px 4px;
+            padding: 0 24px 0 16px;
+            border: 1px solid transparent;
+            border-radius: 16px;
+            background: var(--surface);
+            color: var(--ink);
+            font-size: 14px;
+            font-weight: 500;
+            transition: box-shadow .15s ease;
+        }
+
+        .new-btn:hover {
+            box-shadow: 0 1px 4px rgba(60, 64, 67, .3);
+        }
+
+        .navlink {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            height: 40px;
+            padding: 0 14px;
+            border-radius: 20px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .navlink:hover {
+            background: var(--hover);
+            color: var(--ink);
+        }
+
+        .navlink.active {
+            background: var(--selected);
+            color: #001d35;
+            font-weight: 500;
+        }
+
+        .navlink i {
+            font-size: 20px;
+        }
+
+        .side-gap {
+            height: 10px;
+        }
+
+        .side-sep {
+            height: 1px;
+            background: var(--line);
+            margin: 10px 14px;
+        }
+
+        .storage {
+            padding: 2px 14px 0;
+            color: var(--muted-2);
+        }
+
+        .storage .bar {
+            height: 4px;
+            border-radius: 2px;
+            background: #e8eaed;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .storage .bar i {
+            display: block;
+            height: 100%;
+            /* Roughly matches the "used" figure below: 2.6 of 15 GB. */
+            width: 17%;
+            background: var(--blue-icon);
+        }
+
+        .storage p {
+            margin: 0 0 10px;
+            font-size: 13px;
+        }
+
+        .storage .more {
+            display: inline-block;
+            height: 36px;
+            line-height: 34px;
+            padding: 0 20px;
+            border: 1px solid #747775;
+            border-radius: 18px;
+            color: var(--blue);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .storage .more:hover {
+            background: #f6fafe;
+        }
+
+        main {
+            flex: 1 1 auto;
+            min-width: 0;
+            padding: 6px 28px 40px 4px;
+            overflow-y: auto;
+        }
+
+        .pagehead {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 6px 0 18px;
+        }
+
+        .pagehead h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 400;
+            line-height: 36px;
+            flex: 1 1 auto;
+        }
+
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            height: 56px;
+            padding: 0 18px;
+            border-radius: 28px;
+            background: var(--surface);
+            color: var(--muted-2);
+            margin-bottom: 18px;
+        }
+
+        .search:focus-within {
+            background: #fff;
+            box-shadow: 0 1px 6px rgba(32, 33, 36, .28);
+        }
+
+        .search input {
+            flex: 1;
+            min-width: 0;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            font: inherit;
+            font-size: 16px;
+            color: var(--ink);
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 36px;
+            padding: 0 12px 0 14px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            color: #3c4043;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .chip:hover {
+            background: var(--hover);
+        }
+
+        .chip svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .chip .caret {
+            width: 16px;
+            height: 16px;
+            color: var(--muted-2);
+        }
+
+        h2.section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 26px 0 12px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ink);
+        }
+
+        h2.section .collapse {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--ink);
+            font: inherit;
+            font-weight: 500;
+        }
+
+        h2.section .caret {
+            width: 18px;
+            height: 18px;
+            transition: transform .2s ease;
+        }
+
+        h2.section.closed .caret {
+            transform: rotate(-90deg);
+        }
+
+        .viewtoggle {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            height: 36px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .viewtoggle button {
+            width: 46px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            color: var(--muted-2);
+        }
+
+        .viewtoggle button.on {
+            background: var(--selected);
+            color: #001d35;
+        }
+
+        .folders {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .folder {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 8px 12px 16px;
+            border-radius: 12px;
+            background: var(--surface);
+            text-align: left;
+        }
+
+        .folder:hover {
+            background: #e5ebf3;
+        }
+
+        .folder .meta {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .folder .name,
+        .row .name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--ink);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .folder .sub {
+            font-size: 12px;
+            color: var(--muted-2);
+        }
+
+        .kebab {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: var(--muted-2);
+            flex: none;
+        }
+
+        .kebab:hover {
+            background: rgba(60, 64, 67, .08);
+        }
+
+        .files-head {
+            display: flex;
+            align-items: center;
+            padding: 0 8px 8px 0;
+            border-bottom: 1px solid var(--hair);
+            color: var(--muted-2);
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .file-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            height: 52px;
+            padding-right: 8px;
+            border-bottom: 1px solid var(--hair);
+            text-align: left;
+        }
+
+        .file-row:hover {
+            background: var(--hover);
+        }
+
+        .file-row .shared {
+            color: var(--muted-2);
+            flex: none;
+        }
+
+        .file-row .name {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-weight: 400;
+        }
+
+        .viewmore {
+            display: inline-block;
+            margin: 18px 0 8px;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .viewmore:hover {
+            background: var(--hover);
+        }
+
+        /* ── Workspace side rail ───────────────────────────────────────────── */
+        .rail {
+            width: 58px;
+            flex: none;
+            border-left: 1px solid var(--hair);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            gap: 6px;
+        }
+
+        .rail button {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: var(--muted-2);
+        }
+
+        .rail button:hover {
+            background: var(--hover);
+        }
+
+        .rail .sep {
+            height: 1px;
+            width: 26px;
+            background: var(--line);
+            margin: 6px 0;
+        }
+
+        .rail .badge {
+            display: grid;
+            place-items: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: var(--selected);
+            color: #001d35;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 1000px) {
+            .folders {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        @media (max-width: 860px) {
+            .sidebar,
+            .rail {
+                display: none;
+            }
+
+            main {
+                padding: 6px 14px 40px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+        <symbol id="ic-search" viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l5 4.99L20.49 19zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14"
+                fill="none" stroke="currentColor" stroke-width="1.8" />
+        </symbol>
+        <symbol id="ic-help" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path d="M9.6 9.3a2.5 2.5 0 1 1 3.6 2.2c-.7.4-1.1.8-1.1 1.7v.4M12 16.6h.01" fill="none"
+                stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </symbol>
+        <symbol id="ic-gear" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <path d="M12 2.6v3M12 18.4v3M2.6 12h3M18.4 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" />
+            </g>
+        </symbol>
+        <symbol id="ic-apps" viewBox="0 0 24 24">
+            <g fill="currentColor">
+                <circle cx="6" cy="6" r="1.8" />
+                <circle cx="12" cy="6" r="1.8" />
+                <circle cx="18" cy="6" r="1.8" />
+                <circle cx="6" cy="12" r="1.8" />
+                <circle cx="12" cy="12" r="1.8" />
+                <circle cx="18" cy="12" r="1.8" />
+                <circle cx="6" cy="18" r="1.8" />
+                <circle cx="12" cy="18" r="1.8" />
+                <circle cx="18" cy="18" r="1.8" />
+            </g>
+        </symbol>
+        <symbol id="ic-sparkle" viewBox="0 0 24 24">
+            <path d="M12 2.6l1.9 5.1 5.1 1.9-5.1 1.9L12 16.6l-1.9-5.1L5 9.6l5.1-1.9z" fill="#4285f4" />
+            <path d="M18.6 15.2l.9 2.4 2.4.9-2.4.9-.9 2.4-.9-2.4-2.4-.9 2.4-.9z" fill="#fbbc04" />
+            <path d="M5.4 14.4l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9L2.8 17l1.9-.7z" fill="#34a853" />
+        </symbol>
+        <symbol id="ic-plus" viewBox="0 0 36 36">
+            <path d="M16 6h4v10h10v4H20v10h-4V20H6v-4h10z" fill="#4285f4" />
+        </symbol>
+        <symbol id="ic-home" viewBox="0 0 24 24">
+            <path d="M4 10.6 12 4l8 6.6V20h-5.6v-5.4h-4.8V20H4z" fill="#0b57d0" />
+        </symbol>
+        <symbol id="ic-drive-small" viewBox="0 0 24 24">
+            <path d="M9 4h6l6 10.4-3 5.2H6L3 14.4z" fill="none" stroke="currentColor" stroke-width="1.6" />
+        </symbol>
+        <symbol id="ic-computer" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="3" y="4" width="18" height="12" rx="1.6" />
+                <path d="M9 20h6M12 16v4" stroke-linecap="round" />
+            </g>
+        </symbol>
+        <symbol id="ic-people" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7">
+                <circle cx="9" cy="9" r="3.2" />
+                <path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke-linecap="round" />
+                <path d="M16 6.5a3 3 0 0 1 0 5.6M17.5 19c0-2.2-.7-3.8-1.8-4.9 3 .2 5 2.1 5 4.9" stroke-linecap="round" />
+            </g>
+        </symbol>
+        <symbol id="ic-clock" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <circle cx="12" cy="12" r="8.4" />
+                <path d="M12 7.4V12l3.4 2.1" />
+            </g>
+        </symbol>
+        <symbol id="ic-star" viewBox="0 0 24 24">
+            <path d="M12 3.2l2.7 5.6 6.1.6-4.5 4.1 1.3 6-5.6-3.1-5.6 3.1 1.3-6-4.5-4.1 6.1-.6z" fill="none"
+                stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="ic-spam" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <circle cx="12" cy="12" r="8.4" />
+                <path d="M12 7.6v5.2M12 16.4h.01" />
+            </g>
+        </symbol>
+        <symbol id="ic-trash" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <path d="M4.5 7h15M9.5 7V4.8h5V7M6.5 7l1 12.2h9L17.5 7" />
+            </g>
+        </symbol>
+        <symbol id="ic-storage" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7">
+                <path d="M7 18a3.2 3.2 0 0 1-.3-6.4A4.6 4.6 0 0 1 15.6 10a3.5 3.5 0 0 1-.4 7z" />
+            </g>
+        </symbol>
+        <symbol id="ic-kebab" viewBox="0 0 24 24">
+            <g fill="currentColor">
+                <circle cx="12" cy="5.4" r="1.7" />
+                <circle cx="12" cy="12" r="1.7" />
+                <circle cx="12" cy="18.6" r="1.7" />
+            </g>
+        </symbol>
+        <symbol id="ic-caret" viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z" fill="currentColor" />
+        </symbol>
+        <symbol id="ic-info" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <circle cx="12" cy="12" r="8.4" />
+                <path d="M12 11v5.4M12 7.8h.01" />
+            </g>
+        </symbol>
+        <symbol id="ic-list" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+                <path d="M9 7h11M9 12h11M9 17h11M4.6 7h.01M4.6 12h.01M4.6 17h.01" />
+            </g>
+        </symbol>
+        <symbol id="ic-grid" viewBox="0 0 24 24">
+            <g fill="currentColor">
+                <rect x="4" y="4" width="6.6" height="6.6" rx="1.4" />
+                <rect x="13.4" y="4" width="6.6" height="6.6" rx="1.4" />
+                <rect x="4" y="13.4" width="6.6" height="6.6" rx="1.4" />
+                <rect x="13.4" y="13.4" width="6.6" height="6.6" rx="1.4" />
+            </g>
+        </symbol>
+        <symbol id="ic-filter" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="5" y="3.5" width="14" height="17" rx="2" />
+                <path d="M8.6 9h6.8M8.6 12.4h6.8M8.6 15.8h4" stroke-linecap="round" />
+            </g>
+        </symbol>
+        <symbol id="ic-person" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7">
+                <circle cx="12" cy="8.4" r="3.4" />
+                <path d="M5.4 19.4c0-3.4 3-5.6 6.6-5.6s6.6 2.2 6.6 5.6" stroke-linecap="round" />
+            </g>
+        </symbol>
+        <symbol id="ic-calendar" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7">
+                <rect x="4" y="5" width="16" height="15" rx="2" />
+                <path d="M4 9.6h16M8.6 3.4v3.2M15.4 3.4v3.2" stroke-linecap="round" />
+            </g>
+        </symbol>
+        <symbol id="ic-folder-blue" viewBox="0 0 24 24">
+            <path d="M3 6.4A1.4 1.4 0 0 1 4.4 5h4.3l1.8 2.2h9.1A1.4 1.4 0 0 1 21 8.6v9A1.4 1.4 0 0 1 19.6 19H4.4A1.4 1.4 0 0 1 3 17.6z"
+                fill="#4285f4" />
+        </symbol>
+        <symbol id="ic-doc" viewBox="0 0 24 24">
+            <path d="M6 3h8l4 4v14H6z" fill="#4285f4" />
+            <path d="M14 3l4 4h-4z" fill="#a1c2fa" />
+            <path d="M9 12h6M9 15h6M9 18h4" stroke="#fff" stroke-width="1.2" />
+        </symbol>
+        <symbol id="ic-sheet" viewBox="0 0 24 24">
+            <path d="M6 3h8l4 4v14H6z" fill="#34a853" />
+            <path d="M14 3l4 4h-4z" fill="#a8dab5" />
+            <path d="M9 12h6M9 15h6M12 12v6" stroke="#fff" stroke-width="1.2" />
+        </symbol>
+        <symbol id="ic-video" viewBox="0 0 24 24">
+            <path d="M6 3h8l4 4v14H6z" fill="#ea4335" />
+            <path d="M14 3l4 4h-4z" fill="#f6aea6" />
+            <path d="M10.6 11.4l4.4 2.6-4.4 2.6z" fill="#fff" />
+        </symbol>
+        <symbol id="ic-image" viewBox="0 0 24 24">
+            <path d="M6 3h8l4 4v14H6z" fill="#4285f4" />
+            <path d="M14 3l4 4h-4z" fill="#a1c2fa" />
+            <path d="M9 16l2.5-3 2 2.2 1.5-1.7L18 17H9z" fill="#fff" />
+        </symbol>
+    </svg>
+
+    <header class="topbar">
+        <a class="brand" href="#">
+            <img src="/assets/img/drive.svg" alt="Google Drive">
+            <span>Drive</span>
+        </a>
+        <div class="spacer"></div>
+        <button class="icon-btn" type="button" aria-label="Support"><svg class="icon">
+                <use href="#ic-help" />
+            </svg></button>
+        <button class="icon-btn" type="button" aria-label="Settings"><svg class="icon">
+                <use href="#ic-gear" />
+            </svg></button>
+        <button class="icon-btn" type="button" aria-label="Ask Gemini"><svg class="icon">
+                <use href="#ic-sparkle" />
+            </svg></button>
+        <button class="upgrade" type="button">Upgrade</button>
+        <button class="icon-btn" type="button" aria-label="Google apps"><svg class="icon">
+                <use href="#ic-apps" />
+            </svg></button>
+        <div class="avatar">D</div>
+    </header>
+
+    <div class="shell">
+        <aside class="sidebar">
+            <button class="new-btn" type="button">
+                <svg width="22" height="22" viewBox="0 0 36 36" aria-hidden="true">
+                    <use href="#ic-plus" />
+                </svg>
+                New
+            </button>
+
+            <a class="navlink active" href="#home" data-nav="1"><svg class="icon">
+                    <use href="#ic-home" />
+                </svg>Home</a>
+            <a class="navlink" href="#my-drive" data-nav="1"><svg class="icon">
+                    <use href="#ic-drive-small" />
+                </svg>My Drive</a>
+            <a class="navlink" href="#computers" data-nav="1"><svg class="icon">
+                    <use href="#ic-computer" />
+                </svg>Computers</a>
+
+            <div class="side-gap"></div>
+
+            <a class="navlink" href="#shared" data-nav="1"><svg class="icon">
+                    <use href="#ic-people" />
+                </svg>Shared with me</a>
+            <a class="navlink" href="#recent" data-nav="1"><svg class="icon">
+                    <use href="#ic-clock" />
+                </svg>Recent</a>
+            <a class="navlink" href="#starred" data-nav="1"><svg class="icon">
+                    <use href="#ic-star" />
+                </svg>Starred</a>
+
+            <div class="side-gap"></div>
+
+            <a class="navlink" href="#spam" data-nav="1"><svg class="icon">
+                    <use href="#ic-spam" />
+                </svg>Spam</a>
+            <a class="navlink" href="#trash" data-nav="1"><svg class="icon">
+                    <use href="#ic-trash" />
+                </svg>Trash</a>
+            <a class="navlink" href="#storage" data-nav="1"><svg class="icon">
+                    <use href="#ic-storage" />
+                </svg>Storage</a>
+
+            <div class="side-sep"></div>
+            <div class="storage">
+                <div class="bar"><i></i></div>
+                <p>2.6 GB of 15 GB used</p>
+                <a class="more" href="#upgrade">Get more storage</a>
+            </div>
+        </aside>
+
+        <main>
+            <div class="pagehead">
+                <h1>Welcome</h1>
+                <button class="icon-btn" type="button" aria-label="About suggested items"><svg class="icon">
+                        <use href="#ic-info" />
+                    </svg></button>
+            </div>
+
+            <label class="search">
+                <svg class="icon">
+                    <use href="#ic-search" />
+                </svg>
+                <input type="text" placeholder="Search in Drive" aria-label="Search in Drive">
+            </label>
+
+            <div class="chips">
+                <button class="chip" type="button">
+                    <svg>
+                        <use href="#ic-filter" />
+                    </svg>
+                    Type
+                    <svg class="caret">
+                        <use href="#ic-caret" />
+                    </svg>
+                </button>
+                <button class="chip" type="button">
+                    <svg>
+                        <use href="#ic-person" />
+                    </svg>
+                    People
+                    <svg class="caret">
+                        <use href="#ic-caret" />
+                    </svg>
+                </button>
+                <button class="chip" type="button">
+                    <svg>
+                        <use href="#ic-calendar" />
+                    </svg>
+                    Modified
+                    <svg class="caret">
+                        <use href="#ic-caret" />
+                    </svg>
+                </button>
+                <button class="chip" type="button">
+                    <svg>
+                        <use href="#ic-folder-blue" />
+                    </svg>
+                    Location
+                    <svg class="caret">
+                        <use href="#ic-caret" />
+                    </svg>
+                </button>
+            </div>
+
+            <h2 class="section">
+                <button class="collapse" type="button" data-toggle="folders">
+                    <svg class="caret">
+                        <use href="#ic-caret" />
+                    </svg>
+                    Suggested folders
+                </button>
+            </h2>
+
+            <div class="folders" data-panel="folders">
+                <button class="folder" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-folder-blue" />
+                    </svg>
+                    <span class="meta">
+                        <span class="name">Biology Group Project</span>
+                        <span class="sub">In Shared with me</span>
+                    </span>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+                <button class="folder" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-folder-blue" />
+                    </svg>
+                    <span class="meta">
+                        <span class="name">World History Notes</span>
+                        <span class="sub">In Shared with me</span>
+                    </span>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+                <button class="folder" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-folder-blue" />
+                    </svg>
+                    <span class="meta">
+                        <span class="name">Book Reports - Term 1</span>
+                        <span class="sub">In Shared with me</span>
+                    </span>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+                <button class="folder" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-folder-blue" />
+                    </svg>
+                    <span class="meta">
+                        <span class="name">Yearbook Photos 2026</span>
+                        <span class="sub">In Shared with me</span>
+                    </span>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+            </div>
+
+            <h2 class="section">
+                <button class="collapse" type="button" data-toggle="files">
+                    <svg class="caret">
+                        <use href="#ic-caret" />
+                    </svg>
+                    Suggested files
+                </button>
+                <span class="viewtoggle">
+                    <button class="on" type="button" aria-label="List layout"><svg class="icon">
+                            <use href="#ic-list" />
+                        </svg></button>
+                    <button type="button" aria-label="Grid layout"><svg class="icon">
+                            <use href="#ic-grid" />
+                        </svg></button>
+                </span>
+            </h2>
+
+            <div data-panel="files">
+                <div class="files-head">Name</div>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-doc" />
+                    </svg>
+                    <span class="name">English Essay - Final Draft</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-sheet" />
+                    </svg>
+                    <span class="name">Reading Log - Semester 1</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-video" />
+                    </svg>
+                    <span class="name">Science Fair Presentation.mp4</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-video" />
+                    </svg>
+                    <span class="name">Band Concert 2026.mp4</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-doc" />
+                    </svg>
+                    <span class="name">Class Notes - Algebra 2</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-video" />
+                    </svg>
+                    <span class="name">Volleyball Game vs Northside.mp4</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-doc" />
+                    </svg>
+                    <span class="name">History Timeline Project.docx</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-video" />
+                    </svg>
+                    <span class="name">Chemistry Lab Demo.mp4</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-sheet" />
+                    </svg>
+                    <span class="name">Weekly Planner 2026-2027</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-video" />
+                    </svg>
+                    <span class="name">End of Year Assembly.mp4</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <a class="viewmore" href="#more">View more</a>
+            </div>
+        </main>
+
+        <aside class="rail">
+            <button type="button" aria-label="Calendar"><span class="badge">31</span></button>
+            <button type="button" aria-label="Keep"><svg class="icon" style="color:#fbbc04">
+                    <use href="#ic-sparkle" />
+                </svg></button>
+            <button type="button" aria-label="Tasks"><svg class="icon" style="color:#1a73e8">
+                    <use href="#ic-info" />
+                </svg></button>
+            <button type="button" aria-label="Contacts"><svg class="icon" style="color:#1a73e8">
+                    <use href="#ic-person" />
+                </svg></button>
+            <span class="sep"></span>
+            <button type="button" aria-label="Get add-ons"><svg class="icon">
+                    <use href="#ic-plus" />
+                </svg></button>
+        </aside>
+    </div>
+
+    <script>
+        // Tab decoy: this page is shown first, then hands over to the real site
+        // five seconds after it finishes loading. The redirect is built from
+        // window.location.origin on purpose: a bare "/" (or a <base> tag) would
+        // otherwise resolve against google.com instead of this site.
+        try {
+            sessionStorage.setItem("cherri_launched", "yes")
+        } catch (e) { }
+
+        window.addEventListener("load", function () {
+            setTimeout(function () {
+                // "?launch=1" is the site's own flag for "already past the decoy",
+                // so the hand-off cannot loop even if sessionStorage is blocked.
+                window.location.replace(window.location.origin + "/?launch=1")
+            }, 5000)
+        })
+
+        // Keep the decoy inert: nothing navigates away. The sidebar only changes
+        // which item looks selected, and the two sections can be collapsed.
+        document.querySelectorAll("[data-nav]").forEach(function (link) {
+            link.addEventListener("click", function (event) {
+                event.preventDefault()
+                document.querySelectorAll("[data-nav]").forEach(function (other) {
+                    other.classList.remove("active")
+                })
+                link.classList.add("active")
+            })
+        })
+
+        document.querySelectorAll("[data-toggle]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                var header = button.closest(".section")
+                var panel = document.querySelector('[data-panel="' + button.dataset.toggle + '"]')
+                if (!header || !panel) return
+
+                header.classList.toggle("closed")
+                panel.classList.toggle("hidden")
+            })
+        })
+
+        document.querySelectorAll(".viewtoggle button").forEach(function (button) {
+            button.addEventListener("click", function () {
+                document.querySelectorAll(".viewtoggle button").forEach(function (other) {
+                    other.classList.remove("on")
+                })
+                button.classList.add("on")
+            })
+        })
+    </script>
+</body>
+
+</html>

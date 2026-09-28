@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kermit (RTPK) Network | games</title>
+    <link rel="shortcut icon" href="/assets/img/fav.png" type="image/png" id="tabIcon">
+    <script src="/assets/js/background.js" defer></script>
+    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
+    <link rel="stylesheet" href="/assets/css/elements.css">
+    <link rel="stylesheet" href="/assets/css/font.css">
+    <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
+    <!-- Settings open over this page instead of sending you back to the home
+         page (see assets/js/settings.js). -->
+    <link rel="stylesheet" href="/assets/css/t.css">
+    <link rel="stylesheet" href="/assets/css/dropdown.css">
+    <link rel="stylesheet" href="/assets/css/settings.css">
+    <script src="/assets/js/colors.js"></script>
+</head>
+
+<body>
+
+    
+
+    <nav>
+        <ul id="nav-ul" class="">
+            <div class="container" style="display: flex; flex-direction: row;">
+                <div class="top-nav">
+                    <li>
+                        <a class="active" href="/" target="_top">
+                            <i class="ri ri-home-4-line"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/games.html">
+                            <i class="ri ri-gamepad-fill"></i>
+                            Games
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/browser.html">
+                            <i class="ri ri-global-line"></i>
+                            Browser
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/movieframe.html">
+                            <i class="ri ri-film-line"></i>
+                            Movies
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/assistant.html">
+                            <i class="ri ri-robot-2-fill"></i>
+                            AI
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/chatrooms.html">
+                            <i class="ri ri-chat-1-fill"></i>
+                            Chat
+                        </a>
+                    </li>
+                </div>
+                <div>
+                    <li>
+                        <a href="#" onclick="toggleSettings(); return false;">
+                            <i class="ri ri-settings-3-line"></i>
+                            Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a style="cursor: pointer;" onclick="window.open('https://github.com/DrunkenKermit/Kermit-RTPK-Network', '_blank')">
+                            <i class="ri ri-github-fill"></i>
+                            Beta 2.2
+                        </a>
+                    </li>
+                </div>
+            </div>
+        </ul>
+    </nav>
+
+    <div class="nav-logo">
+        <button class="nav-logo-btn ri-menu-line" aria-label="Open navigation" onclick="
+            ul.classList.add('active');
+            const blurr = document.createElement('div')
+            blurr.classList.add('bluroverlay')
+            document.body.append(blurr)
+            blurr.addEventListener('click', () => {
+                ul.classList.remove('active')
+                blurr.remove()
+            })
+        "></button>
+    </div>
+
+    <style>
+        #particles-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .centerc {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            position: absolute;
+        }
+
+        h1 {
+            color: var(--bright-text);
+            font-size: 2.5rem;
+        }
+
+        .hcenter {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            /* Without a top offset the heading sat flush against the top edge of
+               the page, so it read as cut off. */
+            top: 0;
+            padding-top: 18px;
+            box-sizing: border-box;
+        }
+
+        .app {
+            width: 280px;
+            height: 170px;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--border-4);
+            margin: 10px;
+            transition: 0.3s;
+            border: 0px solid white;
+            position: relative;
+            z-index: 1;
+            /* Skip layout + paint for tiles that are off screen. GN-Math alone is
+               479 tiles, and without this the browser lays out all of them. */
+            content-visibility: auto;
+            contain-intrinsic-size: 280px 170px;
+        }
+
+        .app-img {
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            position: relative;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            transition: 0.3s;
+            display: block;
+            object-fit: cover;
+        }
+
+
+        .title {
+            z-index: 31;
+            transition: 0.2s;
+            position: absolute !important;
+            left: 15px;
+            bottom: -15px;
+            opacity: 0;
+        }
+
+        .app:hover {
+            cursor: pointer;
+            outline-offset: 0px;
+            scale: 1.05;
+        }
+
+        .app:hover .app-img {
+            filter: brightness(0.3);
+        }
+
+        .app:hover .title {
+            bottom: 5px;
+            opacity: 1;
+        }
+
+        .app h2 {
+            color: var(--bright-text);
+            position: relative;
+            top: 0%;
+            transform: translateY(30%);
+            font-size: 20px;
+        }
+
+        /* If a thumbnail is missing, show a themed panel with the game name
+           instead of a broken-image icon. */
+        .app.no-img {
+            background: linear-gradient(135deg, var(--bg-2), var(--bg-4));
+        }
+
+        .app.no-img .title {
+            bottom: 5px;
+            opacity: 1;
+        }
+
+        .apps-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 90%;
+            z-index: 0;
+        }
+
+        .games-tools {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        /* The search + source picker must sit above the tile grid, or the
+           open source menu paints underneath the first row of games. */
+        .games-tools-wrap {
+            z-index: 4000;
+        }
+
+        .games-heading {
+            text-align: center;
+            color: var(--text);
+            font-family: Arial;
+            font-size: 14px;
+            margin-top: 4px;
+            opacity: .75;
+        }
+
+        .games-heading span {
+            color: var(--bright-text);
+            opacity: 1;
+        }
+
+        .game-search {
+            width: 400px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .store-select {
+            position: relative;
+        }
+
+        .store-selected {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-2);
+            color: var(--text);
+            border: 1px solid var(--border-4);
+            border-radius: 10px;
+            padding: 15px 14px;
+            cursor: pointer;
+            font-family: Arial;
+            font-size: 14px;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+
+        .store-selected:hover {
+            background: var(--bg-3);
+            color: var(--bright-text);
+        }
+
+        .store-options {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            min-width: 100%;
+            background: var(--bg-2);
+            border: 1px solid var(--border-4);
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 999999;
+        }
+
+        .store-options.store-show {
+            display: block;
+        }
+
+        .store-options div {
+            padding: 10px 14px;
+            cursor: pointer;
+            color: var(--text);
+            font-family: Arial;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .store-options div:hover,
+        .store-options .same-as-selected {
+            background: var(--bg-3);
+            color: var(--bright-text);
+        }
+
+        /* Fit the games grid to the device it is opened on. */
+        @media (max-width: 700px) {
+            h1 {
+                font-size: 1.9rem;
+            }
+
+            .hcenter {
+                width: 100%;
+                padding: 0 10px;
+                box-sizing: border-box;
+            }
+
+            .hcenter input.game-search {
+                width: 100%;
+            }
+
+            .games-tools {
+                flex-wrap: wrap;
+            }
+
+            .apps-container {
+                width: 100%;
+                padding: 0 10px;
+                box-sizing: border-box;
+            }
+
+            .app {
+                width: 46%;
+                height: 130px;
+                margin: 6px;
+            }
+
+            .app h2 {
+                font-size: 15px;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            scrollbar-width: none;
+        }
+
+        .bottom-glow {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 35%;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            opacity: 0.3;
+            background: radial-gradient(at bottom, var(--bg-3) 30%, transparent 70%);
+        }
+
+        .top-glow {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 35%;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            opacity: 0.3;
+            background: radial-gradient(at top, var(--bg-3) 30%, transparent 70%);
+        }
+    </style>
+
+    <div id="particles-container"></div>
+    <div class="hcenter games-tools-wrap">
+        <h1 class="page-title">Games</h1>
+        <p class="games-heading" id="gameMeta">Loading games...</p>
+        <div class="games-tools">
+            <input class="game-search" id="gameSearch" style="margin: 3px;" type="text"
+                placeholder="Search for a game..." autocomplete="off">
+            <div class="store-select">
+                <button class="store-selected" onclick="event.stopPropagation(); toggleStoreMenu()">
+                    <i class="ri ri-database-2-line"></i>
+                    <span id="store-name">Classplay</span>
+                    <i class="ri ri-arrow-down-s-line"></i>
+                </button>
+                <div class="store-options" id="storeOptions"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="apps-container hcenter" style="top: 210px;">
+    </div>
+
+
+    <script defer>
+        const ul = document.getElementById("nav-ul")
+
+        document.querySelectorAll("li a").forEach(link => {
+            link.addEventListener("click", function () {
+                document.querySelectorAll("li a").forEach(l => l.classList.remove("active"));
+                this.classList.add("active");
+            });
+        });
+
+        window.addEventListener("keydown", (e) => {
+            if (e.ctrlKey && e.key === "m") {
+                console.log("Key pressed")
+                e.preventDefault()
+                if (!ul.classList.contains("active")) {
+                    ul.classList.add("active")
+                    const blurr = document.createElement("div")
+                    blurr.classList.add("bluroverlay")
+                    document.body.append(blurr)
+                    blurr.addEventListener("click", () => {
+                        blurr.remove()
+                        ul.classList.remove("active")
+                    })
+                } else {
+                    ul.classList.remove("active")
+                    const blurr = document.querySelector(".bluroverlay")
+                    blurr.remove()
+                }
+            }
+        })
+
+        const acont = document.querySelector('.apps-container');
+
+        // Every source lists the store files behind it, so "All" can pull both at once.
+        const STORES = {
+            "All": {
+                label: "All Sources",
+                files: ["/assets/json/classplay.json", "/assets/json/gn-math.json"]
+            },
+            "Classplay": {
+                label: "Classplay",
+                files: ["/assets/json/classplay.json"]
+            },
+            "GN-Math": {
+                label: "GN-Math",
+                files: ["/assets/json/gn-math.json"]
+            }
+        };
+
+        const DEFAULT_STORE = "All";
+
+        let currentStore = localStorage.getItem("cherri_gameStore") || DEFAULT_STORE;
+        if (!STORES[currentStore]) currentStore = DEFAULT_STORE;
+
+        let data
+        let res
+
+        function storeLabel() {
+            return (STORES[currentStore] && STORES[currentStore].label) || currentStore;
+        }
+
+        // "All Sources · 521 games", or "12 of 521 games in All Sources" while searching.
+        function updateMeta(shown) {
+            const meta = document.getElementById("gameMeta");
+            if (!meta) return;
+
+            const total = data ? data.length : 0;
+
+            if (shown === undefined || shown === total) {
+                meta.innerHTML = "<span>" + esc(storeLabel()) + "</span> &middot; " + total + " games";
+            } else {
+                meta.innerHTML = "<span>" + shown + "</span> of " + total + " games in " + esc(storeLabel());
+            }
+        }
+
+        let tileEls = [];
+        const jsonCache = {};
+
+        function esc(s) {
+            return String(s)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function renderTiles() {
+            // One innerHTML assignment instead of one appendChild per game: the grid
+            // can hold 479 tiles, and inserting them one at a time re-lays-out the
+            // page hundreds of times. Images are lazy, so only visible rows load.
+            let html = "";
+
+            data.forEach(app => {
+                html +=
+                    '<div class="app" data-url="' + encodeURIComponent(app.url) +
+                    '" data-name="' + esc(app.name.toLowerCase()) + '">' +
+                    '<img class="app-img" src="' + esc(app.img) + '" alt="' + esc(app.name) +
+                    '" loading="lazy" decoding="async">' +
+                    '<div class="title"><h2 class="h2-title">' + esc(app.name) + '</h2></div>' +
+                    '</div>';
+            });
+
+            acont.innerHTML = html;
+            tileEls = Array.from(acont.children);
+            updateMeta();
+        }
+
+        async function loadApps() {
+            try {
+                if (!jsonCache[currentStore]) {
+                    const lists = await Promise.all(
+                        STORES[currentStore].files.map(file => fetch(file).then(r => r.json()))
+                    );
+
+                    // Classplay and GN-Math share 53 game names; keep one tile each.
+                    const seen = new Set();
+                    jsonCache[currentStore] = [].concat(...lists).filter(game => {
+                        const key = String(game.name).toLowerCase().replace(/[^a-z0-9]/g, "");
+                        if (seen.has(key)) return false;
+                        seen.add(key);
+                        return true;
+                    });
+                }
+                data = jsonCache[currentStore];
+                renderTiles();
+            } catch (e) {
+                console.error("Could not load the game store:", e);
+            }
+        }
+
+        // A thumbnail that fails to load must not leave a broken-image icon.
+        acont.addEventListener("error", (e) => {
+            const img = e.target
+            if (!img || img.tagName !== "IMG") return
+            img.style.display = "none"
+            const tile = img.closest(".app")
+            if (tile) tile.classList.add("no-img")
+        }, true);
+
+        // One delegated listener instead of 479 inline onclick attributes.
+        acont.addEventListener("click", (e) => {
+            const tile = e.target.closest(".app");
+            if (!tile || !tile.dataset.url) return;
+            window.location.href = "/pages/play.html?launch=" + tile.dataset.url;
+        });
+
+        function renderStore() {
+            document.getElementById("store-name").textContent = storeLabel();
+
+            const opts = document.getElementById("storeOptions");
+            opts.innerHTML = "";
+
+            Object.keys(STORES).forEach(store => {
+                const opt = document.createElement("div");
+                opt.textContent = STORES[store].label;
+                if (store === currentStore) opt.classList.add("same-as-selected");
+                opt.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    setStore(store);
+                });
+                opts.appendChild(opt);
+            });
+        }
+
+        function toggleStoreMenu() {
+            document.getElementById("storeOptions").classList.toggle("store-show");
+        }
+
+        function setStore(store) {
+            document.getElementById("storeOptions").classList.remove("store-show");
+            if (!STORES[store] || store === currentStore) return;
+
+            currentStore = store;
+            localStorage.setItem("cherri_gameStore", store);
+            acont.innerHTML = "";
+            tileEls = [];
+            document.getElementById("gameMeta").textContent = "Loading " + storeLabel() + "...";
+            renderStore();
+            loadApps();
+        }
+
+        document.addEventListener("click", () => {
+            document.getElementById("storeOptions")?.classList.remove("store-show");
+        });
+
+        function searchApps(q) {
+            const term = (q || "").toLowerCase();
+            let shown = 0;
+
+            for (const tile of tileEls) {
+                const match = !term || tile.dataset.name.includes(term);
+                tile.style.display = match ? "block" : "none";
+                if (match) shown++;
+            }
+
+            updateMeta(term ? shown : undefined);
+        }
+
+        // Debounced so typing does not re-style hundreds of tiles per keystroke.
+        const gameSearch = document.getElementById("gameSearch");
+        let searchTimer = null;
+
+        gameSearch.addEventListener("input", () => {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => searchApps(gameSearch.value), 120);
+        });
+
+        renderStore();
+        loadApps();
+    </script>
+    <script src="/assets/js/t.js"></script>
+    <script src="/assets/js/settings.js"></script>
+    <script src="/assets/js/dropdown.js"></script>
+</body>
+
+</html>

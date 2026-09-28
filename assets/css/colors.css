@@ -1,0 +1,59 @@
+:root {
+    /* Kermit (RTPK) Network palette */
+    --strong-green: #0d8f3f;
+    --light-green: #63ff93;
+
+    --bg: #07140b;
+    --bg-2: #0b1a10;
+    --bg-3: #123021;
+    --bg-4: #1b46308c;
+    --bg-5: #050e09;
+
+    --border: rgba(255, 255, 255, 0.78);
+    --border-2: rgba(255, 255, 255, 0.44);
+    --border-3: rgba(255, 255, 255, 0.19);
+    --border-4: rgba(255, 255, 255, 0.1);
+
+    --text: rgba(255, 255, 255, 0.82);
+    --bright-text: #ffffff;
+
+    --accent: #63ff93;
+    --accent-2: #0d8f3f;
+
+    /* Kermit-compatible aliases, kept in sync with --accent */
+    --current-accent: #63ff93;
+    --current-accent-contrast: #07140b;
+    --accent-soft: rgba(99, 255, 147, 0.18);
+}
+
+#reset-theme {
+    display: none !important;
+}
+
+/* ── Shared button polish ──────────────────────────────────────────────────
+   This stylesheet is loaded by every page, so the baseline button behaviour is
+   the same everywhere. Page-specific rules (classes, Tailwind) still win.   */
+button {
+    font-family: inherit;
+    color: var(--text);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+button:not(:disabled):active {
+    transform: scale(0.97);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}

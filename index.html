@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <link rel="icon" type="image/png" href="/assets/img/fav.png">
+    <script>
+        // Cloaking entry: the first visit of a session lands on the Classroom decoy
+        // page, which hands over to the real site after 5 seconds. The flag keeps
+        // our own links (and the Home button) from bouncing straight back.
+        (function () {
+            try {
+                const params = new URLSearchParams(window.location.search)
+
+                if (params.get("launch") === "1") {
+                    sessionStorage.setItem("cherri_launched", "yes")
+                    return
+                }
+                if (sessionStorage.getItem("cherri_launched") === "yes") return
+
+                window.location.replace("/pages/drive.html")
+            } catch (e) { }
+        })()
+    </script>
+    <title>Kermit (RTPK) Network</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Deferred: together these are megabytes of JS and none of it is needed for
+         the first paint. defer preserves their relative order, so the proxy chain
+         still initialises in the right sequence, before DOMContentLoaded. -->
+    <script src="/uv/uv.bundle.js" defer></script>
+    <script src="/uv/uv.config.js" defer></script>
+    <script src="/baremux/index.js" defer></script>
+    <script src="/assets/js/t.js" defer></script>
+    <script src="/homework/math.all.js" defer></script>
+    <link rel="stylesheet" href="/styles/index.css">
+    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
+    <link rel="stylesheet" href="/fa/css/all.css">
+    <link rel="stylesheet" href="/fa/css/all.min.css">
+    <link rel="stylesheet" href="/fa/css/solid.css">
+    <link rel="stylesheet" href="/fa/css/all-pro.css">
+    <link rel="stylesheet" href="/assets/css/t.css">
+    <link rel="stylesheet" href="/assets/css/dropdown.css">
+    <script src="/assets/js/cursor.js" defer></script>
+    <script src="/assets/js/background.js" defer></script>
+    <script src="/assets/js/toolbar.js" defer></script>
+    <script src="/assets/js/colors.js"></script>
+    <script src="/assets/js/splash.js" defer></script>
+    <script src="/assets/js/browserfunctions.js" defer></script>
+    <meta name="title" content="Kermit (RTPK) Network">
+    <meta name="description"
+        content="Games, movies, shows and a built-in private browser in one place. Clean, customizable, and completely yours.">
+    <meta name="keywords"
+        content="games, unblocked, school, movies, tv, shows, browser, proxy, scramjet, libre, gn-math">
+    <meta name="robots" content="index, nofollow">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta property="og:image" content="/assets/img/cover.png">
+    <meta property="twitter:image" content="/assets/img/cover.png">
+    <meta name="language" content="English">
+    <meta name="revisit-after" content="2 days">
+    <meta name="author" content="Kermit (RTPK) Network">
+    <script defer src="https://cloud.umami.is/script.js"
+        data-website-id="aa852720-724b-4441-be4c-6db9ef160eb9"></script>
+    <link rel="stylesheet" href="/assets/css/font.css">
+    <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
+    <link rel="stylesheet" href="/assets/css/settings.css">
+</head>
+
+<body>
+    <button id="gohomeblock" onclick="navTo('home?launch=1')">
+        <i class="ri-home-4-line"></i>
+    </button>
+    <nav data-toolbar="main">
+        <ul>
+            <li class="toolbar-logo">
+                <a onclick="navTo('home?launch=1')" href="#" data-page="home">
+                    <pre class="kermit-art" aria-hidden="true">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠔⠒⡶⡷⠀⠁⠵⡄⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠠⢶⣶⣦⡄⢀⠤⢔⠘⠓⠉⠀⠀⠑⠦⠤⠤⠞⠪⡂⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⡰⠁⠀⠉⠛⠿⣆⣽⠶⠤⣄⣀⣀⠀⠀⠀⠀⠀⠀⠀⠈⢢⠀⠀⠀⠀⠀
+⠀⠀⠀⠰⠁⠀⠀⠀⠀⠠⠃⠈⢧⠠⠠⣦⣍⣍⣝⠛⠾⠾⢂⣤⣤⣾⡆⠀⠀⠀⠀
+⠀⠀⠀⡆⠀⠀⠀⠀⡐⠁⠀⠀⠀⠱⡀⠀⠀⠀⣀⣠⣤⣾⣿⣿⣿⣿⡇⠀⠀⠀⠀
+⠀⠀⠀⡗⢤⡀⡠⠊⠀⠀⠀⠀⠀⠀⠈⠢⡀⠙⠻⠛⠛⣟⣿⣿⣿⣿⡇⠀⠀⠀⠀
+⠀⠀⠀⠀⣸⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢟⣤⢠⣄⡔⡊⠛⠻⣿⣿⡇⠀⠀⠀⠀
+⠀⠀⢀⢀⣾⠻⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣮⣆⠻⣿⣿⣧⣤⣌⣻⡇⠀⠀⠀⠀
+⠀⠀⢸⡸⣿⠨⡀⠀⠀⠀⠀⠀⠀⠀⢀⡠⡮⠋⠉⠻⡓⠮⠛⠛⠻⠿⢧⡀⠀⠀⠀
+⠀⠀⠀⢷⡞⠓⠒⠬⠥⠤⠄⠤⠠⢝⣆⡾⠃⣠⣾⠀⠀⣰⡀⠀⠀⣆⠀⢻⣦⠀⠀
+⣿⣿⣿⣿⣶⣤⡤⣄⣀⣐⣀⣤⣮⢊⢀⡼⠋⠀⠀⡰⠁⣇⠀⡸⢹⣇⠀⣿⣧⣤
+⠽⢿⠿⠿⢿⣿⣿⣿⣿⣿⣿⡟⠁⣤⠎⠀⠀⡄⡼⠃⠀⢺⣠⣷⣄⣈⠁⠻⣿⠛</pre>
+                </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+                <a onclick="navTo('games')" href="#" data-page="games" title="Games">
+                    <i class="ri-gamepad-fill"></i>
+                </a>
+            </li>
+            <li>
+                <a onclick="navTo('browser')" href="#" data-page="browser">
+                    <i class="ri-global-line"></i>
+                </a>
+            </li>
+            <li>
+                <a onclick="navTo('movies')" href="#" data-page="movies">
+                    <i class="ri-video-line"></i>
+                </a>
+            </li>
+            <li>
+                <a onclick="navTo('assistant'); showToast('success', 'AI is in beta! Report bugs on the repo', 'fas fa-exclamation-triangle')"
+                    href="#" data-page="ai" title="AI Assistant">
+                    <i class="ri-robot-2-fill"></i>
+                </a>
+            </li>
+            <li>
+                <a onclick="navTo('chatrooms');" href="#" data-page="chatrooms" title="Chatrooms">
+                    <i class="ri-chat-1-fill"></i>
+                </a>
+            </li>
+            <li class="divider"></li>
+            <!--
+            <li>
+                <a onclick="toggleChat()" href="#" data-page="social">
+                    <i class="fas fa-messages"></i>
+                </a>
+            </li>
+            -->
+            <li class="toolbar-end">
+                <a onclick="toggleSettings()" href="#" data-page="dc">
+                    <i class="ri-settings-3-line"></i>
+                </a>
+            </li>
+            <!--
+            <li class="divider"></li>
+            <li style="width: 85px">
+                <a onclick="navTo('gmbl'); showToast('warning', 'Kermit (RTPK) Network in NO WAY encourages gambling, betting, or any actions of the kind. This is just a joke.', 'fas fa-exclamation-triangle')"
+                    href="#" data-page="gmbl">
+                    <i class="far fa-slot-machine"
+                        style="font-size: 17px; transform: translateY(40%); left: 10px;"></i><span
+                        class="new">NEW</span>
+                </a>
+            </li>
+            -->
+        </ul>
+    </nav>
+    <div id="homeContent">
+        <h1 class="text-7xl font-medium home-gradient">
+            Kermit (RTPK) Network</h1>
+        <p id="splash" class="text-medium font-light text-white/50">
+            wsp
+        </p>
+        <br>
+        <div class="searchathome">
+            <i class="fas fa-search"></i>
+            <input id="homesearch" autocomplete="off" style="margin-right: -3%;" type="text"
+                placeholder="search anything..." />
+            <i style="margin-right: 1%; animation: rotationlmao .45s linear infinite forwards; transition: 0.2s;"
+                class="fas fa-spinner-third"></i>
+        </div>
+        <br><br>
+    </div>
+
+    <div class="toast-container fixed right-4 top-4 w-1/4">
+    </div>
+
+    <div class="toast-container"></div>
+
+    <iframe id="contentFrame"></iframe>
+
+    <div class="browser-container">
+        <div class="browser-controls">
+            <div class="tabs">
+                <button class="newtab" onclick="newTab()" title="New tab">
+                    <i class="ri-add-line"></i>
+                </button>
+            </div>
+            <div class="browser-buttons">
+                <div class="hcontainer">
+                    <button onclick="b()" title="Back">
+                        <i class="ri-arrow-left-line"></i>
+                    </button>
+                    <button onclick="f()" title="Forward">
+                        <i class="ri-arrow-right-line"></i>
+                    </button>
+                    <button onclick="r()" title="Reload">
+                        <i class="ri-restart-line"></i>
+                    </button>
+                    <!-- The URL bar is wired up by browserfunctions.js; the old
+                         inline handler read `this.value` inside an arrow function
+                         (window, not the input) and threw on every Enter. -->
+                    <input type="text" id="searchbar" placeholder="Search for anything or enter a URL...">
+                    <button onclick="full()" title="Fullscreen">
+                        <i class="ri-fullscreen-line"></i>
+                    </button>
+                    <button onclick="launchEruda()" title="Developer console">
+                        <i class="ri-code-line"></i>
+                    </button>
+                    <button onclick="closeOverlays(); hideBrowser()" title="Close browser">
+                        <i class="ri-home-4-line"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div id="particles-container"></div>-->
+
+    <div id="cursor-thank-you-zxs"
+        style="position: fixed; top: 0px; left: 0px; width: 16px; height: 16px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 70%, white 30%); pointer-events: none; z-index: 9999; transform: translate(748px, 592px); transition: width 0.15s, height 0.15s, opacity 0.15s; mix-blend-mode: difference; opacity: 0;">
+    </div>
+
+    <button id="reset-theme" onclick="resetTheme()">CLICK HERE TO RESET YOUR THEME!</button>
+
+    <!-- site version -->
+    <kermitattr version="s1.1.1"></kermitattr>
+
+    <!-- Settings are injected by settings.js, which must run before dropdown.js,
+         because dropdown.js wires up the selectors inside the overlay. -->
+    <script src="/assets/js/settings.js"></script>
+    <script src="/assets/js/dropdown.js"></script>
+    <script>
+        async function registerSW() {
+            if ("serviceWorker" in navigator) {
+                await navigator.serviceWorker.register("/uv/sw.js").then(() => {
+                    console.log(
+                        "%cKermit" + "%c UV sw registered!",
+                        "color: white; background: linear-gradient(to bottom right, #040c16, #000000); border-radius: 5px; font-weight: bold; padding: 6px; font-family: sans-serif;",
+                        "color: white; background: transparent; border-radius: 0px; padding: 0px;"
+                    );
+                    setTimeout(() => {
+                        showToast("success", "Ultraviolet worker initialized!", "fas fa-check-circle")
+                        console.log("shown toast")
+                    }, 1000)
+                }).catch(e => {
+                    console.log("Error registering service worker (UV): " + e)
+                    showToast("error", "Failed to register service worker", "fas fa-times-circle")
+                });
+
+                await navigator.serviceWorker.register("/sw.js").then(() => {
+                    console.log(
+                        "%cKermit" + "%c SJ sw registered!",
+                        "color: white; background: linear-gradient(to bottom right, #040c16, #000000); border-radius: 5px; font-weight: bold; padding: 6px; font-family: sans-serif;",
+                        "color: white; background: transparent; border-radius: 0px; padding: 0px;"
+                    );
+                    setTimeout(() => {
+                        showToast("success", "Scramjet worker initialized", "fas fa-check-circle")
+                        console.log("shown toast")
+                    }, 1000)
+                }).catch(e => {
+                    console.log("Error registering service worker (SJ): " + e)
+                    showToast("error", "Failed to register service worker", "fas fa-times-circle")
+                });
+            }
+        }
+
+        // The home search box used to be enabled only after BOTH service workers had
+        // registered, so any failure left it greyed out on "search not ready yet!"
+        // forever. Whether the proxy boots no longer decides if you can search.
+        function showHomeSearch() {
+            const homeSearch = document.getElementById("homesearch")
+            if (!homeSearch) return
+
+            homeSearch.disabled = false
+            homeSearch.placeholder = "search anything..."
+
+            document.querySelectorAll(".searchathome .fa-spinner-third").forEach(spinner => {
+                spinner.style.opacity = 0
+                spinner.style.pointerEvents = "none"
+            })
+        }
+
+        window.addEventListener("DOMContentLoaded", () => setTimeout(showHomeSearch, 700))
+        window.addEventListener("load", showHomeSearch)
+
+        window.addEventListener("load", () => {
+            registerSW();
+            lucide.createIcons();
+        });
+
+        const contentFrame = document.getElementById('contentFrame');
+        const homeContent = document.getElementById('homeContent');
+        const navLinks = document.querySelectorAll('nav a[data-page]');
+
+        function navTo(l) {
+            // Never leave an overlay (or its click-catching blur backdrop) sitting on
+            // top of the page we are navigating to.
+            if (typeof closeOverlays === "function") closeOverlays()
+            if (l.includes("home")) {
+                contentFrame.remove();
+                document.querySelector("nav").style.display = "block"
+                setTimeout(() => {
+                    document.querySelector("nav").style.opacity = "1"
+                }, 3)
+                homeContent.style.display = "block";
+                document.querySelector("#gohomeblock").style.display = "none"
+            } else {
+                if (!document.body.contains(contentFrame)) {
+                    document.body.appendChild(contentFrame);
+                }
+                const overlayOn = localStorage.getItem("cherri_useOverlay") ?? "yes"
+                if (overlayOn === "yes" && l.includes("/stores/")) {
+                    document.querySelector("nav").style.opacity = 0
+                    setTimeout(() => {
+                        document.querySelector("nav").style.display = "none"
+                    }, 350)
+                }
+                homeContent.style.display = "none";
+                contentFrame.style.display = "block";
+                contentFrame.src = l.includes("/stores/") ? `/pages/${l}` : `/pages/${l}.html`;
+            }
+        }
+    </script>
+    <script>
+        const inp = document.getElementById("searchbar")
+
+        inp.addEventListener("keydown", e => {
+            if (e.key === "Enter") {
+                nav(inp.value)
+                console.log("i")
+            }
+        })
+    </script>
+    <script defer>
+        window.addEventListener("load", () => {
+            const frames = document.querySelectorAll(".viewframe")
+            const activeFrames = document.querySelectorAll(".active")
+
+            activeFrames.forEach(frame => {
+                frame.classList.remove("active")
+            })
+        })
+    </script>
+    <script>
+        function rSearch(input) {
+            let url = input;
+            if (!url.includes(".") || url.includes(" ")) {
+                url = url;
+            } else {
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    url = "https://" + url;
+                }
+            }
+
+            const b = document.querySelector(".browser-container")
+            const frames = document.querySelectorAll(".viewframe")
+
+            b.style.opacity = 1
+            b.style.pointerEvents = "all"
+
+            frames.forEach(frame => {
+                frame.style.opacity = 1
+                frame.style.pointerEvents = "all"
+            })
+
+            console.log("rSearch")
+            newTab()
+            nav(url)
+            switchTab(aTab)
+        }
+    </script>
+    <script defer>
+        window.addEventListener("DOMContentLoaded", () => {
+            console.log("kermit: dom content loaded")
+            const homesearch = document.getElementById("homesearch");
+
+            homesearch.addEventListener("keydown", (e) => {
+                console.log("askjdfaskhjlgdf")
+                if (e.key === "Enter") {
+                    rSearch(homesearch?.value.trim());
+                    console.log("rsearching")
+                }
+                console.log("check")
+            });
+        })
+    </script>
+    <script defer>
+        const kermitAttr = document.querySelector("kermitattr")
+        const siteVersion = kermitAttr.getAttribute("version")
+        const savedVer = localStorage.getItem("cherri_siteVersion") ?? ""
+
+        window.addEventListener("DOMContentLoaded", () => {
+            if (savedVer === null || !savedVer) {
+                showToast("success", "Welcome to Kermit (RTPK) Network!", "fas fa-hand-wave")
+                localStorage.setItem("cherri_siteVersion", siteVersion)
+            } else if (savedVer !== siteVersion) {
+                showToast("success", "Kermit (RTPK) Network was updated! Check settings for more info.", "fas fa-check-circle")
+                localStorage.setItem("cherri_siteVersion", siteVersion)
+            }
+        })
+
+        function resetTheme() {
+            localStorage.setItem("cherri_theme", "default")
+            window.location.reload()
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search)
+            if (params.get("page") === "settings") {
+                toggleSettings()
+            } else if (params.get("page") && params.get("launch")) {
+                navTo(params.get("page"))
+            }
+        })
+    </script>
+</body>
