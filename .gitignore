@@ -4,6 +4,10 @@ dist/
 # generated types
 .astro/
 
+# python bytecode from running the api locally
+__pycache__/
+*.py[cod]
+
 # dependencies
 node_modules/
 
