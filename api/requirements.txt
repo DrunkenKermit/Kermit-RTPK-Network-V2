@@ -1,0 +1,2 @@
+# api/chat.py uses only the Python standard library (http.server, urllib, json),
+# so there are no third-party dependencies to install.

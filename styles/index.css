@@ -201,6 +201,19 @@ nav ul li.disabled {
     color: transparent;
 }
 
+/* Home headline and the rotating splash line. They are the first thing the
+   page shows, so both scale with the viewport instead of being fixed small.
+   The id selector outranks the Tailwind text-7xl class on the heading. */
+#homeContent h1 {
+    font-size: clamp(3rem, 9vw, 7rem);
+    line-height: 1.05;
+}
+
+#splash {
+    font-size: clamp(1.35rem, 2.8vw, 2.25rem);
+    line-height: 1.3;
+}
+
 /* Kermit (RTPK) Network braille art, used as the toolbar logo.
    Left aligned so the art's own leading blanks keep every row in register.
    The 31x13 braille grid is set at 12px and scaled down with a transform:
@@ -318,13 +331,6 @@ nav ul li.disabled {
     padding: 2px;
     transform-origin: center center;
     filter: drop-shadow(0 0 15px var(--bg-5));
-}
-
-.version-tag {
-    position: absolute;
-    bottom: 15px;
-    left: 17.5px;
-    font-size: 14px;
 }
 
 .settings-sidebar {
@@ -1023,22 +1029,68 @@ button.button:hover {
 /* ── Toolbar layout ──────────────────────────────────────────────────────────
    One long line by default, optional left rail or bottom bar
    (see assets/js/toolbar.js).                                                  */
+/* The toolbar hugs its own buttons and sits centred, and every slot is a
+   step smaller than the subpage menus so it stays compact. */
 nav[data-toolbar] {
-    width: calc(100% - 24px);
+    width: fit-content;
     max-width: calc(100% - 24px);
-    justify-content: flex-start;
+    height: 56px;
+    padding-left: 8px;
+    padding-right: 8px;
+    justify-content: center;
     overflow: visible;
     transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 nav[data-toolbar] ul {
-    width: 100%;
+    width: auto;
     flex-wrap: nowrap;
-    justify-content: flex-start;
+    justify-content: center;
+}
+
+nav[data-toolbar] ul li {
+    width: 46px;
+    height: 46px;
+    margin: 2px;
+}
+
+/* Kept explicit: `nav[data-toolbar] ul li` above sets a 46px width and would
+   otherwise turn the thin separators into blocks. */
+nav[data-toolbar] ul li.divider {
+    width: 3px;
+    height: 24px;
+}
+
+/* Size the toolbar glyphs here so the icon-only home toolbar matches the
+   labelled navs on the other pages, which get their 22px from the .ri class. */
+nav[data-toolbar] a i {
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+nav[data-toolbar] .toolbar-logo {
+    width: 72px;
+    height: 46px;
+}
+
+nav[data-toolbar] .toolbar-logo .kermit-art {
+    transform: scale(0.29);
 }
 
 nav[data-toolbar] ul li.toolbar-end {
     margin-left: 12px;
+}
+
+/* The arrow that folds the toolbar away. */
+nav[data-toolbar] ul li.toolbar-hide a {
+    color: var(--text);
+    opacity: 0.7;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+nav[data-toolbar] ul li.toolbar-hide a:hover {
+    color: var(--accent);
+    opacity: 1;
 }
 
 html.toolbar-left nav[data-toolbar] {
@@ -1090,22 +1142,26 @@ html.toolbar-hidden nav[data-toolbar] {
     display: none;
 }
 
+/* While the toolbar is folded away this tab stays centred at the top edge, so
+   the same arrow brings it back (see assets/js/toolbar.js). */
 #toolbarHandle {
     display: none;
     position: fixed;
-    top: 15px;
-    left: 15px;
-    width: 44px;
-    height: 44px;
+    top: 0;
+    left: 50%;
+    margin-left: -28px;
+    width: 56px;
+    height: 32px;
     align-items: center;
     justify-content: center;
-    font-size: 19px;
-    border-radius: 10px;
+    font-size: 18px;
+    border-radius: 0 0 12px 12px;
     border: 1px solid var(--border-4);
+    border-top: none;
     background: color-mix(in srgb, var(--bg) 55%, transparent 45%);
     backdrop-filter: blur(10px);
     color: var(--text);
-    opacity: 0.55;
+    opacity: 0.7;
     z-index: 9324768;
     cursor: pointer;
     transition: opacity 0.2s ease, scale 0.2s ease;
@@ -1627,6 +1683,30 @@ span.online-count {
     }
 
     .toolbar-logo .kermit-art {
+        transform: scale(0.25);
+    }
+
+    /* Narrow screens let the toolbar wrap instead of squeezing it. */
+    nav[data-toolbar] {
+        height: auto;
+        padding: 4px 6px;
+    }
+
+    nav[data-toolbar] ul {
+        flex-wrap: wrap;
+    }
+
+    nav[data-toolbar] ul li {
+        width: 40px;
+        height: 40px;
+    }
+
+    nav[data-toolbar] .toolbar-logo {
+        width: 62px;
+        height: 40px;
+    }
+
+    nav[data-toolbar] .toolbar-logo .kermit-art {
         transform: scale(0.25);
     }
 

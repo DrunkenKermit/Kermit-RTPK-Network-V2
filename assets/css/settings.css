@@ -30,13 +30,6 @@
     filter: drop-shadow(0 0 15px var(--bg-5));
 }
 
-.version-tag {
-    position: absolute;
-    bottom: 15px;
-    left: 17.5px;
-    font-size: 14px;
-}
-
 .settings-sidebar {
     width: 25%;
     padding: 2px;

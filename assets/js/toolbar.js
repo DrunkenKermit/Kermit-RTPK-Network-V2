@@ -2,9 +2,9 @@
  * Kermit (RTPK) Network toolbar behaviour.
  *
  * The main toolbar is one long line at the top of the page by default; it can
- * also be docked down the left side or along the bottom, and it can be hidden
- * entirely (a small handle brings it back). Both choices are saved and restored
- * on the next visit.
+ * also be docked down the left side or along the bottom. Its own arrow folds it
+ * away and the handle left behind brings it back. The position is saved and
+ * restored on the next visit.
  *
  * Only pages that opt in with <nav data-toolbar="main"> are affected; the small
  * menu bar on the subpages keeps its own behaviour.
@@ -53,7 +53,7 @@
         el.type = "button";
         el.title = "Show toolbar";
         el.setAttribute("aria-label", "Show toolbar");
-        el.innerHTML = '<i class="ri-eye-line"></i>';
+        el.innerHTML = '<i class="ri-arrow-down-s-line"></i>';
         el.addEventListener("click", function () {
             setHidden(false);
             if (typeof window.showToast === "function") {
@@ -82,10 +82,6 @@
         }
 
         reserveSpace();
-
-        // Keep the settings switch in sync (the overlay may not exist yet).
-        var toggle = document.getElementById("toolbar-toggle");
-        if (toggle) toggle.checked = isHidden;
     }
 
     // The toolbar is fixed, so the page underneath has to be told how much room
@@ -158,9 +154,9 @@
     window.getToolbarPos = position;
     window.setToolbarHidden = setHidden;
     window.getToolbarHidden = hidden;
-    window.updateToolbarVisibility = function () {
-        var toggle = document.getElementById("toolbar-toggle");
-        setHidden(toggle ? toggle.checked : !hidden());
+    // One call for the toolbar's own arrow, the handle and the Ctrl/Cmd+M key.
+    window.toggleToolbar = function () {
+        setHidden(!hidden());
     };
 
     function boot() {

@@ -68,7 +68,7 @@
 
 <body>
     <button id="gohomeblock" onclick="navTo('home?launch=1')">
-        <i class="ri-home-4-line"></i>
+        <i class="ri-home-4-fill"></i>
     </button>
     <nav data-toolbar="main">
         <ul>
@@ -97,12 +97,12 @@
             </li>
             <li>
                 <a onclick="navTo('browser')" href="#" data-page="browser">
-                    <i class="ri-window-2-line"></i>
+                    <i class="ri-window-2-fill"></i>
                 </a>
             </li>
             <li>
                 <a onclick="navTo('movies')" href="#" data-page="movies">
-                    <i class="ri-clapperboard-line"></i>
+                    <i class="ri-clapperboard-fill"></i>
                 </a>
             </li>
             <li>
@@ -126,7 +126,13 @@
             -->
             <li class="toolbar-end">
                 <a onclick="toggleSettings()" href="#" data-page="dc">
-                    <i class="ri-settings-3-line"></i>
+                    <i class="ri-settings-3-fill"></i>
+                </a>
+            </li>
+            <li class="toolbar-hide">
+                <a onclick="if (window.toggleToolbar) toggleToolbar(); return false;" href="#"
+                    title="Hide toolbar" aria-label="Hide toolbar">
+                    <i class="ri-arrow-up-s-line"></i>
                 </a>
             </li>
             <!--
@@ -148,14 +154,6 @@
         <p id="splash" class="text-medium font-light text-white/50">
             wsp
         </p>
-        <br>
-        <div class="searchathome">
-            <i class="fas fa-search"></i>
-            <input id="homesearch" autocomplete="off" style="margin-right: -3%;" type="text"
-                placeholder="search anything..." />
-            <i style="margin-right: 1%; animation: rotationlmao .45s linear infinite forwards; transition: 0.2s;"
-                class="fas fa-spinner-third"></i>
-        </div>
         <br><br>
     </div>
 
@@ -252,25 +250,6 @@
             }
         }
 
-        // The home search box used to be enabled only after BOTH service workers had
-        // registered, so any failure left it greyed out on "search not ready yet!"
-        // forever. Whether the proxy boots no longer decides if you can search.
-        function showHomeSearch() {
-            const homeSearch = document.getElementById("homesearch")
-            if (!homeSearch) return
-
-            homeSearch.disabled = false
-            homeSearch.placeholder = "search anything..."
-
-            document.querySelectorAll(".searchathome .fa-spinner-third").forEach(spinner => {
-                spinner.style.opacity = 0
-                spinner.style.pointerEvents = "none"
-            })
-        }
-
-        window.addEventListener("DOMContentLoaded", () => setTimeout(showHomeSearch, 700))
-        window.addEventListener("load", showHomeSearch)
-
         window.addEventListener("load", () => {
             registerSW();
             lucide.createIcons();
@@ -357,21 +336,8 @@
             switchTab(aTab)
         }
     </script>
-    <script defer>
-        window.addEventListener("DOMContentLoaded", () => {
-            console.log("kermit: dom content loaded")
-            const homesearch = document.getElementById("homesearch");
-
-            homesearch.addEventListener("keydown", (e) => {
-                console.log("askjdfaskhjlgdf")
-                if (e.key === "Enter") {
-                    rSearch(homesearch?.value.trim());
-                    console.log("rsearching")
-                }
-                console.log("check")
-            });
-        })
-    </script>
+    <!-- The home search box was removed from this page; rSearch() is kept for
+         the in-page browser but nothing on the home page calls it any more. -->
     <script defer>
         const kermitAttr = document.querySelector("kermitattr")
         const siteVersion = kermitAttr.getAttribute("version")

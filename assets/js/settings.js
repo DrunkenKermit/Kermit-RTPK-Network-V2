@@ -91,12 +91,8 @@
         selector("background", "Rain") +
 
         '<h2>Toolbar</h2>' +
-        '<p>Keep the toolbar as one long line across the top, dock it down the left side, or sit it along the bottom.</p>' +
+        '<p>Keep the toolbar as one long line across the top, dock it down the left side, or sit it along the bottom. The arrow on the toolbar folds it away and brings it back.</p>' +
         selector("toolbar", "Top") +
-
-        '<h2>Hide Toolbar</h2>' +
-        '<p>Move the toolbar out of the way completely and leave just a small handle in the top-left corner. Press the handle (or <b>Ctrl / ⌘ + M</b>) whenever you want it back.</p>' +
-        toggleSwitch("toolbar-toggle", read("cherri_hideToolbar", "no") === "yes", "updateToolbarVisibility()") +
         '<br><br>' +
 
         '<h2>Custom Cursor</h2>' +
@@ -181,8 +177,6 @@
         '</div>' +
         '</div>' +
 
-        '<p class="version-tag">Kermit (RTPK) Network ' +
-        '<a href="https://github.com/DrunkenKermit/Kermit-RTPK-Network" target="_blank">stable v1.1.1</a></p>' +
         '</div>' +
         '</div>';
 
