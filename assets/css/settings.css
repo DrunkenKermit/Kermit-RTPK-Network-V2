@@ -313,6 +313,46 @@ button.button:hover {
     box-shadow: var(--circle-checked-shadow);
 }
 
+/* ── Diagnostics tab ────────────────────────────────────────────────────────
+   A plain key/value readout. The palette has no error colour, so a problem is
+   marked with the cross glyph and weight rather than an invented red.        */
+.diag-report {
+    background: color-mix(in srgb, var(--bg-2) 50%, transparent 50%);
+    border: 1px solid var(--border-4);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.diag-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.diag-label {
+    color: var(--text);
+    flex-shrink: 0;
+}
+
+.diag-value {
+    color: var(--bright-text);
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.diag-value.diag-ok {
+    color: var(--accent);
+}
+
+.diag-value.diag-bad {
+    color: var(--bright-text);
+    font-weight: 550;
+}
+
 /* The selectors ship with a Font Awesome chevron, which is not loaded on the
    subpages. Use the icon font every page already has. */
 .theme-selected::after,

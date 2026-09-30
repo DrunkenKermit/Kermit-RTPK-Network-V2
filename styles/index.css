@@ -122,13 +122,16 @@ li.toright {
     right: 10px;
 }
 
+/* Every subpage loads inside this frame, so it is inset by the toolbar's real
+   size instead of sitting underneath it. The --toolbar-*-space values are
+   measured in assets/js/toolbar.js (0 when the bar is hidden). */
 #contentFrame {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: var(--toolbar-top-space, 0px);
+    left: var(--toolbar-left-space, 0px);
+    width: calc(100% - var(--toolbar-left-space, 0px));
+    height: calc(100% - var(--toolbar-top-space, 0px) - var(--toolbar-bottom-space, 0px));
     border: none;
     z-index: 1;
 }
@@ -143,7 +146,12 @@ li.toright {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    /* Centre in the room the toolbar leaves rather than the whole viewport, so
+       the hero is not pushed behind the bar on a short window. */
+    margin-top: calc((var(--toolbar-top-space, 0px) - var(--toolbar-bottom-space, 0px)) / 2);
     z-index: 1;
+    box-sizing: border-box;
+    max-width: 100%;
 }
 
 #homeContent.hidden {
@@ -1064,27 +1072,16 @@ html.toolbar-left nav[data-toolbar] ul li.divider {
 }
 
 html.toolbar-left #homeContent {
-    left: calc(50% + 39px);
+    left: calc(50% + (var(--toolbar-left-space, 0px) / 2));
 }
 
-html.toolbar-left #contentFrame {
-    left: 90px;
-    width: calc(100% - 90px);
-}
-
-/* Bottom bar: same toolbar, docked to the bottom edge instead of the top. */
+/* Bottom bar: same toolbar, docked to the bottom edge instead of the top.
+   The left/bottom insets for #contentFrame and #homeContent come from the
+   measured variables above, so there is nothing to override here. */
 html.toolbar-bottom nav[data-toolbar] {
     top: auto;
     bottom: 12px;
     margin-top: 0;
-}
-
-html.toolbar-bottom #homeContent {
-    top: calc(50% - 40px);
-}
-
-html.toolbar-bottom #contentFrame {
-    height: calc(100% - 100px);
 }
 
 /* Hidden toolbar: the nav leaves the stage and a small handle brings it back.

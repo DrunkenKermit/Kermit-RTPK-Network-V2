@@ -25,15 +25,249 @@
     <script src="/assets/js/colors.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
     <link rel="stylesheet" href="/assets/css/font.css">
+    <!-- The favourites tiles use Remixicon glyphs, like the browser chrome does. -->
+    <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
 </head>
 
 <body>
     <div id="homeContent">
-        <h1 class="text-8xl text-white font-bold">hi!</h1>
-        <p style="color: var(--text) !important;">try searching to get started.</p>
+        <pre class="kermit-art newtab-art" role="img" aria-label="Kermit (RTPK) Network">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠔⠒⡶⡷⠀⠁⠵⡄⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠠⢶⣶⣦⡄⢀⠤⢔⠘⠓⠉⠀⠀⠑⠦⠤⠤⠞⠪⡂⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⡰⠁⠀⠉⠛⠿⣆⣽⠶⠤⣄⣀⣀⠀⠀⠀⠀⠀⠀⠀⠈⢢⠀⠀⠀⠀⠀
+⠀⠀⠀⠰⠁⠀⠀⠀⠀⠠⠃⠈⢧⠠⠠⣦⣍⣍⣝⠛⠾⠾⢂⣤⣤⣾⡆⠀⠀⠀⠀
+⠀⠀⠀⡆⠀⠀⠀⠀⡐⠁⠀⠀⠀⠱⡀⠀⠀⠀⣀⣠⣤⣾⣿⣿⣿⣿⡇⠀⠀⠀⠀
+⠀⠀⠀⡗⢤⡀⡠⠊⠀⠀⠀⠀⠀⠀⠈⠢⡀⠙⠻⠛⠛⣟⣿⣿⣿⣿⡇⠀⠀⠀⠀
+⠀⠀⠀⠀⣸⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢟⣤⢠⣄⡔⡊⠛⠻⣿⣿⡇⠀⠀⠀⠀
+⠀⠀⢀⢀⣾⠻⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣮⣆⠻⣿⣿⣧⣤⣌⣻⡇⠀⠀⠀⠀
+⠀⠀⢸⡸⣿⠨⡀⠀⠀⠀⠀⠀⠀⠀⢀⡠⡮⠋⠉⠻⡓⠮⠛⠛⠻⠿⢧⡀⠀⠀⠀
+⠀⠀⠀⢷⡞⠓⠒⠬⠥⠤⠄⠤⠠⢝⣆⡾⠃⣠⣾⠀⠀⣰⡀⠀⠀⣆⠀⢻⣦⠀⠀
+⣿⣿⣿⣿⣶⣤⡤⣄⣀⣐⣀⣤⣮⢊⢀⡼⠋⠀⠀⡰⠁⣇⠀⡸⢹⣇⠀⣿⣧⣤
+⠽⢿⠿⠿⢿⣿⣿⣿⣿⣿⣿⡟⠁⣤⠎⠀⠀⡄⡼⠃⠀⢺⣠⣷⣄⣈⠁⠻⣿⠛</pre>
+
+        <div class="fav-grid" id="favGrid"></div>
     </div>
 
-    
+    <style>
+        /* The same braille art as the toolbar logo. inline-block width plus auto
+           margins keeps the block centred inside #homeContent. */
+        .newtab-art {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 26px;
+            font-size: min(4vw, 30px, 4.6vh);
+            line-height: 1;
+            color: var(--accent);
+        }
+
+        .fav-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .fav {
+            position: relative;
+            width: 92px;
+            height: 92px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px;
+            box-sizing: border-box;
+            border-radius: 16px;
+            border: 1px solid var(--border-4);
+            background: color-mix(in srgb, var(--bg-2) 60%, transparent 40%);
+            color: var(--text);
+            font-family: Inter, sans-serif;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .fav:hover {
+            background: var(--bg-3);
+            border-color: var(--border-3);
+            color: var(--bright-text);
+            transform: translateY(-2px);
+        }
+
+        .fav img {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+        }
+
+        .fav span {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
+
+        /* An unused slot, so the row always shows eight of them. */
+        .fav.empty {
+            border-style: dashed;
+            background: transparent;
+            opacity: 0.55;
+        }
+
+        .fav.empty i {
+            font-size: 26px;
+        }
+
+        .fav.empty:hover {
+            opacity: 1;
+        }
+
+        .fav .remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            font-size: 14px;
+            line-height: 1;
+            padding: 2px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: 0.2s;
+        }
+
+        .fav:hover .remove {
+            opacity: 1;
+        }
+
+        .fav .remove:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 780px) {
+            .fav {
+                width: 72px;
+                height: 72px;
+                font-size: 11px;
+            }
+
+            .fav img {
+                width: 22px;
+                height: 22px;
+            }
+
+            .newtab-art {
+                margin-bottom: 18px;
+            }
+        }
+    </style>
+
+    <script>
+        (function () {
+            "use strict";
+
+            var KEY = "cherri_bookmarks";
+            var SLOTS = 8;
+
+            var grid = document.getElementById("favGrid");
+            if (!grid) return;
+
+            function bookmarks() {
+                try {
+                    var saved = JSON.parse(localStorage.getItem(KEY) || "[]");
+                    return Array.isArray(saved) ? saved.filter(function (b) { return b && b.url; }) : [];
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function save(list) {
+                try {
+                    localStorage.setItem(KEY, JSON.stringify(list));
+                } catch (e) { }
+            }
+
+            function label(bookmark) {
+                if (bookmark.title) return bookmark.title;
+                try {
+                    return new URL(bookmark.url).hostname.replace(/^www\./, "");
+                } catch (e) {
+                    return bookmark.url;
+                }
+            }
+
+            // These tiles live inside the browser page's frame, so a filled slot
+            // asks the browser to navigate instead of moving this frame itself.
+            function open(url) {
+                try {
+                    if (window.parent && window.parent !== window && typeof window.parent.nav === "function") {
+                        window.parent.nav(url);
+                        return;
+                    }
+                } catch (e) { }
+                window.location.href = "/pages/browser.html";
+            }
+
+            function focusUrlBar() {
+                try {
+                    var bar = window.parent.document.getElementById("searchbar");
+                    if (bar) bar.focus();
+                } catch (e) { }
+            }
+
+            function render() {
+                var list = bookmarks();
+                grid.innerHTML = "";
+
+                for (var i = 0; i < SLOTS; i++) {
+                    // `const` inside the loop body, so each click handler closes
+                    // over its own bookmark rather than the last one.
+                    const bookmark = list[i];
+                    const tile = document.createElement("button");
+                    tile.type = "button";
+
+                    if (!bookmark) {
+                        tile.className = "fav empty";
+                        tile.title = "Empty favourite - add one with the star in the browser bar";
+                        tile.innerHTML = '<i class="ri-add-line"></i><span>Add</span>';
+                        tile.addEventListener("click", focusUrlBar);
+                        grid.appendChild(tile);
+                        continue;
+                    }
+
+                    tile.className = "fav";
+                    tile.title = bookmark.url;
+                    tile.innerHTML =
+                        '<img alt="" src="https://www.google.com/s2/favicons?domain=' +
+                        encodeURIComponent(bookmark.url) + '&sz=64">' +
+                        '<span></span>' +
+                        '<i class="ri-close-line remove" title="Remove favourite"></i>';
+                    tile.querySelector("span").textContent = label(bookmark);
+
+                    tile.addEventListener("click", function (event) {
+                        if (event.target.closest(".remove")) return;
+                        open(bookmark.url);
+                    });
+
+                    tile.querySelector(".remove").addEventListener("click", function (event) {
+                        event.stopPropagation();
+                        save(bookmarks().filter(function (b) { return b.url !== bookmark.url; }));
+                        render();
+                    });
+
+                    grid.appendChild(tile);
+                }
+            }
+
+            // The star in the browser bar writes the same key, which fires this
+            // event in every other document of the origin - this page included.
+            window.addEventListener("storage", function (event) {
+                if (!event.key || event.key === KEY) render();
+            });
+
+            render();
+        })();
+    </script>
 </body>
 
 </html>

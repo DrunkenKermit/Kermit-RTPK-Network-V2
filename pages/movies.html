@@ -45,16 +45,26 @@
         }
     }
 
-    input {
-        background: var(--bg-2) !important;
-        font-size: 14px !important;
+    /* Match the Games page search field: the same base look as elements.css
+       (10px radius, --bg-3 fill, 400px wide) rather than the rounded Tailwind
+       pill this page used before. */
+    .movie-search {
+        width: 400px;
+        max-width: 100%;
+        box-sizing: border-box;
+        height: 30px;
+        padding: 10px;
+        border: 1px solid var(--border-4) !important;
+        border-radius: 10px !important;
+        background: var(--bg-3) !important;
+        color: white !important;
+        font-size: 17px !important;
         font-family: Arial !important;
-        padding: 10px 20px !important;
     }
 
-    input:focus {
+    .movie-search:focus {
         outline: none;
-        background: var(--bg-3) !important;
+        background: var(--bg-2) !important;
     }
 
     .switcher {
@@ -62,6 +72,14 @@
         left: 50%;
         transform: translateX(-50%);
         font-family: arial;
+    }
+
+    /* Body padding without Tailwind's p-8 top inset, so the heading sits 18px
+       from the top of the page. That is the same spot the Games heading takes
+       (.hcenter { top: 0; padding-top: 18px } in pages/games.html). */
+    body {
+        padding: 18px 32px 32px;
+        box-sizing: border-box;
     }
 
     /* Same gradient heading as the home page, instead of a plain white one. */
@@ -84,14 +102,13 @@
     }
 </style>
 
-<body class="text-[var(--text)] min-h-screen p-8" x-data="app()">
+<body class="text-[var(--text)] min-h-screen" x-data="app()">
     <div class="container mx-auto">
-        <br><br>
         <h1 class="page-title">Movies &amp; Shows</h1>
         <br>
         <div class="mb-8 flex flex-col md:flex-row gap-4 transition-all duration-200 items-center justify-center">
-            <input type="text" x-model="searchQuery" @input="onSearchInput()" placeholder="What are we watching today?"
-                class="transition-all w-full max-w-xl text-[var(--text)] rounded-2xl px-4 py-2">
+            <input class="movie-search" type="text" x-model="searchQuery" @input="onSearchInput()"
+                placeholder="Search for a movie/show" autocomplete="off">
         </div>
         <p class="text-center mb-4 opacity-70" x-text="status"></p>
 

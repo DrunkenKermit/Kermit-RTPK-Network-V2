@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="en">
+<!-- data-settings="proxy": this page's Settings icon shows the proxy/network
+     options only. Every other page shows the general site options instead. -->
+<html lang="en" data-settings="proxy">
 
 <head>
     <meta charset="UTF-8">
@@ -69,10 +71,14 @@
         }
 
         .browser-frame {
+            /* The controls bar measures its own height (see layoutChrome in
+               assets/js/browserfunctions.js), so the page frame always starts
+               below the real chrome and can never be covered by it. */
+            --chrome: var(--browser-chrome-h, 104px);
             width: calc(100% - 20px);
-            height: calc(100vh - 124px);
+            height: calc(100vh - var(--chrome) - 10px);
             position: fixed;
-            top: 114px;
+            top: var(--chrome);
             left: 50%;
             transform: translateX(-50%);
             border-radius: 12px;
@@ -105,6 +111,9 @@
             background: color-mix(in srgb, var(--bg) 82%, transparent 18%);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-4);
+            /* Never let the chrome grow to swallow the page on a short screen. */
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
             z-index: 1001;
         }
 
@@ -215,15 +224,34 @@
             flex-shrink: 0;
         }
 
+        /* The close button is a Remixicon glyph: pages/browser.html does not load
+           Font Awesome, so the old `fas fa-times` rendered as nothing at all. */
         .tab .close-btn {
-            font-size: 20px;
+            font-size: 18px;
+            line-height: 1;
+            padding: 2px;
+            border-radius: 6px;
             cursor: pointer;
             transition: 0.2s;
-            color: var(--bright-text);
+            color: var(--text);
             flex-shrink: 0;
         }
 
         .tab .close-btn:hover {
+            color: var(--accent);
+            background: var(--bg-4);
+        }
+
+        /* Arrows with nowhere to go are greyed out instead of silently doing
+           nothing, and the star / console reflect their own state. */
+        .browser-buttons button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .browser-buttons button.is-bookmarked,
+        .browser-buttons button.is-active {
+            border-color: var(--accent);
             color: var(--accent);
         }
 
@@ -242,6 +270,91 @@
         .newtab:hover {
             background: var(--bg-3);
             color: var(--bright-text);
+        }
+
+        /* A friendly card shown over the page area when a site answers with a bot
+           challenge, a rate limit or an empty render, instead of leaving the
+           frame blank. Purely presentational: it does not touch the request, the
+           transport or the encoded proxy URL. It is a direct child of <body> and
+           matches the frame's own box so it covers exactly the page area. */
+        .frame-notice {
+            --chrome: var(--browser-chrome-h, 104px);
+            position: fixed;
+            top: var(--chrome);
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 20px);
+            height: calc(100vh - var(--chrome) - 10px);
+            box-sizing: border-box;
+            border-radius: 12px;
+            border: 1px solid var(--border-3);
+            /* Solid, no backdrop-filter: this covers the whole page area, and a
+               full-frame blur is needless GPU work while the card is up. */
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            z-index: 1002;
+        }
+
+        .frame-notice[hidden] {
+            display: none;
+        }
+
+        .frame-notice-card {
+            max-width: 460px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .frame-notice-card > i {
+            font-size: 40px;
+            color: var(--accent);
+        }
+
+        .frame-notice-title {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--bright-text);
+        }
+
+        .frame-notice-body {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text);
+        }
+
+        .frame-notice-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .frame-notice-actions button {
+            height: 38px;
+            padding: 0 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: var(--bg-2);
+            border: 1px solid var(--border-4);
+            color: var(--bright-text);
+        }
+
+        .frame-notice-actions button:hover {
+            background: var(--bg-3);
+        }
+
+        .frame-notice-actions button.primary {
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         /* Keep the browser chrome usable on a phone: it stays one row and the URL
@@ -283,30 +396,44 @@
             </div>
             <div class="browser-buttons">
                 <div class="hcontainer">
-                    <button onclick="b()" title="Back">
+                    <button data-nav="back" onclick="b()" title="Back">
                         <i class="ri-arrow-left-line ri"></i>
                     </button>
-                    <button onclick="f()" title="Forward">
+                    <button data-nav="forward" onclick="f()" title="Forward">
                         <i class="ri-arrow-right-line ri"></i>
                     </button>
-                    <button onclick="r()" title="Reload">
+                    <button data-nav="reload" onclick="r()" title="Reload">
                         <i class="ri-restart-line ri"></i>
                     </button>
                     <input type="text" id="searchbar" placeholder="Search for anything or enter a URL...">
+                    <button id="bookmark-toggle" onclick="toggleBookmark()" title="Add to favourites">
+                        <i class="ri-star-line ri"></i>
+                    </button>
                     <button onclick="full()" title="Fullscreen">
                         <i class="ri-fullscreen-line ri"></i>
                     </button>
-                    <button onclick="eruda.init(); this.querySelector('i').style.color='var(--accent)'"
-                        title="Developer console">
+                    <button id="eruda-toggle" onclick="launchEruda()" title="Developer console">
                         <i class="ri-code-line ri"></i>
                     </button>
-                    <button onclick="toggleSettings()" title="Settings">
+                    <button onclick="toggleSettings()" title="Proxy settings">
                         <i class="ri-settings-3-line ri"></i>
                     </button>
-                    <button onclick="location.href = '/?launch=1'" title="Home">
-                        <i class="ri-home-4-line ri"></i>
-                    </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shown over the page area when a site answers with a bot challenge or an
+         empty render, instead of leaving a blank frame. A direct child of <body>
+         so it stacks above the page frames (z-index 1000). -->
+    <div id="frameNotice" class="frame-notice" hidden>
+        <div class="frame-notice-card">
+            <i class="ri-alert-line ri"></i>
+            <h2 class="frame-notice-title">The site is checking your browser</h2>
+            <p class="frame-notice-body"></p>
+            <div class="frame-notice-actions">
+                <button class="primary" onclick="r()">Reload</button>
+                <button onclick="dismissFrameNotice()">Dismiss</button>
             </div>
         </div>
     </div>

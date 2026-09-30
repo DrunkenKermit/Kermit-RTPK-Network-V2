@@ -81,9 +81,39 @@
             if (el && el.parentNode) el.parentNode.removeChild(el);
         }
 
+        reserveSpace();
+
         // Keep the settings switch in sync (the overlay may not exist yet).
         var toggle = document.getElementById("toolbar-toggle");
         if (toggle) toggle.checked = isHidden;
+    }
+
+    // The toolbar is fixed, so the page underneath has to be told how much room
+    // it takes up. Without this the bar sat on top of the first ~80px of every
+    // page it does not own (the subpages all render inside #contentFrame), and
+    // the left/bottom variants relied on hard-coded offsets that only happened
+    // to be right at one window size. Measuring also copes with the bar growing
+    // a row taller when the icon font loads or the viewport narrows.
+    function reserveSpace() {
+        var root = document.documentElement;
+        var el = toolbar();
+        var top = 0;
+        var bottom = 0;
+        var left = 0;
+
+        if (el && !hidden()) {
+            var rect = el.getBoundingClientRect();
+            var pos = position();
+
+            if (pos === "bottom") bottom = Math.ceil(window.innerHeight - rect.top + 8);
+            else if (pos === "left") left = Math.ceil(rect.right + 8);
+            else top = Math.ceil(rect.bottom + 8);
+        }
+
+        // Consumed by #contentFrame and #homeContent in styles/index.css.
+        root.style.setProperty("--toolbar-top-space", top + "px");
+        root.style.setProperty("--toolbar-bottom-space", bottom + "px");
+        root.style.setProperty("--toolbar-left-space", left + "px");
     }
 
     function announce() {
@@ -137,6 +167,15 @@
         if (!toolbar()) return;
         apply();
         wire();
+
+        window.addEventListener("resize", reserveSpace);
+        window.addEventListener("load", reserveSpace);
+
+        // The bar is sized by the icon font, which may still be loading when the
+        // first measurement is taken.
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(reserveSpace).catch(function () { });
+        }
     }
 
     if (document.readyState === "loading") {

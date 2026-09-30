@@ -76,6 +76,8 @@
         '<i class="ri-spy-line"></i>Cloaking</div>' +
         '<div class="settings-section" data-target="proxy" onclick="switchSettingsPage(\'proxy\')">' +
         '<i class="ri-global-line"></i>Proxy</div>' +
+        '<div class="settings-section" data-target="diagnostics" onclick="switchSettingsPage(\'diagnostics\')">' +
+        '<i class="ri-pulse-line"></i>Diagnostics</div>' +
         '</div>' +
 
         '<div class="settings-content-container">' +
@@ -137,7 +139,7 @@
         '<button class="button" onclick="setWisp(document.querySelector(\'.wispInput\').value)">Set</button>' +
         '</div>' +
         '<br>' +
-        '<p>Or pick one that is known to be reachable. The old default (wisp.rhw.one) no longer resolves, which is why proxied pages could not load at all.</p>' +
+        '<p>Or pick one that is known to be reachable. An older built-in default no longer resolves, which is why proxied pages could not load at all.</p>' +
         selector("wisp", "Mercury Workshop") +
         '<br>' +
 
@@ -149,6 +151,32 @@
         '<p>This is the search engine that the proxy will use with search queries.</p>' +
         selector("search-engine", "DuckDuckGo") +
 
+        '<br><br><br>' +
+        '</div>' +
+
+        '<div id="settings-diagnostics" class="settings-page">' +
+        '<h2>Proxy check</h2>' +
+        '<p>What the proxy actually needs, read from this page. The check is read-only and changes nothing.</p>' +
+        '<div class="diag-report" id="diag-report">' +
+        '<div class="diag-row"><span class="diag-label">Opening the check…</span></div>' +
+        '</div>' +
+        '<div id="diag-hints"></div>' +
+        '<button class="button" onclick="runDiagnostics()"><i class="ri-refresh-line"></i>&nbsp;Run check again</button>' +
+        '<br>' +
+
+        '<h2>Registered workers</h2>' +
+        '<div class="diag-report" id="diag-workers"></div>' +
+
+        '<h2>Cache Storage</h2>' +
+        '<div class="diag-report" id="diag-caches"></div>' +
+        '<br>' +
+
+        '<h2>Reset</h2>' +
+        '<p>Unregisters every service worker and empties Cache Storage for this site, then reloads. Use it when the browser keeps serving an older build of the proxy. Nothing else is cleared, so your theme, backend and Wisp choice are kept.</p>' +
+        '<button class="button" onclick="resetProxyState()"><i class="ri-restart-line"></i>&nbsp;Reset workers &amp; caches</button>' +
+        '<br><br>' +
+        '<p>If the check reports the backend as <b>Ultraviolet</b>, that is why a proxied page will not load: this build only routes Scramjet through its worker. Switch it back to Scramjet under Proxy.</p>' +
+        '<button class="button" onclick="resetProxyDefaults()"><i class="ri-eraser-line"></i>&nbsp;Reset backend &amp; Wisp to defaults</button>' +
         '<br><br><br>' +
         '</div>' +
         '</div>' +
@@ -165,8 +193,39 @@
         holder.innerHTML = markup;
         document.body.appendChild(holder.firstChild);
 
+        applyScope();
+
         var wispInput = document.querySelector(".settings-container .wispInput");
         if (wispInput) wispInput.value = read("cherri_wispUrl", "");
+    }
+
+    // Which panels a page shows. The proxy/network options and the Diagnostics
+    // check belong to the browser page's own Settings icon, so the site-wide
+    // Settings keeps only the general options. <html data-settings="proxy">
+    // marks the browser page. Only panels are moved: the values, storage keys and
+    // handlers behind them (cherri_wispUrl, cherri_backend, cherri_searchEngine)
+    // are untouched.
+    function applyScope() {
+        var scope = (document.documentElement.getAttribute("data-settings") || "site").toLowerCase();
+        var keep = scope === "proxy" ? ["proxy", "diagnostics"] : ["general", "cloaking"];
+
+        ["general", "cloaking", "proxy", "diagnostics"].forEach(function (id) {
+            if (keep.indexOf(id) !== -1) return;
+
+            var page = document.getElementById("settings-" + id);
+            var tab = document.querySelector('.settings-section[data-target="' + id + '"]');
+
+            if (page && page.parentNode) page.parentNode.removeChild(page);
+            if (tab && tab.parentNode) tab.parentNode.removeChild(tab);
+        });
+
+        // Whichever tab survived becomes the one that is open.
+        document.querySelectorAll(".settings-section").forEach(function (tab, i) {
+            tab.classList.toggle("active", i === 0);
+        });
+        document.querySelectorAll(".settings-page").forEach(function (page, i) {
+            page.classList.toggle("settings-active", i === 0);
+        });
     }
 
     if (document.body) mount();
@@ -186,6 +245,9 @@
         document.querySelectorAll(".settings-section").forEach(function (button) {
             button.classList.toggle("active", button.getAttribute("data-target") === target);
         });
+
+        // Re-run the check on open so it never shows stale numbers.
+        if (target === "diagnostics") runDiagnostics();
     };
 
     window.closeOverlays = function () {
@@ -326,5 +388,202 @@
 
         write("cherri_wispUrl", url);
         toast("success", "Wisp server updated! Do<b> ⌘⇧R</b>  to see changes.", "fas fa-check-circle");
+    };
+
+    // ── Diagnostics tab ──────────────────────────────────────────────────────
+    //
+    // Read-only reporting, plus a reset of browser-side state. None of this
+    // edits the proxy's configuration or engine code, so it can explain a
+    // "the proxy stopped loading" without being able to cause one.
+
+    function escapeHtml(value) {
+        return String(value === undefined || value === null ? "-" : value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;");
+    }
+
+    function diagRow(label, value, ok) {
+        var mark = ok === undefined ? "" : ok ? "&#10003; " : "&#10007; ";
+        var cls = ok === undefined ? "" : ok ? " diag-ok" : " diag-bad";
+
+        return '<div class="diag-row"><span class="diag-label">' + escapeHtml(label) +
+            '</span><span class="diag-value' + cls + '">' + mark + escapeHtml(value) + "</span></div>";
+    }
+
+    function pathOf(url) {
+        try {
+            return new URL(url, window.location.href).pathname;
+        } catch (e) {
+            return url;
+        }
+    }
+
+    // The default Wisp lives in browserfunctions.js; read it from there when that
+    // script is on the page so the two cannot drift apart.
+    function defaultWisp() {
+        try {
+            return typeof DEFAULT_WISP !== "undefined" ? DEFAULT_WISP : "wss://wisp.mercurywork.shop/";
+        } catch (e) {
+            return "wss://wisp.mercurywork.shop/";
+        }
+    }
+
+    // Opening the same websocket the transport uses is the one check that really
+    // answers "why is nothing loading" — it is read-only and sends nothing.
+    function checkWisp(url) {
+        return new Promise(function (resolve) {
+            var socket;
+
+            try {
+                socket = new WebSocket(url);
+            } catch (e) {
+                return resolve({ ok: false, detail: "not a usable websocket URL" });
+            }
+
+            var done = false;
+            var timer = setTimeout(function () { finish(false, "timed out after 5s"); }, 5000);
+
+            function finish(ok, detail) {
+                if (done) return;
+                done = true;
+                clearTimeout(timer);
+                try { socket.close(); } catch (e) { }
+                resolve({ ok: ok, detail: detail });
+            }
+
+            socket.onopen = function () { finish(true, "reachable"); };
+            socket.onerror = function () { finish(false, "could not connect (blocked or offline)"); };
+        });
+    }
+
+    window.runDiagnostics = function () {
+        var out = document.getElementById("diag-report");
+        var workersOut = document.getElementById("diag-workers");
+        var cachesOut = document.getElementById("diag-caches");
+        var hints = document.getElementById("diag-hints");
+
+        if (!out) return;
+
+        if (hints) hints.innerHTML = "";
+        if (workersOut) workersOut.innerHTML = "";
+        if (cachesOut) cachesOut.innerHTML = "";
+
+        var secure = window.isSecureContext === true;
+        var supported = "serviceWorker" in navigator;
+        var controller = supported && navigator.serviceWorker.controller
+            ? navigator.serviceWorker.controller.scriptURL
+            : null;
+
+        var backend = read("cherri_backend", "");
+        var backendOk = String(backend || "scramjet").toLowerCase().indexOf("ultraviolet") === -1;
+        var wisp = read("cherri_wispUrl", defaultWisp());
+
+        // Rows are built twice: immediately, then again once the async parts
+        // (registered workers, cache names, a Wisp probe) have come back.
+        function rows(wispProbe) {
+            var wispRow = wispProbe
+                ? diagRow("Wisp reachable", wispProbe.detail || "unknown", wispProbe.ok === true)
+                : diagRow("Checking Wisp…", "…");
+
+            return diagRow("Page", window.location.origin + window.location.pathname) +
+                diagRow("HTTPS / secure context", secure ? "yes" : "no - service workers are blocked here", secure) +
+                diagRow("Service workers", supported ? "supported" : "not supported", supported) +
+                // No controller is normal on a first load, so it is not flagged.
+                diagRow("Controlling worker", controller ? pathOf(controller) : "none yet", controller ? true : undefined) +
+                diagRow("Backend", backendOk ? (backend || "Scramjet (default)") : (backend + " - not routable in this build"), backendOk) +
+                diagRow("Wisp in use", wisp) +
+                wispRow +
+                diagRow("Search engine", read("cherri_searchEngine", "DuckDuckGo (default)"));
+        }
+
+        out.innerHTML = rows(null);
+
+        Promise.all([
+            supported ? navigator.serviceWorker.getRegistrations() : Promise.resolve([]),
+            window.caches ? caches.keys() : Promise.resolve([]),
+            checkWisp(wisp)
+        ]).then(function (results) {
+            var registrations = results[0] || [];
+            var cacheNames = results[1] || [];
+            var probe = results[2] || {};
+
+            out.innerHTML = rows(probe);
+
+            if (workersOut) {
+                workersOut.innerHTML = registrations.length
+                    ? registrations.map(function (registration) {
+                        var worker = registration.active || registration.waiting || registration.installing;
+                        return diagRow(worker ? pathOf(worker.scriptURL) : "none", "scope " + pathOf(registration.scope));
+                    }).join("")
+                    : diagRow("none registered", "nothing is registered on this origin");
+            }
+
+            if (cachesOut) {
+                cachesOut.innerHTML = cacheNames.length
+                    ? cacheNames.map(function (name) { return diagRow(name, "cached"); }).join("")
+                    : diagRow("empty", "nothing cached");
+            }
+
+            // A missing controller is normal on a first load, so it only becomes a
+            // hint when there is nothing registered to take over either.
+            if (hints && !controller) {
+                hints.innerHTML = registrations.length
+                    ? "<p>Nothing controls this page yet. Reload once and the registered worker takes over.</p>"
+                    : "<p>No worker is registered, so nothing can rewrite requests. A reload should register them; if this stays empty, service workers are blocked on this origin.</p>";
+            }
+        }).catch(function (e) {
+            out.innerHTML += "<p>Could not finish the check: " + escapeHtml(e && e.message) + "</p>";
+        });
+    };
+
+    window.resetProxyState = function () {
+        toast("info", "Resetting service workers and caches…", "fas fa-info-circle");
+
+        var unregistered = 0;
+        var cleared = 0;
+
+        Promise.resolve()
+            .then(function () {
+                if (!("serviceWorker" in navigator)) return null;
+                return navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                    return Promise.all(registrations.map(function (registration) {
+                        unregistered++;
+                        return registration.unregister();
+                    }));
+                });
+            })
+            .then(function () {
+                if (!window.caches) return null;
+                return caches.keys().then(function (names) {
+                    return Promise.all(names.map(function (name) {
+                        cleared++;
+                        return caches.delete(name);
+                    }));
+                });
+            })
+            .then(function () {
+                toast("success", "Removed " + unregistered + " worker(s) and " + cleared + " cache(s). Reloading…", "fas fa-check-circle");
+            })
+            .catch(function (e) {
+                toast("error", "Reset failed: " + (e && e.message), "fas fa-times-circle");
+            })
+            .then(function () {
+                setTimeout(function () { window.location.reload(); }, 900);
+            });
+    };
+
+    window.resetProxyDefaults = function () {
+        // These three decide which engine loads and where it talks to; clearing
+        // them restores the values this build ships with.
+        ["cherri_backend", "cherri_wispUrl", "cherri_wispUrlSelected"].forEach(function (key) {
+            try {
+                localStorage.removeItem(key);
+            } catch (e) { }
+        });
+
+        toast("success", "Backend and Wisp reset to defaults. Reloading…", "fas fa-check-circle");
+        setTimeout(function () { window.location.reload(); }, 900);
     };
 })();

@@ -9,37 +9,32 @@ const appSettings = {
   toolbarPos: localStorage.getItem("cherri_toolbarPos") || "top",
 };
 
-const searchEngineSelector = document.querySelector(".search-engine-selector");
-const searchEngineSelected = searchEngineSelector.querySelector(
-  ".search-engine-selected"
-);
-const searchEngineOptions = searchEngineSelector.querySelector(
-  ".search-engine-options"
-);
+// A page only carries the selectors for the settings it shows. The browser page
+// is proxy-only and every other page hides the proxy controls (see
+// assets/js/settings.js), so a missing selector must be skipped instead of
+// throwing and taking the rest of this file down with it.
+function wireSelector(
+  selectorType,
+  allOptions,
+  currentVal,
+  storageKey,
+  eventName,
+  successMsg
+) {
+  const root = document.querySelector(`.${selectorType}-selector`);
+  if (!root) return;
 
-const decoySelector = document.querySelector(".decoy-selector");
-const decoySelected = decoySelector.querySelector(".decoy-selected");
-const decoyOptions = decoySelector.querySelector(".decoy-options");
-
-const backendSelector = document.querySelector(".backend-selector");
-const backendSelected = backendSelector.querySelector(".backend-selected");
-const backendOptions = backendSelector.querySelector(".backend-options");
-
-const themeSelector = document.querySelector(".theme-selector");
-const themeSelected = themeSelector.querySelector(".theme-selected");
-const themeOptions = themeSelector.querySelector(".theme-options");
-
-const backgroundSelector = document.querySelector(".background-selector");
-const backgroundSelected = backgroundSelector.querySelector(".background-selected");
-const backgroundOptions = backgroundSelector.querySelector(".background-options");
-
-const toolbarSelector = document.querySelector(".toolbar-selector");
-const toolbarSelected = toolbarSelector.querySelector(".toolbar-selected");
-const toolbarOptions = toolbarSelector.querySelector(".toolbar-options");
-
-const wispSelector = document.querySelector(".wisp-selector");
-const wispSelected = wispSelector.querySelector(".wisp-selected");
-const wispOptions = wispSelector.querySelector(".wisp-options");
+  createSelector(
+    selectorType,
+    root.querySelector(`.${selectorType}-selected`),
+    root.querySelector(`.${selectorType}-options`),
+    allOptions,
+    currentVal,
+    storageKey,
+    eventName,
+    successMsg
+  );
+}
 
 const decoyPresets = {
   Google: {
@@ -161,20 +156,17 @@ const allDecoyOptions = [
   "Billibilli",
 ];
 
-// The old default, wss://wisp.rhw.one/, no longer resolves at all, which left the
-// browser unable to load a single page. These two were verified to accept a
-// websocket connection.
+// An older built-in default no longer resolves at all, which left the browser
+// unable to load a single page. These two were verified to accept a websocket
+// connection.
 const wispPresets = {
   "Mercury Workshop": { url: "wss://wisp.mercurywork.shop/" },
   Terbium: { url: "wss://terbiumon.top/wisp/" },
-  rhw: { url: "wss://wisp.rhw.one/" },
-  
 };
 
 const allWispOptions = [
   "Mercury Workshop",
   "Terbium",
-  "rhw",
 ];
 
 const allBackgroundOptions = [
@@ -306,10 +298,8 @@ function applyDecoy(s) {
   }
 }
 
-createSelector(
+wireSelector(
   "search-engine",
-  searchEngineSelected,
-  searchEngineOptions,
   allSearchEngineOptions,
   appSettings.searchEngine,
   "cherri_searchEngine",
@@ -317,10 +307,8 @@ createSelector(
   "Successfully updated Search Engine!"
 );
 
-createSelector(
+wireSelector(
   "decoy",
-  decoySelected,
-  decoyOptions,
   allDecoyOptions,
   appSettings.decoy,
   "decoy",
@@ -328,10 +316,8 @@ createSelector(
   "Successfully updated cloak!"
 );
 
-createSelector(
+wireSelector(
   "backend",
-  backendSelected,
-  backendOptions,
   allBackendOptions,
   appSettings.backend,
   "cherri_backend",
@@ -339,10 +325,8 @@ createSelector(
   "Successfully updated backend!"
 );
 
-createSelector(
+wireSelector(
   "theme",
-  themeSelected,
-  themeOptions,
   allThemeOptions,
   appSettings.theme,
   "cherri_theme",
@@ -350,10 +334,8 @@ createSelector(
   "Successfully updated theme! Refresh to see background change."
 );
 
-createSelector(
+wireSelector(
   "background",
-  backgroundSelected,
-  backgroundOptions,
   allBackgroundOptions,
   appSettings.background.charAt(0).toUpperCase() + appSettings.background.slice(1),
   "cherri_background",
@@ -361,10 +343,8 @@ createSelector(
   "Successfully updated the background!"
 );
 
-createSelector(
+wireSelector(
   "toolbar",
-  toolbarSelected,
-  toolbarOptions,
   allToolbarOptions,
   ["left", "bottom"].includes(String(appSettings.toolbarPos).toLowerCase())
     ? String(appSettings.toolbarPos).charAt(0).toUpperCase() + String(appSettings.toolbarPos).slice(1).toLowerCase()
@@ -374,10 +354,8 @@ createSelector(
   "Successfully updated the toolbar position!"
 );
 
-createSelector(
+wireSelector(
   "wisp",
-  wispSelected,
-  wispOptions,
   allWispOptions,
   appSettings.wisp,
   "cherri_wispUrlSelected",

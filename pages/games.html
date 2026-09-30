@@ -41,13 +41,13 @@
                     </li>
                     <li>
                         <a href="/pages/browser.html">
-                            <i class="ri ri-global-line"></i>
+                            <i class="ri ri-window-2-line"></i>
                             Browser
                         </a>
                     </li>
                     <li>
                         <a href="/pages/movieframe.html">
-                            <i class="ri ri-film-line"></i>
+                            <i class="ri ri-clapperboard-line"></i>
                             Movies
                         </a>
                     </li>
@@ -82,18 +82,9 @@
         </ul>
     </nav>
 
-    <div class="nav-logo">
-        <button class="nav-logo-btn ri-menu-line" aria-label="Open navigation" onclick="
-            ul.classList.add('active');
-            const blurr = document.createElement('div')
-            blurr.classList.add('bluroverlay')
-            document.body.append(blurr)
-            blurr.addEventListener('click', () => {
-                ul.classList.remove('active')
-                blurr.remove()
-            })
-        "></button>
-    </div>
+    <!-- The ☰ corner button that used to sit here was removed: the site toolbar
+         already provides navigation. The menu above is still reachable with
+         Ctrl / ⌘ + M (see the keydown handler at the bottom of this file). -->
 
     <style>
         #particles-container {
