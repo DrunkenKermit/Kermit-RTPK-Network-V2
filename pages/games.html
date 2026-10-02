@@ -157,6 +157,23 @@
             object-fit: cover;
         }
 
+        /* Used for sources without thumbnails: the game's first letter stands
+           in for the cover image. */
+        .app-img-letter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-3), var(--bg-5));
+            color: var(--accent);
+            font-size: 78px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+            text-shadow: 0 0 26px rgba(99, 255, 147, 0.28);
+            user-select: none;
+        }
+
 
         .title {
             z-index: 31;
@@ -379,7 +396,7 @@
             <div class="store-select">
                 <button class="store-selected" onclick="event.stopPropagation(); toggleStoreMenu()">
                     <i class="ri ri-database-2-line"></i>
-                    <span id="store-name">Classplay</span>
+                    <span id="store-name">All Sources</span>
                     <i class="ri ri-arrow-down-s-line"></i>
                 </button>
                 <div class="store-options" id="storeOptions"></div>
@@ -424,21 +441,508 @@
 
         const acont = document.querySelector('.apps-container');
 
-        // Every source lists the store files behind it, so "All" can pull both at once.
+        // Every source has a loader, so "All" can pull them all at once.
         const STORES = {
             "All": {
                 label: "All Sources",
-                files: ["/assets/json/classplay.json", "/assets/json/gn-math.json"]
-            },
-            "Classplay": {
-                label: "Classplay",
-                files: ["/assets/json/classplay.json"]
+                load: () => Promise.all([loadGnMath(), loadNoahsHub(), loadUgs(), load3kh0(), loadDuckmath(), loadLuminSdk(), loadWasmRip()]).then(mergeGames)
             },
             "GN-Math": {
                 label: "GN-Math",
-                files: ["/assets/json/gn-math.json"]
+                load: () => loadGnMath()
+            },
+            "Noah's Hub": {
+                label: "Noah's Hub",
+                load: () => loadNoahsHub()
+            },
+            "UGS": {
+                label: "UGS",
+                load: () => loadUgs()
+            },
+            "3kh0": {
+                label: "3kh0",
+                load: () => load3kh0()
+            },
+            "Duckmath": {
+                label: "Duckmath",
+                load: () => loadDuckmath()
+            },
+            "LuminSDK": {
+                label: "LuminSDK",
+                load: () => loadLuminSdk()
+            },
+            "wasm.rip": {
+                label: "wasm.rip",
+                load: () => loadWasmRip()
             }
         };
+
+        // ── GN-Math ──────────────────────────────────────────────────────────
+        // GN-Math publishes its catalogue and content straight from GitHub:
+        //   html   – every game page      https://github.com/gn-math/html
+        //   assets – zones.json + assets  https://github.com/gn-math/assets
+        //   covers – the thumbnails       https://github.com/gn-math/covers
+        // jsDelivr now blocks the whole gn-math org (HTTP 403), so the repos are
+        // served through githack, which returns GitHub content with the correct
+        // MIME types. Games already vendored under /stores/gn-math keep loading
+        // from there: they are ad-free and get the progress-saving worker.
+        const GN_MATH = {
+            zones: [
+                "https://rawcdn.githack.com/gn-math/assets/main/zones.json",
+                "https://raw.githubusercontent.com/gn-math/assets/main/zones.json"
+            ],
+            html: "https://rawcdn.githack.com/gn-math/html/main/",
+            covers: "https://raw.githubusercontent.com/gn-math/covers/main/"
+        };
+
+        function gameKey(name) {
+            return String(name).toLowerCase().replace(/[^a-z0-9]/g, "");
+        }
+
+        let gnLocal = null;
+
+        // The vendored snapshot is both the offline fallback for the catalogue and
+        // the list of games we can serve ourselves.
+        async function localGnGames() {
+            if (!gnLocal) {
+                gnLocal = fetch("/assets/json/gn-math.json").then(r => r.json()).catch(() => []);
+            }
+            return gnLocal;
+        }
+
+        async function loadGnMath() {
+            const local = await localGnGames();
+            const byName = new Map(local.map(game => [gameKey(game.name), game]));
+
+            let zones = null;
+            for (const url of GN_MATH.zones) {
+                try {
+                    const res = await fetch(url, { cache: "no-cache" });
+                    if (res.ok) { zones = await res.json(); break; }
+                } catch (e) { /* try the next mirror */ }
+            }
+
+            // If the repos are unreachable, fall back to the vendored list.
+            if (!Array.isArray(zones)) return local.slice();
+
+            const games = [];
+            const seen = new Set();
+
+            zones.forEach(zone => {
+                if (!zone || typeof zone.name !== "string") return;
+                if (!zone.url || zone.url.indexOf("{HTML_URL}") === -1) return; // external link tile
+
+                const key = gameKey(zone.name);
+                if (seen.has(key)) return;
+                seen.add(key);
+
+                const vendored = byName.get(key);
+                games.push({
+                    name: zone.name,
+                    // Thumbnails come from the covers repo; a missing one falls
+                    // back to the vendored image (see the tile error handler).
+                    img: zone.id >= 0 ? GN_MATH.covers + zone.id + ".png" : (vendored ? vendored.img : ""),
+                    imgFallback: vendored ? vendored.img : "",
+                    // Prefer our own copy (ad-free + progress saving), else the repo.
+                    url: vendored ? vendored.url : GN_MATH.html + zone.url.split("/").pop()
+                });
+            });
+
+            // Keep the handful of vendored games the live catalogue dropped.
+            local.forEach(game => {
+                const key = gameKey(game.name);
+                if (seen.has(key)) return;
+                seen.add(key);
+                // The vendored thumbnail is named after the game's id
+                // (/assets/img/games/gn-math/<id>.png), the same id the live
+                // covers repo uses. Prefer the remote cover so the tile still
+                // has an image on hosts that trim heavy local assets, and keep
+                // the vendored file as the fallback.
+                const id = String(game.img || "").match(/gn-math\/(\d+)\.png$/);
+                games.push({
+                    name: game.name,
+                    img: id ? GN_MATH.covers + id[1] + ".png" : game.img,
+                    imgFallback: id ? game.img : "",
+                    url: game.url
+                });
+            });
+
+            return games;
+        }
+
+        // ── Noah's Hub ───────────────────────────────────────────────────────
+        // Noah's Hub has no JSON catalogue: its games.js is a plain JS array of
+        // game records (each entry carries a title, a game URL and a thumbnail).
+        // We fetch it and keep only the game entries, rewriting the launch URLs
+        // through githack, which serves the pages with the correct text/html MIME
+        // type (raw.githubusercontent.com returns them as text/plain, so they
+        // would render as source instead of running).
+        const NOAHS_HUB = {
+            games: "https://raw.githubusercontent.com/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/master/games.js",
+            html: "https://rawcdn.githack.com/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/master/",
+            img: "https://raw.githubusercontent.com/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/master/"
+        };
+
+        async function loadNoahsHub() {
+            try {
+                const res = await fetch(NOAHS_HUB.games, { cache: "no-cache" });
+                if (!res.ok) return [];
+                const text = await res.text();
+
+                const games = [];
+
+                // Every record is kept, duplicates included: the owner asked for
+                // the whole repo, so no entry is dropped for sharing a name.
+                // Each record is a brace-delimited object with no nested braces.
+                for (const match of text.matchAll(/\{([^{}]*)\}/g)) {
+                    const body = match[1];
+                    const title = (body.match(/title:\s*"([^"]*)"/) || [])[1];
+                    const url = (body.match(/url:\s*"([^"]*)"/) || [])[1];
+                    const image = (body.match(/image:\s*"([^"]*)"/) || [])[1];
+                    if (!title || !url) continue;
+
+                    const id = (url.match(/games\/([^\/?#]+)\.html/) || [])[1];
+                    const file = (String(image || "").match(/images\/([^\/?#]+)$/) || [])[1];
+                    games.push({
+                        name: title,
+                        // Pages hosted in the repo go through githack (raw serves
+                        // them as text/plain); the few external links are used
+                        // exactly as authored so no game is left out.
+                        url: id ? NOAHS_HUB.html + "games/" + id + ".html" : url,
+                        img: file ? NOAHS_HUB.img + "images/" + file : "",
+                        source: "noahs"
+                    });
+                }
+
+                return games;
+            } catch (e) {
+                console.error("Could not load Noah's Hub:", e);
+                return [];
+            }
+        }
+
+        // ── UGS (Ultimate Game Stash) ────────────────────────────────────────
+        // UGS publishes two kinds of games:
+        //   • directories in its GitHub repos (UGS-Assets + ports), served
+        //     through githack so they keep the right text/html MIME type, and
+        //   • a large set of single-file games shipped in the npm package
+        //     "ugs-singlefiles". The package's games.js only lists the file
+        //     names, so display names come from the public UGS doc (which lists
+        //     one "Name: clfile.html" line per game); if the doc is unreachable
+        //     the name is derived from the file name instead.
+        const UGS = {
+            repos: "/assets/json/ugs.json",
+            assetsBase: "https://rawcdn.githack.com/bubbls/UGS-Assets/main/",
+            portsBase: "https://rawcdn.githack.com/bubbls/ports/main/",
+            doc: "https://docs.google.com/document/d/1_FmH3BlSBQI7FGgAQL59-ZPe8eCxs35wel6JUyVaG8Q/export?format=txt",
+            files: "https://unpkg.com/ugs-singlefiles@1.0.6/games.js",
+            single: "https://unpkg.com/ugs-singlefiles@1.0.6/UGS-Files/"
+        };
+
+        // "clcookieclicker" -> "Cookieclicker"; used when the doc has no title.
+        function ugsTitle(file) {
+            let s = String(file).replace(/\.html$/i, "").replace(/^cl/, "");
+            s = s.replace(/[-_]+/g, " ").replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+            s = s.replace(/\s+/g, " ").trim();
+            return s.replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        // The doc is a plain text list of "Game Name: clfile.html" lines.
+        function ugsDocTitles(text) {
+            const titles = new Map();
+            const re = /^(.+?):\s*(cl[A-Za-z0-9_!.\- ()]+\.html)\s*$/gm;
+            let match;
+            while ((match = re.exec(text))) {
+                const title = match[1].trim();
+                const file = match[2].toLowerCase();
+                if (!/singlefile/i.test(file) && !titles.has(file)) titles.set(file, title);
+            }
+            return titles;
+        }
+
+        async function loadUgs() {
+            const games = [];
+            const seen = new Set();
+            const push = (name, url) => {
+                if (!name) return;
+                const key = gameKey(name);
+                if (!key || seen.has(key)) return;
+                seen.add(key);
+                games.push({ name: name, url: url, img: "", source: "ugs" });
+            };
+
+            // 1. Games hosted in the UGS GitHub repos.
+            try {
+                const repos = await fetch(UGS.repos).then(r => r.json());
+                (repos.assets || []).forEach(e =>
+                    push(e[0], UGS.assetsBase + e[1] + "/index.html"));
+                (repos.ports || []).forEach(e =>
+                    push(e[0], UGS.portsBase + e[1]));
+            } catch (e) { /* the repos are an optional part of the source */ }
+
+            // 2. The single-file games: names from the doc, files from the npm
+            //    package. Every tile points at a file that actually exists.
+            let titles = new Map();
+            try {
+                const doc = await fetch(UGS.doc, { cache: "no-cache" });
+                if (doc.ok) titles = ugsDocTitles(await doc.text());
+            } catch (e) { /* fall back to names derived from file names */ }
+
+            try {
+                const res = await fetch(UGS.files, { cache: "no-cache" });
+                if (res.ok) {
+                    const text = await res.text();
+                    const re = /"([^"]*)"/g;
+                    let m;
+                    while ((m = re.exec(text))) {
+                        let file = m[1];
+                        if (!file || !/^cl/i.test(file)) continue;
+                        if (!/\.html$/i.test(file)) file += ".html";
+                        if (/singlefile/i.test(file)) continue;
+                        // Skip the couple of mojibake/placeholder names in the list.
+                        if (file.indexOf("?") !== -1 || /[^\x20-\x7e]/.test(file)) continue;
+                        push(titles.get(file.toLowerCase()) || ugsTitle(file),
+                            UGS.single + file);
+                    }
+                }
+            } catch (e) { /* the npm package is an optional part of the source */ }
+
+            return games;
+        }
+
+        // ── 3kh0 ─────────────────────────────────────────────────────────────
+        // 3kh0 ships each game as its own folder (index.html + art) inside the
+        // "3kh0assets" repo, with the catalogue mirrored on GitLab. The repo has
+        // no JSON index of its own, so /assets/json/3kh0.json was generated from
+        // its file tree: [name, folder/index.html path, thumbnail path]. Pages
+        // are served through githack (correct text/html MIME + CORS); the
+        // thumbnails stay on raw.githubusercontent.com, which serves images fine.
+        const THREEKH0 = {
+            repos: "/assets/json/3kh0.json",
+            html: "https://rawcdn.githack.com/technonyte00/3kh0assets/main/",
+            img: "https://raw.githubusercontent.com/technonyte00/3kh0assets/main/"
+        };
+
+        async function load3kh0() {
+            try {
+                const list = await fetch(THREEKH0.repos).then(r => r.json());
+                return list.map(e => ({
+                    name: e[0],
+                    url: THREEKH0.html + e[1],
+                    // Some thumbnails contain spaces or braces, so encode the path.
+                    img: e[2] ? THREEKH0.img + encodeURI(e[2]) : "",
+                    source: "3kh0"
+                }));
+            } catch (e) {
+                console.error("Could not load 3kh0:", e);
+                return [];
+            }
+        }
+
+        // ── Duckmath ─────────────────────────────────────────────────────────
+        // Duckmath (github.com/Divij-Agarwal-42/duckmath.github.io) has no JSON
+        // index either: its catalogue is the markup of g4m3s.html, one <a> per
+        // game with the page path and thumbnail. /assets/json/duckmath.json is
+        // that list, generated as [name, page path, thumbnail path].
+        //
+        // The repo's own domain (duckmath.org) no longer serves it - the path
+        // returns an unrelated site's HTML - and GitHub Pages is off, so pages
+        // come from githack (correct text/html MIME + CORS) and thumbnails from
+        // raw.githubusercontent, which serves images as-is.
+        const DUCKMATH = {
+            list: "/assets/json/duckmath.json",
+            html: "https://rawcdn.githack.com/Divij-Agarwal-42/duckmath.github.io/main/",
+            img: "https://raw.githubusercontent.com/Divij-Agarwal-42/duckmath.github.io/main/"
+        };
+
+        async function loadDuckmath() {
+            try {
+                const list = await fetch(DUCKMATH.list).then(r => r.json());
+                return list.map(e => ({
+                    name: e[0],
+                    url: DUCKMATH.html + e[1],
+                    // Paths are stored exactly as the repo writes them: one
+                    // thumbnail is already percent-encoded (papalouie2_100x100%20(1).webp),
+                    // so re-encoding here would double-escape it and 404.
+                    img: e[2] ? DUCKMATH.img + e[2] : "",
+                    source: "duckmath"
+                }));
+            } catch (e) {
+                console.error("Could not load Duckmath:", e);
+                return [];
+            }
+        }
+
+        // ── LuminSDK ─────────────────────────────────────────────────────────
+        // LuminSDK is script-driven: instead of a JSON catalogue it ships a
+        // client-side SDK that pulls its games from a worker. We load it in
+        // headless mode (no built-in UI), list every game through Lumin.getGames
+        // and render the tiles ourselves; clicking one opens play.html, which
+        // asks the SDK for a fresh one-time playable URL.
+        //
+        // The SDK is published as two byte-identical builds. Lightspeed Systems
+        // (lightspeedsystems.com) blanket-blocks any site that loads the build
+        // named after the SDK, so we load the identical "fonts.min.js" build
+        // from the same base URL instead - a common name that does not trip it.
+        const LUMIN = {
+            sdk: "https://cdn.jsdelivr.net/gh/luminsdk/script@latest/fonts.min.js"
+        };
+
+        // Resolved Lumin games carry a one-time URL, so tiles keep a "lumin:<id>"
+        // handle instead; play.html turns that into a playable URL on load.
+        const LUMIN_PREFIX = "lumin:";
+
+        // The SDK loads remote code and connects a worker, so guard every step
+        // behind a timeout: a stall must not hold up the rest of "All Sources".
+        function withTimeout(promise, ms) {
+            return Promise.race([
+                promise,
+                new Promise((_, reject) => setTimeout(() => reject(new Error("timed out")), ms))
+            ]);
+        }
+
+        let luminScript = null;
+
+        // Inject the SDK once. Its global queues any call made before the file
+        // finishes loading, so init() is safe to call right after onload.
+        function loadLuminScript() {
+            if (!luminScript) {
+                luminScript = new Promise((resolve, reject) => {
+                    const s = document.createElement("script");
+                    s.src = LUMIN.sdk;
+                    s.async = true;
+                    s.onload = () => resolve();
+                    s.onerror = () => reject(new Error("LuminSDK script failed to load"));
+                    document.head.appendChild(s);
+                });
+            }
+            return luminScript;
+        }
+
+        async function loadLuminSdk() {
+            // Getting the SDK booted is all-or-nothing: without it there is no
+            // catalogue at all.
+            try {
+                await withTimeout(loadLuminScript(), 10000);
+                await withTimeout(Lumin.init({ headless: true }), 10000);
+            } catch (e) {
+                console.error("Could not load LuminSDK:", e);
+                return [];
+            }
+
+            // Paginating the catalogue is not: "All Sources" must still show
+            // every Lumin game fetched so far (and count and search them) even
+            // if the SDK stalls or errors on a later page, so each page is
+            // handled on its own and the loop keeps whatever it has.
+            const games = [];
+            let page = 1;
+            let pages = 1;
+            do {
+                try {
+                    const res = await withTimeout(Lumin.getGames({ page: page, limit: 100 }), 10000);
+                    const batch = ((res && res.games) || []).filter(game => game && game.id);
+
+                    // Game objects expose an image_token, not a direct URL, so
+                    // each one is resolved through Lumin.getImageUrl to a usable
+                    // (blob) URL. A token that fails to resolve just leaves the
+                    // tile on its first-letter fallback.
+                    const images = await Promise.all(batch.map(game =>
+                        Lumin.getImageUrl(game.image_token)
+                            .then(url => url || "")
+                            .catch(() => "")));
+
+                    batch.forEach((game, i) => {
+                        games.push({
+                            name: game.name || game.id,
+                            url: LUMIN_PREFIX + game.id,
+                            img: images[i],
+                            source: "lumin"
+                        });
+                    });
+
+                    pages = (res && res.pages) || 1;
+                    page++;
+                } catch (e) {
+                    console.error("Could not load LuminSDK page " + page + ":", e);
+                    break;
+                }
+            } while (page <= pages && page <= 30);
+
+            return games;
+        }
+
+        // ── wasm.rip ─────────────────────────────────────────────────────────
+        // wasm.rip publishes a ready-made JSON catalogue (id, name, gameUrl,
+        // imageUrl), so it is fetched live rather than vendored. Its own domain
+        // is the only host that serves the files correctly: wasm.rip returns
+        // text/html for the game pages, application/wasm for the modules and
+        // image/* for the thumbnails, all with a permissive CORS header. The
+        // GitHub CDNs do not work here - jsDelivr and raw.githubusercontent
+        // serve the pages as text/plain, and githack refuses this repo (403).
+        const WASM_RIP = {
+            catalogue: "https://wasm.rip/games.json",
+            base: "https://wasm.rip/"
+        };
+
+        // Catalogue paths are repo-relative, but a couple of entries point at
+        // another host outright (Kerbal Space Program lives on its own domain),
+        // so absolute URLs are left untouched.
+        function wasmRipUrl(path) {
+            if (!path) return "";
+            const p = String(path);
+            if (/^(https?:)?\/\//i.test(p)) return p;
+            return WASM_RIP.base + p.replace(/^\/+/, "");
+        }
+
+        // Its catalogue sometimes names the wrong image extension (it lists
+        // img/tmfds.png while the repo ships img/tmfds.jpg). Rather than lose
+        // the thumbnail, the tile gets the same name with the other common
+        // image extensions to try, in order, before the letter panel.
+        const WASM_RIP_IMG_EXTS = [".png", ".jpg", ".jpeg", ".webp", ".gif"];
+        function wasmRipImageFallbacks(path) {
+            if (!path) return "";
+            const p = String(path);
+            if (/^(https?:)?\/\//i.test(p)) return "";
+            const m = p.match(/\.([A-Za-z0-9]+)$/);
+            if (!m) return "";
+            const ext = "." + m[1].toLowerCase();
+            const stem = p.slice(0, p.length - m[0].length);
+            return WASM_RIP_IMG_EXTS
+                .filter(candidate => candidate !== ext)
+                .map(candidate => wasmRipUrl(stem + candidate))
+                .join("|");
+        }
+
+        async function loadWasmRip() {
+            try {
+                const res = await fetch(WASM_RIP.catalogue, { cache: "no-cache" });
+                if (!res.ok) return [];
+                const list = await res.json();
+                return (Array.isArray(list) ? list : [])
+                    .filter(game => game && game.name && game.gameUrl)
+                    .map(game => ({
+                        name: game.name,
+                        url: wasmRipUrl(game.gameUrl),
+                        img: wasmRipUrl(game.imageUrl),
+                        // Extra thumbnails to try if the named one is missing.
+                        imgFallback: wasmRipImageFallbacks(game.imageUrl),
+                        source: "wasmrip"
+                    }));
+            } catch (e) {
+                console.error("Could not load wasm.rip:", e);
+                return [];
+            }
+        }
+
+        // "All Sources" is every source's catalogue combined, verbatim: a game
+        // published by several stores ("Among Us" and friends) appears once for
+        // each store that carries it, duplicates and all. Nothing is dropped for
+        // sharing a name, so the All count is exactly the sum of the sources
+        // (and the search bar filters across that whole combined list). For a
+        // single-store view with no duplicates, use that store's own tab.
+        function mergeGames(lists) {
+            return [].concat(...lists).filter(game => game && game.name);
+        }
 
         const DEFAULT_STORE = "All";
 
@@ -484,11 +988,19 @@
             let html = "";
 
             data.forEach(app => {
+                // A source with no thumbnail (UGS ships none) uses the game's
+                // first letter as its image instead of a broken picture.
+                const hasImg = !!app.img;
+                const letter = (String(app.name).trim().charAt(0) || "?").toUpperCase();
+                const media = hasImg
+                    ? '<img class="app-img" src="' + esc(app.img) + '" alt="' + esc(app.name) +
+                      '" loading="lazy" decoding="async" data-fallback="' + esc(app.imgFallback || "") + '">'
+                    : '<div class="app-img app-img-letter" aria-hidden="true">' + esc(letter) + '</div>';
+
                 html +=
-                    '<div class="app" data-url="' + encodeURIComponent(app.url) +
+                    '<div class="app' + (hasImg ? "" : " no-img") + '" data-url="' + encodeURIComponent(app.url) +
                     '" data-name="' + esc(app.name.toLowerCase()) + '">' +
-                    '<img class="app-img" src="' + esc(app.img) + '" alt="' + esc(app.name) +
-                    '" loading="lazy" decoding="async">' +
+                    media +
                     '<div class="title"><h2 class="h2-title">' + esc(app.name) + '</h2></div>' +
                     '</div>';
             });
@@ -501,21 +1013,13 @@
         async function loadApps() {
             try {
                 if (!jsonCache[currentStore]) {
-                    const lists = await Promise.all(
-                        STORES[currentStore].files.map(file => fetch(file).then(r => r.json()))
-                    );
-
-                    // Classplay and GN-Math share 53 game names; keep one tile each.
-                    const seen = new Set();
-                    jsonCache[currentStore] = [].concat(...lists).filter(game => {
-                        const key = String(game.name).toLowerCase().replace(/[^a-z0-9]/g, "");
-                        if (seen.has(key)) return false;
-                        seen.add(key);
-                        return true;
-                    });
+                    jsonCache[currentStore] = await STORES[currentStore].load();
                 }
                 data = jsonCache[currentStore];
                 renderTiles();
+                // Re-apply the active search so the filter and its "X of N"
+                // count survive a store switch instead of silently resetting.
+                if (gameSearch.value) searchApps(gameSearch.value);
             } catch (e) {
                 console.error("Could not load the game store:", e);
             }
@@ -525,9 +1029,32 @@
         acont.addEventListener("error", (e) => {
             const img = e.target
             if (!img || img.tagName !== "IMG") return
+            // data-fallback holds one or more candidate URLs joined by "|"
+            // (GN-Math's vendored cover, or wasm.rip's other image extensions):
+            // try them in order, and only give up when none are left.
+            if (img.dataset.fallback) {
+                const candidates = img.dataset.fallback.split("|").filter(Boolean)
+                const next = candidates.shift()
+                img.dataset.fallback = candidates.join("|")
+                if (next) {
+                    img.src = next
+                    return
+                }
+            }
             img.style.display = "none"
             const tile = img.closest(".app")
-            if (tile) tile.classList.add("no-img")
+            if (tile) {
+                tile.classList.add("no-img")
+                // Swap the broken image for a first-letter panel.
+                if (!tile.querySelector(".app-img-letter")) {
+                    const heading = tile.querySelector(".h2-title")
+                    const letterEl = document.createElement("div")
+                    letterEl.className = "app-img app-img-letter"
+                    letterEl.setAttribute("aria-hidden", "true")
+                    letterEl.textContent = ((heading && heading.textContent.trim().charAt(0)) || "?").toUpperCase()
+                    tile.insertBefore(letterEl, img)
+                }
+            }
         }, true);
 
         // One delegated listener instead of 479 inline onclick attributes.

@@ -25,6 +25,10 @@
  * Registered from pages/play.html. If the worker cannot run (insecure origin,
  * worker support disabled, first paint before activation), games load exactly
  * as they did before: no regression, just no save.
+ *
+ * This worker also rewrites the asset host of the blocked orgs below while it
+ * has the page open for the shim, so the fix applies to every store page without
+ * editing each game. See BLOCKED_ASSET_HOSTS.
  */
 
 const SHIM = `<script data-kermit-storage="1">(function () {
@@ -61,6 +65,27 @@ const SHIM = `<script data-kermit-storage="1">(function () {
     }
 })();<\/script>`;
 
+// jsDelivr blocks some of the GitHub orgs the games keep their assets in
+// (HTTP 403, "User <org> is blocked"), which silently broke every game whose
+// <base> pointed there. rawcdn.githack.com serves the same GitHub content, so
+// route those orgs through it. Only the blocked orgs are rewritten; every other
+// host, including working jsDelivr packages, is left exactly as the game wrote
+// it.
+// jsDelivr's @latest is a jsDelivr-only ref; githack needs a real branch, and
+// these repos all use main.
+var BLOCKED_ASSET_LATEST = /cdn\.jsdelivr\.net\/gh\/(gn-math|genizy)\/([A-Za-z0-9._-]+)@latest\//g;
+var BLOCKED_ASSET_HOSTS = /cdn\.jsdelivr\.net\/gh\/(gn-math|genizy)\/([A-Za-z0-9._-]+)@([A-Za-z0-9._-]+)/g;
+// Some references leave the branch implicit (jsDelivr defaults it); githack
+// needs an explicit one, so those become @main.
+var BLOCKED_ASSET_HOSTS_NO_REF = /cdn\.jsdelivr\.net\/gh\/(gn-math|genizy)\/([A-Za-z0-9._-]+)\//g;
+
+function rewriteAssets(html) {
+    return html
+        .replace(BLOCKED_ASSET_LATEST, "rawcdn.githack.com/$1/$2/main/")
+        .replace(BLOCKED_ASSET_HOSTS, "rawcdn.githack.com/$1/$2/$3")
+        .replace(BLOCKED_ASSET_HOSTS_NO_REF, "rawcdn.githack.com/$1/$2/main/");
+}
+
 function injectShim(html) {
     if (html.indexOf("data-kermit-storage") !== -1) return html;
 
@@ -89,7 +114,7 @@ async function withShim(request) {
 
     var html = await response.text();
 
-    return new Response(injectShim(html), {
+    return new Response(injectShim(rewriteAssets(html)), {
         status: response.status,
         statusText: response.statusText,
         headers: { "Content-Type": "text/html; charset=utf-8" },

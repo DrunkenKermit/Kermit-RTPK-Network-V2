@@ -1,5 +1,6 @@
 # build output
 dist/
+*.tsbuildinfo
 
 # generated types
 .astro/
@@ -47,5 +48,11 @@ cherri-umami-worker/
 /cherri-cometchat-worker
 cherri-cometchat-worker/
 
-# Freebuff workspace internals
+# Freebuff workspace internals and deploy staging artifacts
 .vly-run/
+isolate/
+
+# Oversized orphaned vendored store (Classplay was removed from the catalogue;
+# nothing references these files). Excluded so the hosting source upload stays
+# under the deploy file-count limit.
+stores/ucp-games/

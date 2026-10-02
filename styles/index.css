@@ -1029,10 +1029,10 @@ button.button:hover {
 /* ── Toolbar layout ──────────────────────────────────────────────────────────
    One long line by default, optional left rail or bottom bar
    (see assets/js/toolbar.js).                                                  */
-/* The toolbar hugs its own buttons and sits centred, and every slot is a
+/* A straight bar spanning the page with its buttons centred, and every slot a
    step smaller than the subpage menus so it stays compact. */
 nav[data-toolbar] {
-    width: fit-content;
+    width: calc(100% - 24px);
     max-width: calc(100% - 24px);
     height: 56px;
     padding-left: 8px;

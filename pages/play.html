@@ -280,9 +280,95 @@
         const urlParams = new URLSearchParams(window.location.search);
         const gameurl = urlParams.get('launch');
 
+        // Noah's Hub game pages come from githack, but a chunk of them declare a
+        // <base href> pointing at a jsDelivr org that jsDelivr now blocks (403),
+        // so those games render blank. githack mirrors the same GitHub repos, so
+        // for those pages we fetch the HTML, swap the blocked orgs over to githack
+        // and load the rewritten page from a blob URL. Everything else loads as-is.
+        const NOAHS_HUB_HTML = "https://rawcdn.githack.com/NoahsAmazingTutoringHelp/Noahs-Calculus-Tutor/master/";
+        // UGS single-file games are served from unpkg as text/plain and load
+        // their assets from a jsDelivr GitHub org that is blocked (403). We fetch
+        // those pages, point the blocked jsDelivr refs at githack (which mirrors
+        // the same GitHub repos with the right MIME type) and load the result
+        // from a blob URL. Everything else is used as-is.
+        const UGS_SINGLE = "https://unpkg.com/ugs-singlefiles@1.0.6/UGS-Files/";
+        const BLOCKED_CDNS = /https?:\/\/cdn\.jsdelivr\.net\/gh\/(genizy|gn-math|bubbls)\//g;
+        const JSDELIVR_GH = /https?:\/\/cdn\.jsdelivr\.net\/gh\/([^@\/\s"']+)\/([^@\/\s"']+)@([^\/\s"']+)\//g;
+
+        function rewriteRemote(src) {
+            return fetch(src, { cache: "no-cache" })
+                .then(res => res.ok ? res.text() : null)
+                .then(html => {
+                    if (!html) return src;
+                    const rewritten = html
+                        .replace(JSDELIVR_GH, "https://rawcdn.githack.com/$1/$2/$3/")
+                        .replace(BLOCKED_CDNS, "https://rawcdn.githack.com/$1/");
+                    if (rewritten === html) return src;
+                    // The page now runs from a blob: keep relative paths pointing
+                    // at the folder it was served from.
+                    let out = rewritten;
+                    if (!/<base[\s>]/i.test(out)) {
+                        const base = src.replace(/[^\/]*$/, "");
+                        out = out.replace(/<head([^>]*)>/i, '<head$1><base href="' + base + '">');
+                    }
+                    return URL.createObjectURL(new Blob([out], { type: "text/html" }));
+                })
+                .catch(() => src);
+        }
+
+        function noahsHubSrc(src) {
+            if (!src || src.indexOf(NOAHS_HUB_HTML) !== 0) return Promise.resolve(src);
+            return rewriteRemote(src);
+        }
+
+        function ugsSrc(src) {
+            if (!src || src.indexOf(UGS_SINGLE) !== 0) return Promise.resolve(src);
+            return rewriteRemote(src);
+        }
+
+        // LuminSDK games are addressed by id and resolved to a fresh one-time
+        // playable URL each time. The SDK is published as two byte-identical
+        // builds; Lightspeed Systems (lightspeedsystems.com) blanket-blocks any
+        // site that loads the build named after the SDK, so we load the
+        // identical "fonts.min.js" build from the same base URL instead.
+        const LUMIN_SDK = "https://cdn.jsdelivr.net/gh/luminsdk/script@latest/fonts.min.js";
+        const LUMIN_PREFIX = "lumin:";
+        let luminScript = null;
+
+        function loadLuminScript() {
+            if (!luminScript) {
+                luminScript = new Promise((resolve, reject) => {
+                    const s = document.createElement("script");
+                    s.src = LUMIN_SDK;
+                    s.async = true;
+                    s.onload = () => resolve();
+                    s.onerror = () => reject(new Error("LuminSDK script failed to load"));
+                    document.head.appendChild(s);
+                });
+            }
+            return luminScript;
+        }
+
+        function luminSrc(src) {
+            if (!src || src.indexOf(LUMIN_PREFIX) !== 0) return Promise.resolve(src);
+            const id = src.slice(LUMIN_PREFIX.length);
+            return loadLuminScript()
+                .then(() => Lumin.init({ headless: true }))
+                .then(() => Lumin.getGameUrl(id))
+                .then(res => (res && res.url) ? res.url : src)
+                .catch(e => {
+                    console.error("Could not load this LuminSDK game:", e);
+                    return src;
+                });
+        }
+
         function loadGame(src) {
             gameframe.src = src;
             gameframe.focus()
+            // Only the games vendored under /stores/gn-math can actually be
+            // downloaded; remote repo games are cross-origin downloads.
+            document.getElementById("downloadBtn").style.display =
+                (src && src.indexOf("/stores/gn-math/") !== -1) ? "" : "none"
             gameframe.onload = () => {
                 // Games hosted on another domain have no reachable contentDocument
                 // (and a few entries, like Territorial.io, are external links).
@@ -338,7 +424,7 @@
             if (gameUrl.startsWith("/stores/")) {
                 gameStorageReady().then(() => loadGame(gameUrl))
             } else {
-                loadGame(gameUrl)
+                noahsHubSrc(gameUrl).then(ugsSrc).then(luminSrc).then(loadGame)
             }
         }
 
@@ -517,10 +603,6 @@
             }, 1000)
         })
 
-
-        if (!document.getElementById("gameframe").src.includes("gn-math")) {
-            document.getElementById("downloadBtn").style.display = "none"
-        }
 
         function downloadGame() {
             const src = document.getElementById("gameframe").src

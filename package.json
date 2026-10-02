@@ -1,0 +1,21 @@
+{
+  "name": "kermit-rtpk-network",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kermit (RTPK) Network - static unblocked games / proxy / movies / AI site, wrapped in a minimal Vite + React build so it can be hosted on framework-only platforms.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^5.2.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "vite": "^7.3.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.0"
+  }
+}
