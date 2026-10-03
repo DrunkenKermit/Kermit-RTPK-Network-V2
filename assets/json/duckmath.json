@@ -1,109 +1,2357 @@
 [
-  ["Retro Bowl","g4m3s/retro_bowl.html","assets/img/icons/retro_bowl_icon.webp"],
-  ["Cookie Clicker","g4m3s/CookieClicker.html","assets/img/icons/cookieclicker.webp"],
-  ["Geometry Dash","g4m3s/geometry_dash.html","assets/img/icons/geometrydash.webp"],
-  ["Fireboy & Watergirl","g4m3s/fireboy.html","assets/img/icons/fireboy.webp"],
-  ["Combat Arms","g4m3s/Combat_reloaded.html","assets/img/icons/combatreloaded.avif"],
-  ["Crossy Roads","g4m3s/crossyroads.html","assets/img/icons/crossyroad.webp"],
-  ["Raft Wars","g4m3s/flash-g4m3s/raftwars1.html","assets/img/icons/rw1.webp"],
-  ["Raft Wars 2","g4m3s/flash-g4m3s/raftwars2.html","assets/img/icons/rw2.webp"],
-  ["Subway Surfers","g4m3s/subway_surfers.html","assets/img/icons/subway.webp"],
-  ["1v1.LOL","g4m3s/1v1.lol.html","assets/img/icons/1v1.webp"],
-  ["Minecraft","g4m3s/Minecraft/Minecraft-landing.html","assets/img/icons/minecraft.webp"],
-  ["Paper.io","g4m3s/Paper.io.html","assets/img/icons/paper.webp"],
-  ["Super Mario 64","g4m3s/SM64.html","assets/img/icons/supermario64.webp"],
-  ["Drift Boss","g4m3s/driftboss.html","assets/img/icons/driftboss.webp"],
-  ["FNAF","g4m3s/Five-Nights-At-Freddys.html","assets/img/icons/fnaf.webp"],
-  ["Super Star Car","g4m3s/Super-Star-Car.html","assets/img/icons/superstarcar.avif"],
-  ["Alien Hominid","g4m3s/flash-g4m3s/Alien_Hominid.html","assets/img/icons/alien.webp"],
-  ["BloonsTD","g4m3s/flash-g4m3s/BloonsTD.html","assets/img/icons/bloons1.webp"],
-  ["BloonsTD 2","g4m3s/flash-g4m3s/BloonsTD_2.html","assets/img/icons/bloons2.webp"],
-  ["BloonsTD 3","g4m3s/flash-g4m3s/BloonsTD_3.html","assets/img/icons/bloons3.webp"],
-  ["Bloxorz","g4m3s/flash-g4m3s/bloxorz.html","assets/img/icons/bloxorz.webp"],
-  ["Breaking the Bank","g4m3s/flash-g4m3s/breakingthebank.html","assets/img/icons/breakbank.webp"],
-  ["Escaping The Prison","g4m3s/flash-g4m3s/escapetheprison.html","assets/img/icons/escapeprison.webp"],
-  ["Stealing the Diamond","g4m3s/flash-g4m3s/StealingtheDiamond.html","assets/img/icons/stealdiamond.webp"],
-  ["Infiltrating the Airship","g4m3s/flash-g4m3s/Infiltratingtheairship.html","assets/img/icons/airship.webp"],
-  ["Fleeing the Complex","g4m3s/flash-g4m3s/FleeingtheComplex.html","assets/img/icons/complex.webp"],
-  ["Meat Boy","g4m3s/flash-g4m3s/MeatBoy.html","assets/img/icons/meat.webp"],
-  ["Electric Man 2","g4m3s/flash-g4m3s/ElectricMan2.html","assets/img/icons/electric.webp"],
-  ["Fancy Pants","g4m3s/flash-g4m3s/FancyPantsAdventures.html","assets/img/icons/fancy.avif"],
-  ["The Binding of Isaac","g4m3s/flash-g4m3s/thebindingofisaac.html","assets/img/icons/isaac.webp"],
-  ["The Impossible Quiz","g4m3s/flash-g4m3s/theimpossiblequiz.html","assets/img/icons/impossible.avif"],
-  ["The Impossible Quiz 2","g4m3s/flash-g4m3s/ImpossibleQuiz2.html","assets/img/icons/impossible2.avif"],
-  ["The World's Hardest Game","g4m3s/flash-g4m3s/worldshardestgame.html","assets/img/icons/hardgame1.webp"],
-  ["The World's Hardest Game 2","g4m3s/flash-g4m3s/worldshardestgame2.html","assets/img/icons/hardgame2.webp"],
-  ["2048","g4m3s/2048.html","assets/img/icons/2048.webp"],
-  ["Tetris","g4m3s/Tetris.html","assets/img/icons/tetris.webp"],
-  ["Friday Night Funkin","g4m3s/FridayNightFunkin.html","assets/img/icons/friday.webp"],
-  ["Swords and Sandals 2","g4m3s/flash-g4m3s/SwordsandSandals2.html","assets/img/icons/sas2.webp"],
-  ["Agar.io","g4m3s/agar.io.html","assets/img/icons/agar.webp"],
-  ["Mini Golf","g4m3s/Minigolf.html","assets/img/icons/golfmini.webp"],
-  ["Run 3","g4m3s/Run3.html","assets/img/icons/run3.webp"],
-  ["Uno","g4m3s/Uno.html","assets/img/icons/uno.webp"],
-  ["Flappy Bird","g4m3s/PaperMinecraft.html","assets/img/icons/bird.webp"],
-  ["Duck Life","g4m3s/ducklife.html","assets/img/icons/dl1.webp"],
-  ["Duck Life 2","g4m3s/ducklife2.html","assets/img/icons/dl2.avif"],
-  ["Duck Life 3","g4m3s/ducklife3.html","assets/img/icons/dl3.avif"],
-  ["Duck Life 4","g4m3s/ducklife4.html","assets/img/icons/dl4.avif"],
-  ["Pizza Party","g4m3s/PizzaParty.html","assets/img/icons/pizzaparty.webp"],
-  ["Yohoho.io","g4m3s/Yohoho.io.html","assets/img/icons/yohoho.webp"],
-  ["Moto X3M","g4m3s/MotoX3M.html","assets/img/icons/motox3m.webp"],
-  ["Stickman Peacekeeper","g4m3s/Stickmanpeacekeeper.html","assets/img/icons/stickmanpeace.webp"],
-  ["Endless Lake","g4m3s/EndlessLake.html","assets/img/icons/endlesslake.webp"],
-  ["CS Surf","g4m3s/CSSurf.html","assets/img/icons/cssurf.webp"],
-  ["Habbo Clicker","g4m3s/HabboClicker.html","assets/img/icons/habboclicker.webp"],
-  ["Money Movers","g4m3s/MoneyMovers.html","assets/img/icons/moneymovers1.webp"],
-  ["Bingo","g4m3s/Bingo.html","assets/img/icons/Bingo.webp"],
-  ["Castle Defender","g4m3s/CastleDefender.html","assets/img/icons/castledefender.webp"],
-  ["Slope","g4m3s/slope.html","assets/img/icons/slope.webp"],
-  ["Madalin Stunt Cars 2","g4m3s/Madalin-Stunt-Cars-2.html","assets/img/icons/madalin.webp"],
-  ["Doodle Jump","g4m3s/Doodle-Jump.html","assets/img/icons/doodle.webp"],
-  ["Rooftop Snipers","g4m3s/Rooftop-Snipers.html","assets/img/icons/rooftop.webp"],
-  ["Tanuki Sunset","g4m3s/TanukiSunset.html","assets/img/icons/tanuki.webp"],
-  ["Getting Over it","g4m3s/Getting-Over-It.html","assets/img/icons/gettingoverit.webp"],
-  ["2D Fortnite","g4m3s/2DFortnite.html","assets/img/icons/fortnite.webp"],
-  ["Spiral Roll","g4m3s/Spiral-Roll.html","assets/img/icons/spiralroll.webp"],
-  ["Zombs Royale","g4m3s/Zombs.io.html","assets/img/icons/zombs.webp"],
-  ["Digital Museum","g4m3s/Digital-Museum.html","assets/img/icons/digital.webp"],
-  ["SSB64","g4m3s/Smash.html","assets/img/icons/smash.webp"],
-  ["CS 1.6 Online","g4m3s/cs.html","assets/img/icons/1.6.webp"],
-  ["Among Us","g4m3s/amogus.html","assets/img/icons/amongus.webp"],
-  ["Papas Pizzeria","g4m3s/flash-g4m3s/PapasPizzeria.html","assets/img/icons/papapizza.webp"],
-  ["Papas Burgeria","g4m3s/flash-g4m3s/papasburgeria.html","assets/img/icons/burger.webp"],
-  ["Papas Tacomia","g4m3s/flash-g4m3s/PapasTacomia.html","assets/img/icons/taco.webp"],
-  ["Papas Freezeria","g4m3s/flash-g4m3s/papasfreezeria.html","assets/img/icons/icecream.webp"],
-  ["Freeway Fury 2","g4m3s/flash-g4m3s/Freewayfury2.html","assets/img/icons/freewayfury2.avif"],
-  ["Tiny Castle","g4m3s/flash-g4m3s/tinycastle.html","assets/img/icons/tinycastle.webp"],
-  ["Baldi's Basics","g4m3s/baldisbasics.html","assets/img/icons/baldis.webp"],
-  ["Granny","g4m3s/granny.html","assets/img/icons/granny.webp"],
-  ["Gunball Emperors Revenge","g4m3s/flash-g4m3s/GunballEmperorRevenge.html","assets/img/icons/gunball.webp"],
-  ["Yeti Sensation","g4m3s/yetidash.html","assets/img/icons/yetidash.webp"],
-  ["Angry Birds","g4m3s/angry-birds.html","assets/img/icons/birdangry.webp"],
-  ["Papa Louie 2: When Burgers Attack","g4m3s/flash-g4m3s/papalouie2.html","assets/img/icons/papalouie2_100x100%20(1).webp"],
-  ["Club Penguin","g4m3s/club-penguin.html","assets/img/icons/clubpenguin.webp"],
-  ["Bad Piggies","g4m3s/flash-g4m3s/badpiggies.html",""],
-  ["Bad Piggies","g4m3s/flash-g4m3s/badpiggies.html",""],
-  ["Plants vs Zombies","g4m3s/pvz.html","assets/img/icons/pvz.webp"],
-  ["Venge.io","g4m3s/venge.io.html","assets/img/icons/venge.io.webp"],
-  ["Roblox","g4m3s/roblox.html","assets/img/icons/roblox.webp"],
-  ["Krunker.io","g4m3s/krunker.io.html","assets/img/icons/krunker.io.webp"],
-  ["Pokémon Ruby","g4m3s/pokemon-ruby.html","assets/img/icons/pokemonruby.webp"],
-  ["Geforce Now","g4m3s/geforce-now.html","assets/img/icons/geforcenow.webp"],
-  ["Awesome Tanks","g4m3s/flash-g4m3s/awesome-tanks-1.html","assets/img/icons/awesometanks1.webp"],
-  ["Awesome Tanks 2","g4m3s/flash-g4m3s/awesome-tanks-2.html","assets/img/icons/awesome-tanks-2.webp"],
-  ["Only Up","g4m3s/only-up.html","assets/img/icons/onlyup.webp"],
-  ["Storm the House","g4m3s/flash-g4m3s/storm-the-house.html","assets/img/icons/stormthehouse.webp"],
-  ["Storm the House 2","g4m3s/flash-g4m3s/storm-the-house-2.html","assets/img/icons/storm-the-house-2.webp"],
-  ["Storm the House 3","g4m3s/flash-g4m3s/storm-the-house-3.html","assets/img/icons/storm-house-3.webp"],
-  ["Slither.io","g4m3s/slither.io.html","assets/img/icons/slither.io.webp"],
-  ["Pixel Gun 3D","g4m3s/pixel-gun-3d.html","assets/img/icons/pixelgun3d.webp"],
-  ["Hole.io","g4m3s/hole.io.html","assets/img/icons/hole.io.webp"],
-  ["Funny Sh00ter","g4m3s/funny-sh00ter.html","assets/img/icons/funntshooes.webp"],
-  ["ShellShock.io","g4m3s/shellshock.html","assets/img/icons/shellshock.webp"],
-  ["Call of Duty","g4m3s/call-of-duty.html","assets/img/icons/cod.webp"],
-  ["Fighter Aircraft Pilot","g4m3s/fighter-aircraft-pilot.html","assets/img/icons/fighter-aircraft-pilotb.avif"],
-  ["Monkey Mart","g4m3s/monkey-mart.html","assets/img/icons/monkey-mart.webp"],
-  ["Rally Point","g4m3s/rally-point.html","assets/img/icons/rallypoint.webp"],
-  ["Fortnite Z","g4m3s/fortnite-z.html","assets/img/icons/fortnite-z.webp"]
+  [
+    "1v1.lol",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/1v1lol/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/1v1.lol-old.webp"
+  ],
+  [
+    "2 Player Crazy Racer",
+    "https://db2.duckmath.org/2022/unity3/2-player-crazy-racer/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/2-Player-Crazy-Racer.jpg"
+  ],
+  [
+    "2048",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/2048/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/2048.webp"
+  ],
+  [
+    "2d Fortnite",
+    "https://db2.duckmath.org/2025/more/fort-battle-royale/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/fort-battle-royale.webp"
+  ],
+  [
+    "8 Ball Pool Billiard",
+    "https://db2.duckmath.org/2022/unity3/8-ball-pool-billiard/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/8-Ball-Pool-Billiard.jpg"
+  ],
+  [
+    "99 Nights Forest Survival",
+    "https://db2.duckmath.org/2026/unity/99-nights-in-the-forest-survival/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/99-nights-in-the-forest-survival-lg.webp"
+  ],
+  [
+    "99 Nights In The Forest",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/99_nights_in_the_forest/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/99-nights-in-the-forest.png"
+  ],
+  [
+    "Ado Cars Drifter",
+    "https://db2.duckmath.org/2023/unity3/ado-cars-drifter/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/ado-cars-drifter.jpg"
+  ],
+  [
+    "Age Of Battle",
+    "https://db2.duckmath.org/2026/unity/age-of-battle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/age-of-battle-game-lg.webp"
+  ],
+  [
+    "Agent Smith",
+    "https://db2.duckmath.org/2021/unity/agent-smith/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Agent-Smith-2.jpg"
+  ],
+  [
+    "Alien Hominid",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/alien_hominid/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/alien.webp"
+  ],
+  [
+    "Alien Sky Invasion",
+    "https://db2.duckmath.org/2021/unity3/alien-sky-invasion/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Alien-Sky-Invasion.jpg"
+  ],
+  [
+    "American Touchdown",
+    "https://db2.duckmath.org/2021/unity3/american-touchdown/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/American-Touchdown-Game.jpg"
+  ],
+  [
+    "Among Impostor",
+    "https://db2.duckmath.org/2023/construct/234/among-impostor/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/among-impostor-512.jpg"
+  ],
+  [
+    "Among Us",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/among_us/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/amongus.webp"
+  ],
+  [
+    "Animal Crossing",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/animal_crossing/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/animal_crossing.webp"
+  ],
+  [
+    "Ants Clicker",
+    "https://db2.duckmath.org/2026/more/ants-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/ants-clicker.webp"
+  ],
+  [
+    "Apple Knight Mini Dungeons",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/apple_knight_mini_dungeons/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/apple-knight.webp"
+  ],
+  [
+    "Arcane Archer",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/arcane_archer/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/arcane-archer.jpg"
+  ],
+  [
+    "Archer Hero",
+    "https://db2.duckmath.org/2023/unity/archer-hero/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Archer-Hero-Online.jpg"
+  ],
+  [
+    "Archer Master 3d Castle Defender",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/archer_master_3d_castle_defender/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/archer-master-3d-castle-defender.jpg"
+  ],
+  [
+    "Arena Of Heroes",
+    "https://db2.duckmath.org/2022/unity/arena-of-heroes/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/Arena-of-Heroes.webp"
+  ],
+  [
+    "Armed Forces Io",
+    "https://db2.duckmath.org/2021/unity3/armedforces-io/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Armed-Forces-io.jpg"
+  ],
+  [
+    "Arrow Master",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/arrow_master/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/arrowmaster.oi.webp"
+  ],
+  [
+    "Awesome Pirates",
+    "https://db2.duckmath.org/2024/flash/awesome-pirates/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/awesome-pirates-512.webp"
+  ],
+  [
+    "Awesome Tanks",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/awesometanks/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/awesometanks1.webp"
+  ],
+  [
+    "Awesome Tanks 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/awesometanks2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/awesome-tanks-2.webp"
+  ],
+  [
+    "Axis Football League",
+    "https://db2.duckmath.org/2024/flash/axis-football-league/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/axis-football-league-game.webp"
+  ],
+  [
+    "Backflip Challenge",
+    "https://db2.duckmath.org/2026/unity/backflip-challenge/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/backflip-challenge-game-lg.webp"
+  ],
+  [
+    "Backrooms",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/backroomsv1.5/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/backrooms1.webp"
+  ],
+  [
+    "Baldis Basics",
+    "https://db2.duckmath.org/2026/more/baldis-basics/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/baldis.webp"
+  ],
+  [
+    "Baseball Bros",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/baseball_bros/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/baseball-bros.jpg"
+  ],
+  [
+    "Basket Bros",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/basket_bros/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/basket-bros.jpeg"
+  ],
+  [
+    "Basket Hoop",
+    "https://db2.duckmath.org/2024/construct/311/basket-hoop/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Basket-Hoop.jpg"
+  ],
+  [
+    "Basket Random",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/basket_random/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Basket-Random.jpg"
+  ],
+  [
+    "Basket Random Pro",
+    "https://db2.duckmath.org/2025/construct/320/basket-random-pro/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/basket-random-pro.webp"
+  ],
+  [
+    "Basketball King",
+    "https://db2.duckmath.org/2024/construct/316/basketball-king/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/basketball-king.jpg"
+  ],
+  [
+    "Basketball Legends",
+    "https://db2.duckmath.org/2002/basketball-legends/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/basketball-legends.jpg"
+  ],
+  [
+    "Basketball Slam Dunk",
+    "https://db2.duckmath.org/2021/unity2/basketball-slam-dunk/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Basketball-Slam-Dunk.jpg"
+  ],
+  [
+    "Basketball Stars",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/basketball_stars/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/basketball-stars.webp"
+  ],
+  [
+    "Battle Simulator",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/battle_simulator/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/tabs.webp"
+  ],
+  [
+    "Bffs Black Friday Collection",
+    "https://db2.duckmath.org/2024/fabbox/bffs-black-friday-collection/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/bffs-black-friday-collection.webp"
+  ],
+  [
+    "Bit Planes",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/bit_planes/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/bit-planes.webp"
+  ],
+  [
+    "Block Blast",
+    "https://db2.duckmath.org/2024/unity3/block-blast/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/block-blast.jpg"
+  ],
+  [
+    "Blocky Combat Swat",
+    "https://db2.duckmath.org/2023/unity3/blocky-combat-swat/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/blocky-combat-swat.jpg"
+  ],
+  [
+    "Blocky Puzzle",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/blocky_puzzle/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/blocky-puzzle.jpg"
+  ],
+  [
+    "Bloonstd",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/bloonstd/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/bloons1.webp"
+  ],
+  [
+    "Bloonstd 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/bloonstd2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/bloons2.webp"
+  ],
+  [
+    "Bloonstd 3",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/bloonstd3/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/bloons3.webp"
+  ],
+  [
+    "Bloonstd 5",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/btd5/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/bloonstd-5.jpg"
+  ],
+  [
+    "Bloxorz",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/bloxorz/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/bloxorz.webp"
+  ],
+  [
+    "Blumgi Racers",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/blumgi_racers/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/blumgi-racers.jpg"
+  ],
+  [
+    "Bob The Robber 4",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/bob_the_robber_4/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/bob-the-robber-4.jpg"
+  ],
+  [
+    "Bookworm",
+    "https://db2.duckmath.org/2024/flash/bookworm/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/bookworm.webp"
+  ],
+  [
+    "Boxing Random",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/boxing_random/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Boxing-Random.jpg"
+  ],
+  [
+    "Breaking The Bank",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/breakingthebank/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/breakbank.webp"
+  ],
+  [
+    "Bridge Race",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/bridge_race/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/bridge-race.jpg"
+  ],
+  [
+    "Brookhaven",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/brookhaven/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/brookhaven.jpg"
+  ],
+  [
+    "Bubble Shooter Easy",
+    "https://db2.duckmath.org/2024/koz/bubble-shooter-easy/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/bubble-shooter-ez-512.webp"
+  ],
+  [
+    "Buckshot Roulette",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/buckshot_roulette/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/buckshot-roulette.jpg"
+  ],
+  [
+    "Burnout City",
+    "https://db2.duckmath.org/2024/unity/burnout-city/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/burnoutcity.jpg"
+  ],
+  [
+    "Burnout Drift Hunter",
+    "https://db2.duckmath.org/2022/unity4/burnout-drift-hunter/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Burnout-Drift-Hunter-Online.jpg"
+  ],
+  [
+    "Burnout Racers",
+    "https://db2.duckmath.org/2024/unity/burnout-racers/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Burnout-Racers.jpg"
+  ],
+  [
+    "Burrito Bison",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/burrito_bison_launcha_libre/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/burrito-bison.jpg"
+  ],
+  [
+    "Cactus Mccoy 1",
+    "https://db2.duckmath.org/2024/flash/cactus-mccoy-1/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/cactus-mccoy-1.webp"
+  ],
+  [
+    "Cactus Mccoy 2",
+    "https://db2.duckmath.org/2024/flash/cactus-mccoy-2/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/cactus-mccoy-2-game.webp"
+  ],
+  [
+    "Cake Match Puzzle",
+    "https://db2.duckmath.org/2024/unity3/cake-match-puzzle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/cake-match-puzzle.webp"
+  ],
+  [
+    "Capybara Clicker",
+    "https://db2.duckmath.org/2023/q2/capy-cutie-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/capybara-clicker.jpg"
+  ],
+  [
+    "Car Football",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/car_football/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Car-Football.jpg"
+  ],
+  [
+    "Car Parkour",
+    "https://db2.duckmath.org/2022/construct/163/car-parkour/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/Car-Parkour.webp"
+  ],
+  [
+    "Car Stunt King",
+    "https://db2.duckmath.org/2024/unity/car-stunt-king/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Car-Stunt-King.jpg"
+  ],
+  [
+    "Car Wash",
+    "https://db2.duckmath.org/2023/unity2/car-wash/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Car-Wash-Online-Game.jpg"
+  ],
+  [
+    "Cargo Jeep Racing",
+    "https://db2.duckmath.org/2021/4/cargo-jeep-racing/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/Cargo-Jeep-Racing.webp"
+  ],
+  [
+    "Cat Miner 2",
+    "https://turbowarp.org/351793769/embed",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/cat-miner.webp"
+  ],
+  [
+    "Cat Simulator",
+    "https://db2.duckmath.org/2022/unity4/cat-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Cat-Simulator-Online.jpg"
+  ],
+  [
+    "Checkout Frenzy",
+    "https://db2.duckmath.org/2025/unity/checkout-frenzy/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/checkout-frenzy-cashier-game.jpg"
+  ],
+  [
+    "Cheese Chompers 3d",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/cheese_chompers_3d/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/cheese-chompers-3d.jpeg"
+  ],
+  [
+    "Chess",
+    "https://db2.duckmath.org/2025/unity3/chess/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/chess-freezenova.webp"
+  ],
+  [
+    "Choppy Orc",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/choppy_orc/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/choppy-orc.jpg"
+  ],
+  [
+    "City Stunts",
+    "https://db2.duckmath.org/2023/unity3/city-stunts/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/City-Stunts-Game.jpg"
+  ],
+  [
+    "Clash Royale",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/clash_royale/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/clash-royale.jpg"
+  ],
+  [
+    "Classic Minecraft",
+    "https://db2.duckmath.org/2026/more/duckcraft/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/mc-classic.webp"
+  ],
+  [
+    "Classicube",
+    "https://db2.duckmath.org/2024/cube/classicube/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/classicube.jpg"
+  ],
+  [
+    "Cloud",
+    "https://db2.duckmath.org/2001/cloud/index.html?cloud=1",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/cloud-gaming.webp"
+  ],
+  [
+    "Cluster Reborn",
+    "https://db2.duckmath.org/2026/unity/cluster-reborn/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/cluster-reborn.webp"
+  ],
+  [
+    "Cluster Rush",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/cluster_rush/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/cluster_rush.webp"
+  ],
+  [
+    "Cobraz Io Classic",
+    "https://db2.duckmath.org/2022/unity/cobraz-io-classic/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Cobraz.io-Classic.jpg"
+  ],
+  [
+    "Cod Zombies Portable",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/cod_zombies_portable/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/cod-zombies-portable.jpeg"
+  ],
+  [
+    "Conquer Kingdoms",
+    "https://db2.duckmath.org/2025/unity/conquer-kingdoms/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/conquer-kingdoms.webp"
+  ],
+  [
+    "Cookie Clicker",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/cookie_clicker/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/cookieclicker.webp"
+  ],
+  [
+    "Cool Cookie Clicker",
+    "https://db2.duckmath.org/2025/construct/260/cool-cookie-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/cool-cookie-clicker.webp"
+  ],
+  [
+    "Cool Game",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/heck_sucker/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/heck.png"
+  ],
+  [
+    "Crazy Cars",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/crazy_cars/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/crazycars.webp"
+  ],
+  [
+    "Crazy Cattle 3d Pro",
+    "https://db2.duckmath.org/2025/unity3/crazy-cattle-3d/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/crazy-cattle-3d.webp"
+  ],
+  [
+    "Crazy Christmas 3d",
+    "https://db2.duckmath.org/2025/unity3/crazy-christmas-3d/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/crazy-christmas-game.webp"
+  ],
+  [
+    "Crazy Hill Climb",
+    "https://db2.duckmath.org/2023/construct/209/crazy-hill-climb/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Crazy-Hill-Climb.jpg"
+  ],
+  [
+    "Crazy Karts",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/crazy_karts/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/crazy-karts.webp"
+  ],
+  [
+    "Crazy Moto Racing",
+    "https://db2.duckmath.org/2022/unity3/crazy-moto-racing/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/crazy-moto-racing.jpg"
+  ],
+  [
+    "Crazy Parking Fury",
+    "https://db2.duckmath.org/2022/unity3/crazy-parking-fury/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Crazy-Parking-Fury.jpg"
+  ],
+  [
+    "Crazy Roll",
+    "https://db2.duckmath.org/2021/unity2/crazy-roll/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/crazy-roll.webp"
+  ],
+  [
+    "Crazy Stickman Physics",
+    "https://db2.duckmath.org/2023/construct/185/crazy-stickman-physics/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Crazy-Stickman-Physics.jpg"
+  ],
+  [
+    "Crazycattle3d",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/crazycattle3d/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Crazy-Cattle-3D.jpg"
+  ],
+  [
+    "Cross Roads",
+    "https://db2.duckmath.org/2023/unity/cross-the-road/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/crossyroad.webp"
+  ],
+  [
+    "Crown Defense",
+    "https://db2.duckmath.org/2025/construct/337/crown-defense/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/crown-defense-online.webp"
+  ],
+  [
+    "Cs Online",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/cs_online/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/1.6.webp"
+  ],
+  [
+    "Cs Surf",
+    "https://turbowarp.org/159243389/embed",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/cssurf.webp"
+  ],
+  [
+    "Cube Worlds",
+    "https://db2.duckmath.org/2025/html/cube-worlds/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Cube-Worlds.jpg"
+  ],
+  [
+    "Cubecraft Survival",
+    "https://db2.duckmath.org/2025/unity4/cubecraft-survival/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/cubecraft-survival.webp"
+  ],
+  [
+    "Dark Forest Idle",
+    "https://db2.duckmath.org/2024/godot/dark-forest-idle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/dark-forest-idle-512.webp"
+  ],
+  [
+    "Darkness Survivors",
+    "https://db2.duckmath.org/2024/q2/darkness-survivors/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Darkness-Survivors.jpg"
+  ],
+  [
+    "Davo",
+    "https://db2.duckmath.org/2025/construct/302/davo/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/davo.webp"
+  ],
+  [
+    "Deadly Descent",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/deadly_descent/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/deadly-descent.jpg"
+  ],
+  [
+    "Deepest Sword",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/deepest_sword/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/deepest-sword.jpg"
+  ],
+  [
+    "Deer Hunter",
+    "https://db2.duckmath.org/2021/1/deer-hunter/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Deer-Hunter.jpg"
+  ],
+  [
+    "Diggy",
+    "https://db2.duckmath.org/2024/flash/diggy/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/diggy.webp"
+  ],
+  [
+    "Digital Museum",
+    "https://noclip.website",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/digital.webp"
+  ],
+  [
+    "Discus",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/discus/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/disc_us.webp"
+  ],
+  [
+    "Diver Down",
+    "https://db2.duckmath.org/2024/godot/diver-down/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/diver-down-512.webp"
+  ],
+  [
+    "Doge Miner",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/doge_miner/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/doge-miner.jpg"
+  ],
+  [
+    "Doggo Clicker",
+    "https://db2.duckmath.org/2024/gm/games4/doggo-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Doggo-Clicker.jpg"
+  ],
+  [
+    "Doki Doki Literature Club",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/ddlc/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/doki-doki-literature-club.jpg"
+  ],
+  [
+    "Dont Fall Io",
+    "https://db2.duckmath.org/2021/unity/dont-fall-io/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Dont-Fall-io-2.jpg"
+  ],
+  [
+    "Doodle Jump",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/doodle_jump/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/doodle.webp"
+  ],
+  [
+    "Doom 1",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/doom_1/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/doom1.webp"
+  ],
+  [
+    "Doom 2d",
+    "https://db2.duckmath.org/2024/flash/doom-2d/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/doom-2d.webp"
+  ],
+  [
+    "Draw The Bridge",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/draw_the_bridge/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/draw_bridge.webp"
+  ],
+  [
+    "Dreamlike Room",
+    "https://db2.duckmath.org/2024/code/dreamlike-room/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/dreamlike-room.webp"
+  ],
+  [
+    "Drift Boss",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/drift_boss/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/driftboss.webp"
+  ],
+  [
+    "Drift City",
+    "https://db2.duckmath.org/2024/gm/games2/drift-city/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/drift-city-unblocked.jpg"
+  ],
+  [
+    "Drift Fury",
+    "https://db2.duckmath.org/2023/unity/drift-fury/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Drift-Fury.jpg"
+  ],
+  [
+    "Drift Hunters",
+    "https://db2.duckmath.org/2023/unity3/drift-hunters/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Drift-Hunters-Game.jpg"
+  ],
+  [
+    "Drift Hunters 2024",
+    "https://db2.duckmath.org/2024/unity/drift-hunters-2024/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/drift-hunters-2024-freezenova.jpg"
+  ],
+  [
+    "Drift Hunters Pro",
+    "https://db2.duckmath.org/2023/unity/drift-hunters-pro/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Drift-Hunters-Pro.jpg"
+  ],
+  [
+    "Drift King",
+    "https://db2.duckmath.org/2024/unity/drift-king/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Drift-King.jpg"
+  ],
+  [
+    "Drift Rider",
+    "https://db2.duckmath.org/2023/unity3/drift-rider/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Drift-Rider.jpg"
+  ],
+  [
+    "Dublix",
+    "https://db2.duckmath.org/2025/unity4/dublix/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/dublix.webp"
+  ],
+  [
+    "Duck Life",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/duck_life/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/dl1.webp"
+  ],
+  [
+    "Duck Life 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/duck_life_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/dl2.webp"
+  ],
+  [
+    "Duck Life 3",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/duck_life_3/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/dl3.webp"
+  ],
+  [
+    "Duck Life 4",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/duck_life_4/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/dl4.webp"
+  ],
+  [
+    "Duck Life 5",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/duck_life_5/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/duck-life-5.jpg"
+  ],
+  [
+    "Ducklingsio",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/ducklingsio/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/ducklingsio.jpg"
+  ],
+  [
+    "Ducky Clicker",
+    "https://db2.duckmath.org/2026/more/ducky-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/ducky-clicker.webp"
+  ],
+  [
+    "Dune",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/dune/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/dune.jpg"
+  ],
+  [
+    "E Life Simulator",
+    "https://db2.duckmath.org/2025/more/e-life-simulation/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/life-simulator.jpg"
+  ],
+  [
+    "Eagle Craft",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/minecraft/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/eagle-craft.jpg"
+  ],
+  [
+    "Eagle Duckcraft",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/minecraft/duckcraft/duckcraft-v1.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/eagle-duckcraft-new.webp"
+  ],
+  [
+    "Edys Car Simulator",
+    "https://db2.duckmath.org/2022/unity/edys-car-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Edys-Car-Simulator-Online.jpg"
+  ],
+  [
+    "Egg Car Racing",
+    "https://db2.duckmath.org/2024/construct/289/egg-car-racing/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/egg-car-racing.jpg"
+  ],
+  [
+    "Eggy Car",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/eggy_car/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/eggy-car.webp"
+  ],
+  [
+    "Elastic Duck",
+    "https://db2.duckmath.org/2026/more/elastic-duck/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/elastic-duck.webp"
+  ],
+  [
+    "Elastic Man",
+    "https://db2.duckmath.org/2025/more/elastic-man/gm/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Elastic-Man-Game-2.jpg"
+  ],
+  [
+    "Electric Man 2",
+    "https://db2.duckmath.org/2024/flash/electric-man-2/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/electric.webp"
+  ],
+  [
+    "Endless Lake",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/endless_lake/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/endlesslake.webp"
+  ],
+  [
+    "Escape Car",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/escape_car/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Escape-Car.jpg"
+  ],
+  [
+    "Escape Tsunami For Brainrots",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/escape-tsunami-for-brainrots/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/escape-tsunami-for-brainrots.webp"
+  ],
+  [
+    "Escaping The Prison",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/escapetheprison/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/escapeprison.webp"
+  ],
+  [
+    "Extreme Run 3d",
+    "https://db2.duckmath.org/2026/docs/extreme-run-3d/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/extreme-run-3d.webp"
+  ],
+  [
+    "F1 Drift Racer",
+    "https://db2.duckmath.org/2022/construct/134/f1-drift-racer/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/F1-Drift-Racer.jpg"
+  ],
+  [
+    "Fall Boys",
+    "https://db2.duckmath.org/2023/unity3/fall-boys/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Fall-Boys.jpg"
+  ],
+  [
+    "Fall Brainrots",
+    "https://db2.duckmath.org/2026/unity/fall-brainrots/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/fall-brainrots-game-lg.webp"
+  ],
+  [
+    "Famidash",
+    "https://db2.duckmath.org/2026/em/famidash/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/famidash.webp"
+  ],
+  [
+    "Fancy Pants Adventures World 1",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fancypantsadventure/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fancy.webp"
+  ],
+  [
+    "Fancy Pants Adventures World 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fpaworld2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fpaw2.webp"
+  ],
+  [
+    "Fancy Pants Adventures World 3",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fpaworld3/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fpaw3.webp"
+  ],
+  [
+    "Fantasy Tower Defense",
+    "https://db2.duckmath.org/2022/unity/fantasy-tower-defense/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Fantasy-Tower-Defense-2.jpg"
+  ],
+  [
+    "Farming Island",
+    "https://db2.duckmath.org/2025/unity/farming-island/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/farming-island.jpg"
+  ],
+  [
+    "Fast Food Manager",
+    "https://db2.duckmath.org/2025/unity4/fast-food-manager/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/fast-food-manager.webp"
+  ],
+  [
+    "Fast Food Rush",
+    "https://db2.duckmath.org/2025/unity/fast-food-rush/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/fast-food-rush.jpg"
+  ],
+  [
+    "Fighter Aircraft Pilot",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fighter_aircraft_pilot/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fighter-aircraft-pilotb.webp"
+  ],
+  [
+    "Find It",
+    "https://db2.duckmath.org/2025/unity/find-it/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Find-It.jpg"
+  ],
+  [
+    "Fire And Water",
+    "https://db2.duckmath.org/2023/construct/179/fire-and-water/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fireboy.webp"
+  ],
+  [
+    "Fish It",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fish_it/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/fish-it.jpg"
+  ],
+  [
+    "Five Nights At Freddys",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fnaf/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fnaf.webp"
+  ],
+  [
+    "Five Nights At Freddys 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fnaf2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fnaf2.webp"
+  ],
+  [
+    "Five Nights At Freddys 3",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fnaf3/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fnaf3.webp"
+  ],
+  [
+    "Five Nights At Freddys 4",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fnaf4/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fnaf4.webp"
+  ],
+  [
+    "Five Nights At Freddys 5",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fnaf5/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/fnaf5.webp"
+  ],
+  [
+    "Five Nights At Freddys Pizzeria Simulator",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fnaf_pizzeria_simulator/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/five-nights-at-freddys-pizzeria-simulator.jpg"
+  ],
+  [
+    "Five Nights At Freddys Web",
+    "https://db2.duckmath.org/2024/more2/five-nights-at-freddys/fnaf/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/five-nights-at-freddys-web.jpg"
+  ],
+  [
+    "Flappy Bird",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/flappy_bird/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/flappy-bird-game.webp"
+  ],
+  [
+    "Flappy Circle",
+    "https://dives05.github.io/flappyCircle/",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/flappycircle.webp"
+  ],
+  [
+    "Fleeing The Complex",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/fleeingthecomplex/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/complex.webp"
+  ],
+  [
+    "Fnaf World",
+    "https://db2.duckmath.org/2024/more2/fnaf-world/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/fnaf-world-game.webp"
+  ],
+  [
+    "Fnf Garcello",
+    "https://db2.duckmath.org/2024/cube/fnf-garcello/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/fnf-garcello.webp"
+  ],
+  [
+    "Fnf Mods",
+    "https://db2.duckmath.org/2000/fnf/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/fnf-mods.webp"
+  ],
+  [
+    "Football Bros",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/football_bros/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/football-bros.jpg"
+  ],
+  [
+    "Football Legends",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/football_legends/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Football-Legends.jpg"
+  ],
+  [
+    "Fortnite Z",
+    "https://turbowarp.org/404950182/embed",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/fort-2d.jpg"
+  ],
+  [
+    "Fps Simulator",
+    "https://db2.duckmath.org/2023/unity3/fps-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Fps-simulator.jpg"
+  ],
+  [
+    "Fps Strike",
+    "https://db2.duckmath.org/2024/unity2/fps-strike/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/fps-strike-online.jpg"
+  ],
+  [
+    "Freeway Fury 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/freewayfury2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/freewayfury2.webp"
+  ],
+  [
+    "Friday Night Funkin",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/friday_night_funkin/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/friday.webp"
+  ],
+  [
+    "Fun Party Makeup",
+    "https://db2.duckmath.org/2021/4/fun-party-makeup/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Fun-Party-Makeup.jpg"
+  ],
+  [
+    "Funny Shooter 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/funny_shooter_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/funntshooes.webp"
+  ],
+  [
+    "Funny Shooter Bro",
+    "https://db2.duckmath.org/2024/unity/funny-shooter-bro/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Funny-Shooter-Bro.jpg"
+  ],
+  [
+    "Galactic Driver",
+    "https://db2.duckmath.org/2022/construct/65/galactic-driver/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Galactic-Driver.jpg"
+  ],
+  [
+    "Geometry Dash",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/geometry_freezenova/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Geometry-Dash.jpg"
+  ],
+  [
+    "Geometry Dash Scratch",
+    "https://db2.duckmath.org/2025/scratch/geometry-dash-scratch/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/Geometry-Dash-Scratch.webp"
+  ],
+  [
+    "Geometry Escape",
+    "https://db2.duckmath.org/2024/construct/299/geometry-escape/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Geometry-Escape.jpg"
+  ],
+  [
+    "Geometry Vector",
+    "https://db2.duckmath.org/2026/construct/329/geometry-vector/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/geometry-vector.webp"
+  ],
+  [
+    "Getting Over It",
+    "https://db2.duckmath.org/2025/scratch/getting-over-it-scratch/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Getting-Over-It.jpg"
+  ],
+  [
+    "Global Guesser",
+    "https://db2.duckmath.org/2025/html/global-guesser/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/global-guesser.webp"
+  ],
+  [
+    "Gold Miner",
+    "https://db2.duckmath.org/2024/flash/gold-miner/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/gold-miner-512.webp"
+  ],
+  [
+    "Golf Bit",
+    "https://db2.duckmath.org/2026/construct/328/golf-bit/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/golf-bit.webp"
+  ],
+  [
+    "Golf Orbit",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/golf_orbit/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Golf-Orbit-Play-Online.jpg"
+  ],
+  [
+    "Grand Prix Multiplication",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/grand_prix_multiplication/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/grandprix.webp"
+  ],
+  [
+    "Granny",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/granny/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/granny.webp"
+  ],
+  [
+    "Grow A Garden",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/grow_a_garden/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/grow-a-garden.jpg"
+  ],
+  [
+    "Growden Io",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/growden_io/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/growden-io.jpeg"
+  ],
+  [
+    "Gta Simulator",
+    "https://db2.duckmath.org/2023/unity2/gta-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/GTA-Simulator.jpg"
+  ],
+  [
+    "Gun Spin",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/gun_spin/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io//img/gun-spin.jpg"
+  ],
+  [
+    "Happy Wheels",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/happy_wheels/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/happpywheels.webp"
+  ],
+  [
+    "Head Ball Online",
+    "https://db2.duckmath.org/2024/unity2/head-ball-online/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/head-ball-online-512.webp"
+  ],
+  [
+    "Head Basketball",
+    "https://db2.duckmath.org/2022/unity/head-basketball/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Head-Basketball.jpg"
+  ],
+  [
+    "Head Soccer",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/head_soccer/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/head-soccer.jpg"
+  ],
+  [
+    "Heist Escape",
+    "https://db2.duckmath.org/2022/construct/119/heist-escape/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Heist-Escape.jpg"
+  ],
+  [
+    "Helix Jump",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/helix_jump/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/helix-jump.jpg"
+  ],
+  [
+    "Hero Dragon Power",
+    "https://db2.duckmath.org/2023/unity/hero-dragon-power/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Hero-Dragon-Power-Game.jpg"
+  ],
+  [
+    "Hero Rush Tower Defense",
+    "https://db2.duckmath.org/2023/unity/hero-rush-tower-defense/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Hero-Rush-Tower-Defense-Play.jpg"
+  ],
+  [
+    "Hexa Puzzle",
+    "https://db2.duckmath.org/2024/unity2/hexa-puzzle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/hexa-puzzle-512.webp"
+  ],
+  [
+    "Highway Driver",
+    "https://db2.duckmath.org/2024/unity2/highway-driver/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/highway-driver-512.webp"
+  ],
+  [
+    "Highway Moto",
+    "https://db2.duckmath.org/2024/unity/highway-moto/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/highway-moto-512.webp"
+  ],
+  [
+    "Highway Racer Pro",
+    "https://db2.duckmath.org/2024/unity/highway-racer-pro/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Highway-Racer-Pro.jpg"
+  ],
+  [
+    "Highway Traffic",
+    "https://db2.duckmath.org/2022/unity/highway-traffic/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Highway-Traffic-2.jpg"
+  ],
+  [
+    "Hill Climb Cars",
+    "https://db2.duckmath.org/2021/3/hill-climb-cars/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Hill-Climb-Cars.jpg"
+  ],
+  [
+    "Hole.io",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/holeio/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/hole.io.webp"
+  ],
+  [
+    "Hollow Knight",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/hollow_knight/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/hollow-knight.jpg"
+  ],
+  [
+    "Hook Wars",
+    "https://db2.duckmath.org/2023/unity3/hook-wars/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Hook-Wars.jpg"
+  ],
+  [
+    "House Painter",
+    "https://db2.duckmath.org/2023/construct/238/house-painter/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/house-painter-512.jpg"
+  ],
+  [
+    "Hover Racer Pro",
+    "https://db2.duckmath.org/2021/unity/hover-racer-pro/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Hover-Racer-Pro.jpg"
+  ],
+  [
+    "Idle Dev Startup",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/idle_dev_startup/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/idle-dev-startup.jpg"
+  ],
+  [
+    "Idle Duck Breakout",
+    "https://db2.duckmath.org/2026/more/idle-duck-breakout/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/idle-duck-breakout.webp"
+  ],
+  [
+    "Idle Restaurant",
+    "https://db2.duckmath.org/2023/unity2/idle-restaurant/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Idle-Restaurant.jpg"
+  ],
+  [
+    "Incredibox",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/incredibox/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/incredibox.webp"
+  ],
+  [
+    "Infiltrating The Airship",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/infiltratingtheairship/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/airship.webp"
+  ],
+  [
+    "Ink Game",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/squid_game_2_mini_games/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/ink-game.png"
+  ],
+  [
+    "Interactive Buddy",
+    "https://db2.duckmath.org/2024/flash/interactive-buddy/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/interactive-buddy-game.webp"
+  ],
+  [
+    "Jacksmith",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/jacksmith/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/jackSmith.webp"
+  ],
+  [
+    "Jasmine Beauty Salon",
+    "https://db2.duckmath.org/2021/2/jasmine-beauty-salon/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/Jasmine-Beauty-Salon.webp"
+  ],
+  [
+    "Jetpack Joyride",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/jetpack_joyride/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/jetpackjoyride.webp"
+  ],
+  [
+    "Jewelanche",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/jewelanche/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/jewelanche.jpg"
+  ],
+  [
+    "Jungle Mart",
+    "https://db2.duckmath.org/2026/construct/339/jungle-mart/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/jungle-mart.webp"
+  ],
+  [
+    "Justfall.lol",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/just_fall_lol/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/justfall-lol.jpeg"
+  ],
+  [
+    "Kart Bros",
+    "https://db2.duckmath.org/2024/unity3/survival-karts/pre.html?g=kart-bros",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/kart-bros.jpg"
+  ],
+  [
+    "Kawai Run 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/kawai_run_2_offline/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/kawai-run-2.jpg"
+  ],
+  [
+    "Kawaii Shooter",
+    "https://db2.duckmath.org/2024/unity/kawaii-shooter/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Kawaii-Shooter.jpg"
+  ],
+  [
+    "Kingdom Attack",
+    "https://db2.duckmath.org/2021/unity3/kingdom-attack/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io//img2/kingdom-battle-3d.webp"
+  ],
+  [
+    "Kingdom Battle 3d",
+    "https://db2.duckmath.org/2025/unity2/kingdom-battle-3d/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/kingdom-battle-3d.webp"
+  ],
+  [
+    "Kingdom Rush Frontiers",
+    "https://db2.duckmath.org/2024/flash/kingdom-rush-frontiers/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/kingdom-rush-frontiers-512.webp"
+  ],
+  [
+    "Learn 2 Fly 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/learn_to_fly_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/learntofly2.webp"
+  ],
+  [
+    "Learn To Fly",
+    "https://db2.duckmath.org/2024/flash/learn-to-fly/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/learn-to-fly.webp"
+  ],
+  [
+    "Learn To Fly 3",
+    "https://db2.duckmath.org/2024/flash/learn-to-fly-3/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/learn-to-fly-3.webp"
+  ],
+  [
+    "Learn To Fly Idle",
+    "https://db2.duckmath.org/2024/flash/learn-to-fly-idle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/learn-to-fly-idle.webp"
+  ],
+  [
+    "Level Troll",
+    "https://db2.duckmath.org/2024/unity2/troll-level/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/troll-level-game.webp"
+  ],
+  [
+    "Library",
+    "https://db2.duckmath.org/2026/library/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/library.webp"
+  ],
+  [
+    "Life Simulator",
+    "https://db2.duckmath.org/2025/unity/life-sim-v1/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/life-simulator.jpg"
+  ],
+  [
+    "Little Alchemy 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/little_alchemy_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/little-alchemy-2.jpg"
+  ],
+  [
+    "Love Tester",
+    "https://db2.duckmath.org/2021/3/love-tester/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/love-tester.jpg "
+  ],
+  [
+    "Madalin Stunt Cars 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/madalin_stunt_cars_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/madalin.webp"
+  ],
+  [
+    "Madalin Stunt Cars Pro",
+    "https://db2.duckmath.org/2023/unity/madalin-stunt-cars-pro/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Madalin-Stunt-Cars-Pro-Game.jpg"
+  ],
+  [
+    "Maddoxcraft",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/minecraft/maddox/maddoxcraft.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/maddoxcraft.jpeg"
+  ],
+  [
+    "Mafia Getaway Cars",
+    "https://db2.duckmath.org/2025/construct/298/mafia-getaway-cars/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Mafia-Getaway-Cars.jpg"
+  ],
+  [
+    "Mahjong",
+    "https://db2.duckmath.org/2025/unity/mahjong/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Mahjong.jpg"
+  ],
+  [
+    "Marble Skies",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/marble_skies/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/marble_skies.webp"
+  ],
+  [
+    "Marco",
+    "https://db2.duckmath.org/2023/unity/marco/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Marco-Online.jpg"
+  ],
+  [
+    "Masked Special Forces",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/masked_special_forces/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/masked-special-forces.jpg"
+  ],
+  [
+    "Math Duck",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/math_duck/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/math-duck.webp"
+  ],
+  [
+    "Math Experta",
+    "https://db2.duckmath.org/2024/unity2/math-experta/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/math-experta-512-2.webp"
+  ],
+  [
+    "Meat Boy",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/meat/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/meat.webp"
+  ],
+  [
+    "Mini Cars Racing",
+    "https://db2.duckmath.org/2021/unity/mini-cars-racing/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Mini-Cars-Racing.jpg"
+  ],
+  [
+    "Mini Golf",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/mini_golf/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/golfmini.webp"
+  ],
+  [
+    "Mini Shooters",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/mini_shooters/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/mini-shooters.jpg"
+  ],
+  [
+    "Mini Zombie Shooters",
+    "https://db2.duckmath.org/2022/construct/162/mini-zombie-shooters/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/Mini-Zombie-Shooters.webp"
+  ],
+  [
+    "Money Movers",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/money_movers/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/moneymovers1.webp"
+  ],
+  [
+    "Monster Survivors",
+    "https://db2.duckmath.org/2025/unity/monster-survivors/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Monster-survivors.jpg"
+  ],
+  [
+    "Moto X3m",
+    "https://db2.duckmath.org/2024/gm/moto-x3m/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/motox3m.webp"
+  ],
+  [
+    "Moto X3m 3",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/moto_x3m_3/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/moto-x3m-3.jpg"
+  ],
+  [
+    "Moto X3m Pool Party",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/moto_x3m_pool_party/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/Moto-X3M-Pool-Party-512x512.jpg"
+  ],
+  [
+    "Moto X3m Spooky Land",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/moto_x3m_spooky_land/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/Moto-X3M-Pool-Party-512x512.jpg"
+  ],
+  [
+    "Moto X3m Winter",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/moto_x3m_winter/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/motox3mwinter.webp"
+  ],
+  [
+    "Neighborhood Defense",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/neighborhood_defense/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Neighborhood-Defense.jpg"
+  ],
+  [
+    "Neon Moto Driver",
+    "https://db2.duckmath.org/2022/construct/138/neon-moto-driver/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/neon-moto-driver.webp"
+  ],
+  [
+    "Nova Billiard",
+    "https://db2.duckmath.org/2021/unity2/nova-billiard/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Nova-Billiard-Game.jpg"
+  ],
+  [
+    "Nova Clicker",
+    "https://db2.duckmath.org/2024/construct/314/nova-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Nova-Clicker.jpg"
+  ],
+  [
+    "Nova Craft",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/nova_craft/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Nova-Craft.jpg"
+  ],
+  [
+    "Nuts And Bolts Puzzle",
+    "https://db2.duckmath.org/2025/unity/nuts-and-bolts-puzzle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/nuts-and-bolts-puzzle.jpg"
+  ],
+  [
+    "Obby But Youre On A Bike",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/obby_but_youre_on_a_bike/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/obby-but-youre-on-a-bike.jpg"
+  ],
+  [
+    "Orb Farm",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/orb_farm/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/orb-farm.jpg"
+  ],
+  [
+    "Orion Sandbox",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/orion_sandbox/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/orion-sandbox.jpg"
+  ],
+  [
+    "Ovo",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/ovo/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/ovo.jpg"
+  ],
+  [
+    "Ovo Multiplayer",
+    "https://db2.duckmath.org/2025/html/ovo-online/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/ovo-multiplayer.jpg"
+  ],
+  [
+    "Pac Man",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/pac_man/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/pacman.webp"
+  ],
+  [
+    "Papa Louie 2 When Burgers Attack",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/papalouie2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/papalouie2_100x100%20(1).webp"
+  ],
+  [
+    "Papas Bakeria",
+    "https://db2.duckmath.org/2024/flash/papas-bakeria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/papas-bakeria.webp"
+  ],
+  [
+    "Papas Burgeria",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/papasburgeria/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/burger.webp"
+  ],
+  [
+    "Papas Cheeseria",
+    "https://db2.duckmath.org/2024/flash/papas-cheeseria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/papas-cheeseria.webp"
+  ],
+  [
+    "Papas Cupcakeria",
+    "https://db2.duckmath.org/2024/flash/papas-cupcakeria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/papas-cupcakeria.webp"
+  ],
+  [
+    "Papas Donuteria",
+    "https://db2.duckmath.org/2024/flash/papas-donuteria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/donuteria.webp"
+  ],
+  [
+    "Papas Freezeria",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/papasfreezeria/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/icecream.webp"
+  ],
+  [
+    "Papas Hot Doggeria",
+    "https://db2.duckmath.org/2024/flash/papas-hot-doggeria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/hot-doggeria.webp"
+  ],
+  [
+    "Papas Pancakeria",
+    "https://db2.duckmath.org/2024/flash/papas-pancakeria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/papas-pancakeria.webp"
+  ],
+  [
+    "Papas Pastaria",
+    "https://db2.duckmath.org/2024/flash/papas-pastaria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/papas-pastaria.webp"
+  ],
+  [
+    "Papas Pizzeria",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/papaspizzeria/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/papapizza.webp"
+  ],
+  [
+    "Papas Scooperia",
+    "https://db2.duckmath.org/2024/flash/papas-scooperia/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/papas-scooperia.webp"
+  ],
+  [
+    "Papas Sushiria",
+    "https://db2.duckmath.org/2024/flash/papas-sushiria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/papas-sushiria.webp"
+  ],
+  [
+    "Papas Tacomia",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/papastacomia/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/taco.webp"
+  ],
+  [
+    "Papas Wingeria",
+    "https://db2.duckmath.org/2024/flash/papas-wingeria/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/papas-wingeria.webp"
+  ],
+  [
+    "Paper Minecraft",
+    "https://db2.duckmath.org/2025/scratch/paper-minecraft-scratch/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Paper-Minecraft.jpg"
+  ],
+  [
+    "Paper Planets",
+    "https://db2.duckmath.org/2023/unity3/paper-planets/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/paper-planets.webp"
+  ],
+  [
+    "Paw Clicker",
+    "https://db2.duckmath.org/2025/construct/331/paw-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Paw-Clicker.webp"
+  ],
+  [
+    "Penalty Challenge",
+    "https://db2.duckmath.org/2023/code/penalty-challenge/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/penalty-challenge-512.jpg"
+  ],
+  [
+    "Penalty King",
+    "https://db2.duckmath.org/2024/q2/penalty-king/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/penalty-king.webp"
+  ],
+  [
+    "Pixel Path",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/pixel_path/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/pixel-path.webp"
+  ],
+  [
+    "Pixelmon Town",
+    "https://db2.duckmath.org/2025/html/pixelmon-town/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/pixelmon-town-game-512.webp"
+  ],
+  [
+    "Pizza Party",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/pizza_party/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/pizzaparty.webp"
+  ],
+  [
+    "Pizza Tower",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/pizza_tower/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/pizza-tower.jpg"
+  ],
+  [
+    "Plants Vs Brainrots",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/plants_vs_brainrots/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/plants-vs-brainrots.jpg"
+  ],
+  [
+    "Plants Vs Zombie Hybrid Story Mod",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/pvz_hybrid_story_mod/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/plants-vs-zombie-hybrid-story-mod.webp"
+  ],
+  [
+    "Plants Vs Zombies",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/pvz/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/pvz.webp"
+  ],
+  [
+    "Playground Latest Version",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/playground_latest_version/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/playground-latest-version.jpg"
+  ],
+  [
+    "Pocket Champions",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/pocket_champions/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/pocket-champions.jpg"
+  ],
+  [
+    "Pokemon Emerald",
+    "https://db2.duckmath.org/2026/em/pokemon-emerald/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/pokemon-emerald.jpg"
+  ],
+  [
+    "Pokemon Red",
+    "https://db2.duckmath.org/2026/em/pokemon-red/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/pokemon-red.jpg"
+  ],
+  [
+    "Police Chase Drifter",
+    "https://db2.duckmath.org/2021/3/police-chase-drifter/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Police-Chase-Drifter-Online.jpg"
+  ],
+  [
+    "Poop Clicker",
+    "https://db2.duckmath.org/2024/construct/292/poop-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Poop-Clicker.jpg"
+  ],
+  [
+    "Poppy Playtime",
+    "https://db2.duckmath.org/2026/more/poppy-playtime/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/poppy.webp"
+  ],
+  [
+    "Portal",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/portal_tfv/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/portal.webp"
+  ],
+  [
+    "Potty Racers 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/pottyracers2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/potty-racers-2.jpg"
+  ],
+  [
+    "Powerslide Kart Simulator",
+    "https://db2.duckmath.org/2022/unity3/powerslide-kart-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Powerslide-Kart-Simulator.jpg"
+  ],
+  [
+    "President Simulator",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/president_simulator/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/pres_sim.webp"
+  ],
+  [
+    "Race Survival Arena King",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/race_survival_arena_king/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/race-survival-arena-king.jpg"
+  ],
+  [
+    "Raft Wars",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/raftwars/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/rw1.webp"
+  ],
+  [
+    "Raft Wars 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/raftwars2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/rw2.webp"
+  ],
+  [
+    "Ragdoll Archers",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/ragdoll_archers/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/ragdoll-archers.jpg"
+  ],
+  [
+    "Ragdoll Hit",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/ragdoll_hit/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/ragdoll-hit.jpg"
+  ],
+  [
+    "Rainbow Friends Return",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/rainbow_friends_return/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/rainbow-friends-return.jpg"
+  ],
+  [
+    "Rally Point",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/rally_point/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/rallypoint.webp"
+  ],
+  [
+    "Real Flight Simulator",
+    "https://db2.duckmath.org/2023/unity2/real-flight-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Real-Flight-Simulator-2.jpg"
+  ],
+  [
+    "Red Ball 4",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/redball_4/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/red-ball-4.jpg"
+  ],
+  [
+    "Retro Bowl",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/retro_bowl/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/retro_bowl_icon.webp"
+  ],
+  [
+    "Riddle School",
+    "https://db2.duckmath.org/2025/flash/riddle-school/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/riddle-school.webp"
+  ],
+  [
+    "Roblox Cloud",
+    "https://db2.duckmath.org/2001/cloud/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/cloud-gaming.webp"
+  ],
+  [
+    "Rocket Hero Clicker",
+    "https://db2.duckmath.org/2025/unity4/rocket-hero-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/rocket-hero-clicker.webp"
+  ],
+  [
+    "Rodeo Stampede",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/rodeo_stampede/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/rodeo-stampede.webp"
+  ],
+  [
+    "Rogue Soul 2",
+    "https://db2.duckmath.org/2024/flash/rogue-soul-2/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/rogue-soul-2-512.webp"
+  ],
+  [
+    "Rooftop Duel",
+    "https://db2.duckmath.org/2025/construct/213/rooftop-duel/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Rooftop-Duel-Online.jpg"
+  ],
+  [
+    "Rooftop Snipers",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/rooftop_snipers/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/rooftop.webp"
+  ],
+  [
+    "Run 1",
+    "https://db2.duckmath.org/2024/flash/run-1/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/run-1-game.webp"
+  ],
+  [
+    "Run 3",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/run3/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/run3.webp"
+  ],
+  [
+    "Run 3 Freezenova",
+    "https://db2.duckmath.org/2026/unity/run-3/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/run-freezenova.webp"
+  ],
+  [
+    "Run 3 Space",
+    "https://db2.duckmath.org/2023/construct/192/run-3-space/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Run-3-Space.jpg"
+  ],
+  [
+    "Secret Sniper Agent",
+    "https://db2.duckmath.org/2022/construct/129/secret-sniper-agent/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Secret-Sniper-Agent.jpg"
+  ],
+  [
+    "Sh3llsh0ck",
+    "https://mathlete.pages.dev",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/shell-shockers.webp"
+  ],
+  [
+    "Siegius",
+    "https://db2.duckmath.org/2024/flash/siegius/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/siegius-512.jpg"
+  ],
+  [
+    "Simple Loot Idle",
+    "https://db2.duckmath.org/2024/gm/games3/simple-loot-idle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/simple-loot-idle.jpg"
+  ],
+  [
+    "Simply Up",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/simply_up/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/simply-up.jpg"
+  ],
+  [
+    "Slime Rush Td",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/slime_rush_td/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/slime-rush-td.jpg"
+  ],
+  [
+    "Smash Karts",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/smash_karts/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/smashkarts.webp"
+  ],
+  [
+    "Snake",
+    "https://db2.duckmath.org/2024/phaser/snake/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/snake.jpg"
+  ],
+  [
+    "Snake Wars",
+    "https://db2.duckmath.org/2024/unity/snake-wars/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Snake-Wars-Free-Game.jpg"
+  ],
+  [
+    "Snaker Io",
+    "https://db2.duckmath.org/2026/more/snaker-io/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/snaker-io.webp"
+  ],
+  [
+    "Snek Io",
+    "https://db2.duckmath.org/2026/more/snek-io/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/snek-io.webp"
+  ],
+  [
+    "Snow Rider 3d",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/snow_rider_3d/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/snowrider3d.webp"
+  ],
+  [
+    "Soccer Random",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/soccer_random/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/soccer-random.jpg"
+  ],
+  [
+    "Soccer Random Pro",
+    "https://db2.duckmath.org/2024/construct/303/soccer-random-pro/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/soccer-random-pro.jpg"
+  ],
+  [
+    "Solar Smash",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/solar_smash/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/solar-smash.png"
+  ],
+  [
+    "Solitaire Adventure",
+    "https://db2.duckmath.org/2022/unity4/solitaire-adventure/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Solitaire-Adventure-Tripeaks.jpg"
+  ],
+  [
+    "Soul Essence Adventure",
+    "https://db2.duckmath.org/2022/unity2/soul-essence-adventure/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Soul-Essence-Adventure.jpg"
+  ],
+  [
+    "Soviet Sniper",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/soviet_sniper/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/cod.webp"
+  ],
+  [
+    "Spacebar Clicker",
+    "https://db2.duckmath.org/2024/more/spacebar-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Spacebar-Clicker.jpg"
+  ],
+  [
+    "Spartahoppers",
+    "https://db2.duckmath.org/2025/construct/227/spartahoppers/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/spartahoppers.webp"
+  ],
+  [
+    "Speedrun Parkour",
+    "https://db2.duckmath.org/2022/construct/145/speedrun-parkour/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Speedrun-Parkour.jpg"
+  ],
+  [
+    "Spider Dude Parkour",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/spider_dude_parkour/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/spider-dude-parkour.jpg"
+  ],
+  [
+    "Spiral Roll",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/spiral_roll/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/spiralroll.webp"
+  ],
+  [
+    "Sprunki",
+    "https://db2.duckmath.org/2024/more2/sprunki/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Sprunki.jpg"
+  ],
+  [
+    "Squad Shooter",
+    "https://db2.duckmath.org/2024/unity2/squad-shooter/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/squad-shooter-512.webp"
+  ],
+  [
+    "Stack Fire Ball",
+    "https://db2.duckmath.org/2021/unity/stack-fire-ball/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Stack-Fire-Ball-Game.jpg"
+  ],
+  [
+    "Staggering Beauty",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/staggering_beauty/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/staggering-beauty.jpg"
+  ],
+  [
+    "State Io Wars",
+    "https://db2.duckmath.org/2024/construct/233/state-io-wars/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/State-io-Wars.jpg"
+  ],
+  [
+    "Steal A Brainrot",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/steal_a_brainrot_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/steal-a-brainrot.jpg"
+  ],
+  [
+    "Steal A Brainrot Temu Version",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/steal_a_brainrot/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/steal-a-brainrot-temu-version.jpg"
+  ],
+  [
+    "Steal Brainrot Duel",
+    "https://db2.duckmath.org/2025/rhm2/steal-brainrot-duel/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/steal-brainrot-duel-2.webp"
+  ],
+  [
+    "Steal Brainrot Heist",
+    "https://db2.duckmath.org/2026/unity/steal-brainrot-heist/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/steal-brainrot-heist-2.webp"
+  ],
+  [
+    "Steal Brainrots Multiplayer",
+    "https://db2.duckmath.org/2026/unity/steal-brainrots-multiplayer/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/steal-brainrots-multiplayer.webp"
+  ],
+  [
+    "Stealing The Diamond",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/stealing_the_diamond/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/stealdiamond.webp"
+  ],
+  [
+    "Stick Battle",
+    "https://db2.duckmath.org/2024/code/7/stick-battle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/stick-battle-unblocked.jpg"
+  ],
+  [
+    "Stick Guys Defense",
+    "https://db2.duckmath.org/2022/unity3/stick-guys-defense/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Stick-Guys-Defense.jpg"
+  ],
+  [
+    "Stickman Destruction",
+    "https://db2.duckmath.org/2021/unity3/stickman-destruction/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Stickman-Destruction.jpg"
+  ],
+  [
+    "Stickman Gta City",
+    "https://db2.duckmath.org/2024/unity3/stickman-gta-city/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/stickman-gta-city-free.jpg"
+  ],
+  [
+    "Stickman Parkour",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/stickman_parkour/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/stickman-parkour.webp"
+  ],
+  [
+    "Stickman Peacekeeper",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/stickman_peacekeeper/index.html?kiz10",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/stickmanpeace.webp"
+  ],
+  [
+    "Storm City Mafia",
+    "https://db2.duckmath.org/2022/unity/storm-city-mafia/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Storm-City-Mafia.jpg"
+  ],
+  [
+    "Storm The House",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/stormthehouse/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/stormthehouse.webp"
+  ],
+  [
+    "Storm The House 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/storm_the_house_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/storm-the-house-2.webp"
+  ],
+  [
+    "Storm The House 3",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/stormthehouse3/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/storm-house-3.webp"
+  ],
+  [
+    "Street Fighter",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/street_fighter/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/street-fighter.webp"
+  ],
+  [
+    "Stunt Rider",
+    "https://db2.duckmath.org/2024/unity/stunt-rider/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/stunt-rider.webp"
+  ],
+  [
+    "Stunt Simulator 2",
+    "https://db2.duckmath.org/2021/unity3/stunt-simulator-2/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Stunt-simulator-2.jpg"
+  ],
+  [
+    "Su Battle Royale",
+    "https://db2.duckmath.org/2024/su-battle-royale/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Su-Battle-Royale.jpg"
+  ],
+  [
+    "Subway Idle 3d",
+    "https://db2.duckmath.org/2022/unity4/subway-idle-3d/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Subway-Idle.jpg"
+  ],
+  [
+    "Subway Runner Barcelona",
+    "https://db2.duckmath.org/2022/unity/bus-subway-runner/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/subway-runner-barcelona.jpg"
+  ],
+  [
+    "Sudoku",
+    "https://db2.duckmath.org/2025/html/sudoku/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Sudoku.jpg"
+  ],
+  [
+    "Super Car Driving",
+    "https://db2.duckmath.org/2024/unity2/super-car-driving/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/supercardriving-2.jpg"
+  ],
+  [
+    "Super Liquid Soccer",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/super_liquid_soccer/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/super-liquid-soccer.jpg"
+  ],
+  [
+    "Super Mario 64",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/super_mario_64/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/supermario64.webp"
+  ],
+  [
+    "Super Mario Bros",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/super_mario_bros/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/super_mario_bros_old.webp"
+  ],
+  [
+    "Super Mario Defense",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/super_mario_defense/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/super-mario-defense.jpg"
+  ],
+  [
+    "Super Mini Racing",
+    "https://db2.duckmath.org/2022/unity4/super-mini-racing/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Super-Mini-Racing.jpg"
+  ],
+  [
+    "Super Smash Flash",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/supersmashflash/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/smashflash2.webp"
+  ],
+  [
+    "Super Star Car",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/super_star_car/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/superstarcar.webp"
+  ],
+  [
+    "Super Stickman Golf",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/super_stickman_golf/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/super-stickman-golf.jpg"
+  ],
+  [
+    "Supercars Drift",
+    "https://db2.duckmath.org/2023/unity3/supercars-drift/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/SuperCars-Drift.jpg"
+  ],
+  [
+    "Supermarket Simulator",
+    "https://db2.duckmath.org/2025/unity/supermarket-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Supermarket-Simulator-Online.jpg"
+  ],
+  [
+    "Survival Craft",
+    "https://db2.duckmath.org/2022/unity/survival-craft/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Survival-Craft-Game.jpg"
+  ],
+  [
+    "Survival Island",
+    "https://db2.duckmath.org/2024/unity2/survival-island/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Survival-Island.jpg"
+  ],
+  [
+    "Survival Karts",
+    "https://db2.duckmath.org/2024/unity3/survival-karts/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/survival-karts-play.jpg"
+  ],
+  [
+    "Swords And Sandals 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/swordsandsandals2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/sas2.webp"
+  ],
+  [
+    "Swords And Souls",
+    "https://db2.duckmath.org/2024/flash/swords-and-souls/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/swords-and-souls-512.webp"
+  ],
+  [
+    "Tank Arena",
+    "https://db2.duckmath.org/2025/construct/293/tank-arena/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Tank-Arena-Online.jpg"
+  ],
+  [
+    "Tanuki Sunset",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/tanuki_sunset/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/tanuki.webp"
+  ],
+  [
+    "Tap Tap Shots",
+    "https://db2.duckmath.org/2023/q/1/tap-tap-shots/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/TapTap-Shots.jpg"
+  ],
+  [
+    "Temple Run 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/temple_run_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/templerun2.webp"
+  ],
+  [
+    "Tennis Masters",
+    "https://db2.duckmath.org/2024/gm/tennis-masters/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Tennis-Masters-2.jpg"
+  ],
+  [
+    "Tetris",
+    "https://turbowarp.org/451773001/embed",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/tetris.webp"
+  ],
+  [
+    "The Binding Of Isaac",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/thebindingofisaac/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/isaac.webp"
+  ],
+  [
+    "The Farmer",
+    "https://db2.duckmath.org/2022/unity/the-farmer/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/The-Farmer.jpg"
+  ],
+  [
+    "The Farmer Craft",
+    "https://db2.duckmath.org/2022/unity4/the-farmer-craft/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/The-Farmer-Craft.jpg"
+  ],
+  [
+    "The Impossible Quiz",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/theimpossiblequiz/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/impossible.webp"
+  ],
+  [
+    "The Impossible Quiz 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/theimpossiblequiz2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/impossible2.webp"
+  ],
+  [
+    "The Worlds Hardest Game",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/theworldshardestgame/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/hardgame1.webp"
+  ],
+  [
+    "The Worlds Hardest Game 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/theworldshardestgame2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/hardgame2.webp"
+  ],
+  [
+    "Thorns And Ballons",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/thorns_and_ballons/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/thorns-and-ballons.jpg"
+  ],
+  [
+    "Tile Match",
+    "https://db2.duckmath.org/2025/unity/tile-match/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/tile-match.jpg"
+  ],
+  [
+    "Time Shooter 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/time_shooter_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Time-Shooter-2.jpg"
+  ],
+  [
+    "Time Shooter Swat",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/time_shooter_swat/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/time-shooter-swat.jpg"
+  ],
+  [
+    "Tiny Castle",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/tinycastle/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/tinycastle.webp"
+  ],
+  [
+    "Tomodachi Collection",
+    "https://db2.duckmath.org/2026/em/tomodachi-collection/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/tomodachi-collection.webp"
+  ],
+  [
+    "Tractor Farming Simulator",
+    "https://db2.duckmath.org/2022/unity/tractor-farming-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Tractor-Farming-Simulator.jpg"
+  ],
+  [
+    "Traffic Jam",
+    "https://db2.duckmath.org/2025/more/traffic-jam/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Traffic-Jam.jpg"
+  ],
+  [
+    "Train Racing",
+    "https://db2.duckmath.org/2022/construct/120/train-racing/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Train-Racing-Game.jpg"
+  ],
+  [
+    "Truck Loader 4",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/truck_loader_4/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/truckloader4.webp"
+  ],
+  [
+    "Tunnel Rush 2",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/tunnel_rush_2/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/tunnelrush.webp"
+  ],
+  [
+    "Turn Turn",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/turnturn/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/turn-turn.webp"
+  ],
+  [
+    "Twerk Race 3d",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/twerk_race_3d/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/twerk-race-3d.webp"
+  ],
+  [
+    "Ultimate Moto",
+    "https://db2.duckmath.org/2021/2/ultimate-moto/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/ultimate-moto.jpg"
+  ],
+  [
+    "Ultrakill",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/ultrakill/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/ultrakill.jpg"
+  ],
+  [
+    "Undertale Yellow",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/undertale_yellow/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Undertale-Yellow.webp"
+  ],
+  [
+    "Uno",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/uno/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/uno.webp"
+  ],
+  [
+    "Uno Online",
+    "https://db2.duckmath.org/2022/unity4/uno-online/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Uno-Online-2.jpg"
+  ],
+  [
+    "Vapor Trails",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/vapor_trails/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/vapor-trails.jpg"
+  ],
+  [
+    "Veggie Survivors",
+    "https://db2.duckmath.org/2025/unity3/veggie-survivors/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/veggie-survivors-freezenova.webp"
+  ],
+  [
+    "Velocity Rush",
+    "https://db2.duckmath.org/2026/unity/velocity-rush/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img3/velocity-rush.webp"
+  ],
+  [
+    "Vex 8",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/vex_8/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/vex-8.webp"
+  ],
+  [
+    "Volley Random",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/volley_random/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/volley-random.jpg"
+  ],
+  [
+    "Voxel World",
+    "https://db2.duckmath.org/2025/unity/voxel-world/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/voxel-world.jpg"
+  ],
+  [
+    "War Of Ships Io",
+    "https://db2.duckmath.org/2022/unity3/war-of-ships-io/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/War-of-Ships-io.jpg"
+  ],
+  [
+    "War Simulator",
+    "https://db2.duckmath.org/2021/unity2/war-simulator/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/War-Simulator.jpg"
+  ],
+  [
+    "Warstrike",
+    "https://db2.duckmath.org/2024/unity3/warstrike/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/WarStrike-Online.jpg"
+  ],
+  [
+    "Watermelon Game",
+    "https://db2.duckmath.org/2025/construct/321/watermelon-game/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Watermelon-Game-Online.jpg"
+  ],
+  [
+    "We Become What We Behold",
+    "https://db2.duckmath.org/2024/more/we-become-what-we-behold/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/we-become-what-we-behold-game.webp"
+  ],
+  [
+    "Wheelie Bike",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/wheelie_bike/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/wheelie-bike.jpg"
+  ],
+  [
+    "Wheres My Pizza",
+    "https://db2.duckmath.org/2024/wix/wheres-my-pizza/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img2/wheres-my-pizza-game.webp"
+  ],
+  [
+    "Wheres My Water",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/where_is_the_water/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/wheresmywater.webp"
+  ],
+  [
+    "Wordle",
+    "https://db2.duckmath.org/2025/html/wordle/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/wordle.jpg"
+  ],
+  [
+    "Wrestle Bros",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/wrestle_bros/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/wheelie-bike.jpg"
+  ],
+  [
+    "Xmas Cookie Clicker",
+    "https://db2.duckmath.org/2023/construct/288/xmas-cookie-clicker/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Xmas-Cookie-Clicker.jpg"
+  ],
+  [
+    "Xtreme Paintball Wars",
+    "https://db2.duckmath.org/2023/unity2/xtreme-paintball-wars/pre.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/Xtreme-Paintball-Wars.jpg"
+  ],
+  [
+    "Xx142 B2.exe",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/xx142-b2.exe/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/xx142-b2.webp"
+  ],
+  [
+    "Yeti Sensation",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/yeti_sensation/gabe.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/yetidash.webp"
+  ],
+  [
+    "Zombie Derby Pixel Survival",
+    "https://classroomlesson.github.io/basic-ruffle-player/html/zombie_derby_pixel_survival/index.html",
+    "https://cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io/img/zombie-derby-pixel-survival.jpg"
+  ]
 ]

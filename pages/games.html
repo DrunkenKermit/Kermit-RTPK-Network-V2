@@ -740,19 +740,19 @@
         }
 
         // ── Duckmath ─────────────────────────────────────────────────────────
-        // Duckmath (github.com/Divij-Agarwal-42/duckmath.github.io) has no JSON
-        // index either: its catalogue is the markup of g4m3s.html, one <a> per
-        // game with the page path and thumbnail. /assets/json/duckmath.json is
-        // that list, generated as [name, page path, thumbnail path].
+        // Duckmath's own domain (duckmath.org) no longer serves a catalogue, and
+        // its old GitHub Pages repo (Divij-Agarwal-42/duckmath.github.io) is
+        // stale. The live catalogue is the single-file "GameLoader" shipped by
+        // the p2pbestmathgames mirror (bitbucket.org/p2p-alt-public/p2p-emis/
+        // raw/main/gameloader). /assets/json/duckmath.json is that list,
+        // generated as [name, game URL, thumbnail URL].
         //
-        // The repo's own domain (duckmath.org) no longer serves it - the path
-        // returns an unrelated site's HTML - and GitHub Pages is off, so pages
-        // come from githack (correct text/html MIME + CORS) and thumbnails from
-        // raw.githubusercontent, which serves images as-is.
+        // Unlike the old g4m3s.html snapshot these are absolute URLs: games are
+        // served from db2.duckmath.org and a Ruffle player on
+        // classroomlesson.github.io (plus a few TurboWarp/noclip hosts), and
+        // every thumbnail from cdn.jsdelivr.net/gh/mathlesson/mathlesson.github.io.
         const DUCKMATH = {
-            list: "/assets/json/duckmath.json",
-            html: "https://rawcdn.githack.com/Divij-Agarwal-42/duckmath.github.io/main/",
-            img: "https://raw.githubusercontent.com/Divij-Agarwal-42/duckmath.github.io/main/"
+            list: "/assets/json/duckmath.json"
         };
 
         async function loadDuckmath() {
@@ -760,11 +760,8 @@
                 const list = await fetch(DUCKMATH.list).then(r => r.json());
                 return list.map(e => ({
                     name: e[0],
-                    url: DUCKMATH.html + e[1],
-                    // Paths are stored exactly as the repo writes them: one
-                    // thumbnail is already percent-encoded (papalouie2_100x100%20(1).webp),
-                    // so re-encoding here would double-escape it and 404.
-                    img: e[2] ? DUCKMATH.img + e[2] : "",
+                    url: e[1],
+                    img: e[2] || "",
                     source: "duckmath"
                 }));
             } catch (e) {
