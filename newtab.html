@@ -34,6 +34,13 @@
 
 <body>
     <div id="homeContent">
+        <!-- Live clock and today's date sit above the artwork, updated by the
+             script at the bottom of this file. -->
+        <div class="clock-widget">
+            <div class="clock-time" id="clockTime">--:--</div>
+            <div class="clock-date" id="clockDate">&nbsp;</div>
+        </div>
+
         <pre class="kermit-art newtab-art" role="img" aria-label="Kermit (RTPK) Network">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠔⠒⡶⡷⠀⠁⠵⡄⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠠⢶⣶⣦⡄⢀⠤⢔⠘⠓⠉⠀⠀⠑⠦⠤⠤⠞⠪⡂⠀⠀⠀⠀⠀⠀
@@ -48,13 +55,6 @@
 ⣿⣿⣿⣿⣶⣤⡤⣄⣀⣐⣀⣤⣮⢊⢀⡼⠋⠀⠀⡰⠁⣇⠀⡸⢹⣇⠀⣿⣧⣤
 ⠽⢿⠿⠿⢿⣿⣿⣿⣿⣿⣿⡟⠁⣤⠎⠀⠀⡄⡼⠃⠀⢺⣠⣷⣄⣈⠁⠻⣿⠛</pre>
 
-        <!-- Live clock and today's date, updated by the script at the bottom of
-             this file. -->
-        <div class="clock-widget">
-            <div class="clock-time" id="clockTime">--:--</div>
-            <div class="clock-date" id="clockDate">&nbsp;</div>
-        </div>
-
         <p id="splash" class="newtab-splash"></p>
 
         <div class="fav-grid" id="favGrid"></div>
@@ -66,8 +66,8 @@
         .newtab-art {
             display: block;
             width: fit-content;
-            margin: 0 auto 26px;
-            font-size: min(4vw, 30px, 4.6vh);
+            margin: 0 auto 16px;
+            font-size: min(3vw, 22px, 3.4vh);
             line-height: 1;
             color: var(--accent);
         }
