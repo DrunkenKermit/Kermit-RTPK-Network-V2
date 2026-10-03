@@ -227,10 +227,10 @@
         <div class="game-controls">
             <h1>Game Controls</h1>
             <button style="margin-left: 0;"
-                onclick="document.getElementById('gameframe').src = document.getElementById('gameframe').src">
+                    onclick="refreshGame()">
                 <i class="ri-restart-line"></i>
             </button>
-            <button onclick="window.open(document.getElementById('gameframe').src, '_blank')">
+            <button onclick="popoutGame()">
                 <i class="ri-external-link-line"></i>
             </button>
             <button onclick="downloadGame()" id="downloadBtn">
@@ -279,6 +279,9 @@
         const gameframe = document.getElementById('gameframe');
         const urlParams = new URLSearchParams(window.location.search);
         const gameurl = urlParams.get('launch');
+        // Kept so one-time LuminSDK URLs can be re-minted on restart / pop-out
+        // (the SDK docs say getGameUrl returns a single-use token).
+        let currentLaunch = null;
 
         // Noah's Hub game pages come from githack, but a chunk of them declare a
         // <base href> pointing at a jsDelivr org that jsDelivr now blocks (403),
@@ -420,6 +423,7 @@
 
         if (gameurl) {
             const gameUrl = decodeURIComponent(gameurl)
+            currentLaunch = gameUrl
 
             if (gameUrl.startsWith("/stores/")) {
                 gameStorageReady().then(() => loadGame(gameUrl))
@@ -428,9 +432,24 @@
             }
         }
 
+        // LuminSDK URLs carry a single-use token (see the SDK docs), so re-assigning
+        // the same src fails the second time it is loaded. Re-resolve the game to
+        // mint a fresh URL first; every other source just reloads as-is. An empty
+        // result means resolution failed, so the current frame is left untouched
+        // rather than being pointed at an unusable "lumin:" handle.
+        function playableSrc() {
+            if (currentLaunch && currentLaunch.indexOf(LUMIN_PREFIX) === 0) {
+                return luminSrc(currentLaunch).then(src =>
+                    (src && src.indexOf(LUMIN_PREFIX) !== 0) ? src : "");
+            }
+            return Promise.resolve(gameframe.src);
+        }
+
         function refreshGame() {
-            gameframe.src = gameframe.src;
-            gameframe.focus();
+            playableSrc().then(src => {
+                if (src) gameframe.src = src;
+                gameframe.focus();
+            });
         }
 
         function fullscreenGame() {
@@ -447,8 +466,10 @@
         }
 
         function popoutGame() {
-            window.open(gameframe.src, '_blank');
-            gameframe.focus();
+            playableSrc().then(src => {
+                if (src) window.open(src, '_blank');
+                gameframe.focus();
+            });
         }
 
         const useOverlay = localStorage.getItem("cherri_useOverlay") ?? "yes"
