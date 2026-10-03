@@ -465,13 +465,19 @@ function watchActiveFrame() {
 
 
 
+// Fullscreen shows the browser chrome (tab strip + controls) with the page
+// below it, and nothing else. Fullscreening the active page frame alone dropped
+// the tabs, which is not what the fullscreen button is for. The page itself is
+// the target instead: the tab frames are appended to <body> as siblings of the
+// container, so only the whole document keeps the tabs and the pages together.
 function full() {
-  const target = activeFrame() || document.querySelector(".browser-container");
+  const target = document.documentElement;
   if (!target) return;
 
   // Fullscreen is only granted to an element whose own document allows it. The
   // site loads this page inside #contentFrame when you pick Browser from the
   // toolbar, so ask the (same-origin) host page to go fullscreen on that frame.
+  // That frame is the whole browser page, so its tabs come along with it.
   const hostDoc = hostDocument();
   if (hostDoc !== document) {
     const hostFrame = hostFrameFor(hostDoc);

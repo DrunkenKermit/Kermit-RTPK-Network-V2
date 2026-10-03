@@ -191,13 +191,18 @@
     <div class="gamestuff">
         <iframe frameborder="0" id="gameframe" allowfullscreen></iframe>
         <div class="gamecontrols">
-            <button onclick="refreshGame()">
+            <button onclick="refreshGame()" title="Restart">
                 <i class="ri-restart-line"></i>
             </button>
-            <button onclick="fullscreenGame()">
-                <i class="ri-fullscreen-line"></i>
+            <!-- Toggles this game in and out of fullscreen; the glyph follows
+                 the state (see syncFullscreenButton). -->
+            <button id="fullscreenBtn" onclick="fullscreenGame()" title="Fullscreen">
+                <i class="ri-fullscreen-line" data-fullscreen-icon></i>
             </button>
-            <button onclick="popoutGame()">
+            <button onclick="backToGames()" title="Back to games">
+                <i class="ri-arrow-left-line"></i>
+            </button>
+            <button onclick="popoutGame()" title="Pop out">
                 <i class="ri-external-link-line"></i>
             </button>
         </div>
@@ -227,16 +232,22 @@
         <div class="game-controls">
             <h1>Game Controls</h1>
             <button style="margin-left: 0;"
-                    onclick="refreshGame()">
+                    onclick="refreshGame()" title="Restart">
                 <i class="ri-restart-line"></i>
             </button>
-            <button onclick="popoutGame()">
+            <button onclick="fullscreenGame()" title="Fullscreen">
+                <i class="ri-fullscreen-line" data-fullscreen-icon></i>
+            </button>
+            <button onclick="backToGames()" title="Back to games">
+                <i class="ri-arrow-left-line"></i>
+            </button>
+            <button onclick="popoutGame()" title="Pop out">
                 <i class="ri-external-link-line"></i>
             </button>
-            <button onclick="downloadGame()" id="downloadBtn">
+            <button onclick="downloadGame()" id="downloadBtn" title="Download">
                 <i class="ri-download-line"></i>
             </button>
-            <button style="margin-right: 0;" onclick="window.location.href = '/'">
+            <button style="margin-right: 0;" onclick="window.location.href = '/pages/games.html'" title="Back to games">
                 <i class="ri-door-open-line"></i>
             </button>
         </div>
@@ -452,17 +463,64 @@
             });
         }
 
+        // Each game gets its own fullscreen toggle: the first press puts that
+        // game's frame on the whole screen, the next one brings it back. The
+        // button glyph mirrors the real state, including when the browser leaves
+        // fullscreen on its own (Esc).
         function fullscreenGame() {
-            if (gameframe.requestFullscreen) {
-                gameframe.requestFullscreen();
-            } else if (gameframe.mozRequestFullScreen) {
-                gameframe.mozRequestFullScreen();
-            } else if (gameframe.webkitRequestFullscreen) {
-                gameframe.webkitRequestFullscreen();
-            } else if (gameframe.msRequestFullscreen) {
-                gameframe.msRequestFullscreen();
+            const doc = document;
+            const isFull = doc.fullscreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
+
+            if (isFull) {
+                const exit = doc.exitFullscreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+                if (exit) {
+                    const r = exit.call(doc);
+                    if (r && typeof r.catch === "function") r.catch(() => { });
+                }
+                gameframe.focus();
+                return;
             }
+
+            const request = gameframe.requestFullscreen || gameframe.mozRequestFullScreen ||
+                gameframe.webkitRequestFullscreen || gameframe.msRequestFullscreen;
+
+            if (!request) {
+                alert("Fullscreen is not available in this browser.");
+                return;
+            }
+
+            const result = request.call(gameframe);
+            if (result && typeof result.catch === "function") result.catch(() => { });
             gameframe.focus();
+        }
+
+        // Both fullscreen buttons (the bottom bar and the overlay) show the same
+        // state, so the glyph is synced on every icon that opts in.
+        function syncFullscreenButton() {
+            const isFull = document.fullscreenElement || document.webkitFullscreenElement ||
+                document.msFullscreenElement;
+
+            document.querySelectorAll("[data-fullscreen-icon]").forEach(icon => {
+                icon.className = isFull ? "ri-fullscreen-exit-line" : "ri-fullscreen-line";
+                const btn = icon.closest("button");
+                if (btn) btn.title = isFull ? "Exit fullscreen" : "Fullscreen";
+            });
+        }
+
+        ["fullscreenchange", "webkitfullscreenchange", "MSFullscreenChange"].forEach(evt =>
+            document.addEventListener(evt, syncFullscreenButton));
+        syncFullscreenButton();
+
+        // Back returns to the games catalogue. When the player was opened from
+        // the site (a real history entry) that is one step back, so the source
+        // list and search term the user had are kept; a direct link falls back
+        // to the catalogue page itself.
+        function backToGames() {
+            if (document.referrer && document.referrer.indexOf(window.location.origin) === 0) {
+                window.history.back();
+                return;
+            }
+            window.location.href = "/pages/games.html";
         }
 
         function popoutGame() {

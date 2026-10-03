@@ -13,6 +13,9 @@
     <script src="/baremux/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="/assets/js/t.js" defer></script>
+    <!-- Same splash lines as the home page, so the new-tab screen rotates them
+         too. Deferred so it runs after the #splash element below is parsed. -->
+    <script src="/assets/js/splash.js" defer></script>
     <script src="/homework/math.all.js"></script>
     <link rel="stylesheet" href="/styles/index.css">
     <link rel="stylesheet" href="/fa/css/all.css">
@@ -45,6 +48,15 @@
 ⣿⣿⣿⣿⣶⣤⡤⣄⣀⣐⣀⣤⣮⢊⢀⡼⠋⠀⠀⡰⠁⣇⠀⡸⢹⣇⠀⣿⣧⣤
 ⠽⢿⠿⠿⢿⣿⣿⣿⣿⣿⣿⡟⠁⣤⠎⠀⠀⡄⡼⠃⠀⢺⣠⣷⣄⣈⠁⠻⣿⠛</pre>
 
+        <!-- Live clock and today's date, updated by the script at the bottom of
+             this file. -->
+        <div class="clock-widget">
+            <div class="clock-time" id="clockTime">--:--</div>
+            <div class="clock-date" id="clockDate">&nbsp;</div>
+        </div>
+
+        <p id="splash" class="newtab-splash"></p>
+
         <div class="fav-grid" id="favGrid"></div>
     </div>
 
@@ -57,6 +69,42 @@
             margin: 0 auto 26px;
             font-size: min(4vw, 30px, 4.6vh);
             line-height: 1;
+            color: var(--accent);
+        }
+
+        .clock-widget {
+            text-align: center;
+            margin-bottom: 14px;
+            font-family: Inter, sans-serif;
+            color: var(--bright-text);
+        }
+
+        .clock-time {
+            font-size: min(9vw, 64px, 9vh);
+            font-weight: 300;
+            line-height: 1;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .clock-date {
+            margin-top: 6px;
+            font-size: min(3.4vw, 16px);
+            color: var(--text);
+            letter-spacing: 1px;
+        }
+
+        /* The rotating line from the home page, a little quieter here. */
+        .newtab-splash {
+            text-align: center;
+            color: var(--text);
+            opacity: 0.6;
+            font-family: Inter, sans-serif;
+            font-size: 14px;
+            margin: 0 0 18px;
+        }
+
+        .newtab-splash a {
             color: var(--accent);
         }
 
@@ -158,6 +206,10 @@
 
             .newtab-art {
                 margin-bottom: 18px;
+            }
+
+            .clock-time {
+                font-size: 46px;
             }
         }
     </style>
@@ -266,6 +318,52 @@
             });
 
             render();
+        })();
+    </script>
+
+    <script>
+        (function () {
+            "use strict";
+
+            var timeEl = document.getElementById("clockTime");
+            var dateEl = document.getElementById("clockDate");
+
+            // Tick on the minute boundary instead of every 60s from load, so the
+            // displayed time never lags the real clock by up to a minute.
+            function tick() {
+                var now = new Date();
+                if (timeEl) {
+                    timeEl.textContent = now.toLocaleTimeString([], {
+                        hour: "numeric",
+                        minute: "2-digit"
+                    });
+                }
+                if (dateEl) {
+                    dateEl.textContent = now.toLocaleDateString([], {
+                        weekday: "long",
+                        month: "long",
+                        day: "numeric"
+                    });
+                }
+            }
+
+            tick();
+
+            function schedule() {
+                // ms until the next minute starts (+ a hair, to land after it).
+                var delay = 60000 - (Date.now() % 60000) + 50;
+                setTimeout(function () {
+                    tick();
+                    schedule();
+                }, delay);
+            }
+
+            schedule();
+
+            // Coming back to a background tab should not show a stale time.
+            document.addEventListener("visibilitychange", function () {
+                if (!document.hidden) tick();
+            });
         })();
     </script>
 </body>

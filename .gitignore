@@ -48,7 +48,7 @@ cherri-umami-worker/
 /cherri-cometchat-worker
 cherri-cometchat-worker/
 
-# Freebuff workspace internals and deploy staging artifacts
+# Local tooling workspace internals and deploy staging artifacts
 .vly-run/
 isolate/
 

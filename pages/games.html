@@ -445,7 +445,14 @@
         const STORES = {
             "All": {
                 label: "All Sources",
-                load: () => Promise.all([loadGnMath(), loadNoahsHub(), loadUgs(), load3kh0(), loadDuckmath(), loadLuminSdk(), loadWasmRip()]).then(mergeGames)
+                // LuminSDK is the slowest source to come up (remote SDK script
+                // plus a worker), so its load is kicked off first. It stays at
+                // its original position in the list, so the combined order, the
+                // dropdown and "All Sources" itself are all unchanged.
+                load: () => {
+                    const lumin = loadLuminSdk();
+                    return Promise.all([loadGnMath(), loadNoahsHub(), loadUgs(), load3kh0(), loadDuckmath(), lumin, loadWasmRip()]).then(mergeGames);
+                }
             },
             "GN-Math": {
                 label: "GN-Math",
@@ -1121,6 +1128,11 @@
             clearTimeout(searchTimer);
             searchTimer = setTimeout(() => searchApps(gameSearch.value), 120);
         });
+
+        // Start the LuminSDK request as early as possible: it is the slowest
+        // source, and its script is memoized, so whichever loader needs it next
+        // reuses this same in-flight request instead of starting over.
+        loadLuminScript().catch(() => { });
 
         renderStore();
         loadApps();
