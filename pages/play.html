@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="/assets/css/font.css">
     <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
     <script src="/assets/js/colors.js"></script>
+    <script src="/assets/js/firebase-config.js"></script>
+    <script src="/assets/js/account.js" defer></script>
     <link rel="stylesheet" href="/assets/css/overlay.css">
 </head>
 
@@ -432,14 +434,40 @@
                 .catch(() => { })
         }
 
+        // Signed-in players get their cloud saves applied before the game
+        // reads localStorage, so progress made on another device (or another
+        // link) is already there when this game starts. account.js is deferred,
+        // so give it a moment to appear; local-only and unconfigured sessions
+        // never wait.
+        function waitForAccount(timeout = 1500) {
+            return new Promise(resolve => {
+                if (window.KERMIT_ACCOUNT) return resolve(window.KERMIT_ACCOUNT)
+                const started = Date.now()
+                const tick = setInterval(() => {
+                    if (window.KERMIT_ACCOUNT || Date.now() - started > timeout) {
+                        clearInterval(tick)
+                        resolve(window.KERMIT_ACCOUNT)
+                    }
+                }, 50)
+            })
+        }
+
+        function cloudProgressReady() {
+            return waitForAccount().then(A => {
+                if (!A || !A.configured || !A.configured()) return
+                // Signed-out sessions resolve immediately (no account, no wait).
+                return (A.whenReady ? A.whenReady(3000) : Promise.resolve()).catch(() => { })
+            })
+        }
+
         if (gameurl) {
             const gameUrl = decodeURIComponent(gameurl)
             currentLaunch = gameUrl
 
             if (gameUrl.startsWith("/stores/")) {
-                gameStorageReady().then(() => loadGame(gameUrl))
+                gameStorageReady().then(() => cloudProgressReady()).then(() => loadGame(gameUrl))
             } else {
-                noahsHubSrc(gameUrl).then(ugsSrc).then(luminSrc).then(loadGame)
+                cloudProgressReady().then(() => noahsHubSrc(gameUrl).then(ugsSrc).then(luminSrc).then(loadGame))
             }
         }
 

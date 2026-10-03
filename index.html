@@ -45,6 +45,10 @@
     <script src="/assets/js/background.js" defer></script>
     <script src="/assets/js/toolbar.js" defer></script>
     <script src="/assets/js/colors.js"></script>
+    <!-- Accounts: config is tiny and sync, account.js defers and only fetches
+         the Firebase SDK when there is a config (or an account action). -->
+    <script src="/assets/js/firebase-config.js"></script>
+    <script src="/assets/js/account.js" defer></script>
     <script src="/assets/js/splash.js" defer></script>
     <script src="/assets/js/browserfunctions.js" defer></script>
     <meta name="title" content="Kermit (RTPK) Network">
@@ -92,29 +96,34 @@
             <li class="divider"></li>
             <li>
                 <a onclick="navTo('games')" href="#" data-page="games" title="Games">
-                    <i class="ri-gamepad-fill"></i>
+                    <i class="ri-gamepad-line"></i>
                 </a>
             </li>
             <li>
                 <a onclick="navTo('browser')" href="#" data-page="browser">
-                    <i class="ri-window-2-fill"></i>
+                    <i class="ri-window-2-line"></i>
                 </a>
             </li>
             <li>
                 <a onclick="navTo('movies')" href="#" data-page="movies">
-                    <i class="ri-clapperboard-fill"></i>
+                    <i class="ri-clapperboard-line"></i>
                 </a>
             </li>
             <li>
                 <a onclick="navTo('assistant'); showToast('success', 'AI is in beta! Report bugs on the repo', 'fas fa-exclamation-triangle')"
                     href="#" data-page="ai" title="AI Assistant">
-                    <i class="ri-robot-2-fill"></i>
+                    <i class="ri-robot-2-line"></i>
                 </a>
             </li>
             <li class="divider"></li>
+            <li>
+                <a onclick="navTo('account')" href="#" data-page="account" title="Account">
+                    <i class="ri-user-line"></i>
+                </a>
+            </li>
             <li class="toolbar-end">
                 <a onclick="toggleSettings()" href="#" data-page="dc">
-                    <i class="ri-settings-3-fill"></i>
+                    <i class="ri-settings-3-line"></i>
                 </a>
             </li>
             <li class="toolbar-hide">

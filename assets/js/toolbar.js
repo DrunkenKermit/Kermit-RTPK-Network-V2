@@ -164,6 +164,14 @@
         apply();
         wire();
 
+        // A position or hidden state chosen in another tab (or restored by the
+        // account sync) follows along here without a reload.
+        window.addEventListener("storage", function (e) {
+            if (e.key !== POS_KEY && e.key !== HIDE_KEY) return;
+            apply();
+            announce();
+        });
+
         window.addEventListener("resize", reserveSpace);
         window.addEventListener("load", reserveSpace);
 

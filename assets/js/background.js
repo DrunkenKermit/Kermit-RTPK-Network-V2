@@ -411,6 +411,42 @@
 
     window.KERMIT_BACKGROUNDS = MODES;
 
+    /* ── live updates ─────────────────────────────────────────────────── */
+
+    // One tab changes the backdrop (or the theme that colours it): follow
+    // along here without a reload. storage events only reach *other*
+    // documents, so the theme also announces itself with a custom event for
+    // the document that changed it (see colors.js / account.js).
+    function syncFromElsewhere(themeOnly) {
+        accent = toRgb(cssVar("--accent", "#63ff93"), "99,255,147");
+
+        var next = reducedMotion() ? "none" : readMode();
+
+        if (next !== mode) {
+            stop();
+            mode = next;
+            start();
+            document.dispatchEvent(new CustomEvent("backgroundChanged", { detail: mode }));
+            return;
+        }
+
+        // Same mode, new theme: restart so the colours are re-read.
+        if (themeOnly && mode !== "none") {
+            stop();
+            start();
+        }
+    }
+
+    window.addEventListener("storage", function (e) {
+        if (!e || !e.key) return;
+        if (e.key === KEY || e.key === LEGACY_KEY) syncFromElsewhere(false);
+        else if (e.key === "cherri_theme") syncFromElsewhere(true);
+    });
+
+    document.addEventListener("themeChanged", function () {
+        syncFromElsewhere(true);
+    });
+
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", boot);
     } else {

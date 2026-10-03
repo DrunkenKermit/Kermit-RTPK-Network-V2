@@ -1062,9 +1062,11 @@ nav[data-toolbar] ul li.divider {
 }
 
 /* Size the toolbar glyphs here so the icon-only home toolbar matches the
-   labelled navs on the other pages, which get their 22px from the .ri class. */
+   labelled navs on the other pages, which get their 22px from the .ri class.
+   Kept on the small side: the toolbar uses the thin (-line) Remixicon set and
+   a large size made the icons read as heavy blocks. */
 nav[data-toolbar] a i {
-    font-size: 20px;
+    font-size: 18px;
     vertical-align: middle;
 }
 
