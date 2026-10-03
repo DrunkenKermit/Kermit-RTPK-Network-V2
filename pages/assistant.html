@@ -854,10 +854,12 @@
         const MAX_CHATS = 40;
         const MAX_IMAGES = 4;
         const DEFAULT_MODEL = "openai";
-        /* api/chat.py keeps the Pollinations key on the server. Without it the
-           page calls the public endpoint itself: it allows any origin, so a
-           browser can reach it directly, and its catalogue says which models
-           answer without a key. */
+        /* api/chat.py keeps every provider key on the server. It prefers a
+           self-hosted AI Worker Proxy (env AI_WORKER_PROXY_URL / _TOKEN) when
+           configured, else the Pollinations key. Without /api/chat the page
+           calls the public endpoint itself: it allows any origin, so a browser
+           can reach it directly, and its catalogue says which models answer
+           without a key. */
         const PROXY_URL = "/api/chat";
         const PUBLIC_CHAT_URL = "https://gen.pollinations.ai/v1/chat/completions";
         const PUBLIC_MODELS_URL = "https://gen.pollinations.ai/models";

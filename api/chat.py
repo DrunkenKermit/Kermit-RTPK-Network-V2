@@ -9,6 +9,8 @@ forwards the request instead.
     POST /api/chat   -> OpenAI-shaped chat completion  {model, messages}
 
 Providers, in priority order:
+    AI_WORKER_PROXY_URL -> your own AI-Worker-Proxy on Cloudflare Workers
+                           (OpenAI-compatible, key + token rotation, failover)
     NAVY_API_KEY        -> https://api.navy/v1          (OpenAI-compatible)
     POLLINATIONS_KEY    -> https://gen.pollinations.ai  (they now require a key)
     on a Vercel deploy  -> https://ai-gateway.vercel.sh/v1, using
@@ -16,8 +18,18 @@ Providers, in priority order:
                            Vercel injects into every deployment
     nothing at all      -> https://gen.pollinations.ai, unauthenticated
 
+The AI Worker Proxy is a self-hosted gateway (fork zxcloli666/AI-Worker-Proxy,
+deploy to Cloudflare, add your provider keys there). It is reached at
+<url>/v1/chat/completions and <url>/v1/models, and it always needs a model:
+the request's model must be one of the route names you defined in routes.json
+(e.g. "fast", "deep-think"). Its token stays on the server, exactly like the
+other keys, so the browser never sees it.
+
 Environment:
-    NAVY_API_KEY         key from your api.navy dashboard   (takes priority)
+    AI_WORKER_PROXY_URL  your worker URL, e.g. https://ai-proxy.YOU.workers.dev
+    AI_WORKER_PROXY_TOKEN the PROXY_AUTH_TOKEN you set on the worker  (required)
+    AI_WORKER_PROXY_MODEL optional default route name            (default "fast")
+    NAVY_API_KEY         key from your api.navy dashboard
     POLLINATIONS_KEY     key from https://enter.pollinations.ai/keys
     AI_GATEWAY_API_KEY   key from the Vercel dashboard; optional, because on
                          Vercel the deployment's own OIDC token is used when
@@ -53,6 +65,20 @@ def env_key(*names):
 
 def provider():
     """The first provider with a credential, Pollinations unauthenticated last."""
+    worker_url = env_key("AI_WORKER_PROXY_URL", "AI_WORKER_PROXY_BASE_URL")
+    worker_token = env_key("AI_WORKER_PROXY_TOKEN", "AI_WORKER_PROXY_KEY")
+    if worker_url and worker_token:
+        return {
+            "name": "worker",
+            "base": worker_url.rstrip("/"),
+            "chat": "/v1/chat/completions",
+            "models": "/v1/models",
+            "key": worker_token,
+            # The worker rejects a request with no model, and only knows the
+            # route names from its routes.json.
+            "default": env_key("AI_WORKER_PROXY_MODEL") or "fast",
+        }
+
     navy_key = env_key("NAVY_API_KEY")
     if navy_key:
         return {
@@ -158,7 +184,11 @@ def text_models():
         if not name:
             continue
 
-        if current["name"] == "navy":
+        if current["name"] == "worker":
+            # Every entry is a route name defined in routes.json, so all of
+            # them are usable chat models; no filtering needed.
+            pass
+        elif current["name"] == "navy":
             # The catalogue mixes chat, image, audio and embedding models.
             endpoint = item.get("endpoint")
             if endpoint and endpoint != "/v1/chat/completions":
