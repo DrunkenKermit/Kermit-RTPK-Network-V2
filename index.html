@@ -38,7 +38,6 @@
     <link rel="stylesheet" href="/fa/css/all.css">
     <link rel="stylesheet" href="/fa/css/all.min.css">
     <link rel="stylesheet" href="/fa/css/solid.css">
-    <link rel="stylesheet" href="/fa/css/all-pro.css">
     <link rel="stylesheet" href="/assets/css/t.css">
     <link rel="stylesheet" href="/assets/css/dropdown.css">
     <script src="/assets/js/cursor.js" defer></script>
@@ -342,7 +341,7 @@
 
         window.addEventListener("DOMContentLoaded", () => {
             if (savedVer === null || !savedVer) {
-                showToast("success", "Welcome to Kermit (RTPK) Network!", "fas fa-hand-wave")
+                showToast("success", "Welcome to Kermit (RTPK) Network!", "fas fa-rocket")
                 localStorage.setItem("cherri_siteVersion", siteVersion)
             } else if (savedVer !== siteVersion) {
                 showToast("success", "Kermit (RTPK) Network was updated! Check settings for more info.", "fas fa-check-circle")

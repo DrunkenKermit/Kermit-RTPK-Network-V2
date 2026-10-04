@@ -33,7 +33,7 @@
 
 @font-face {
     font-family: google sans;
-    src: url(/assets/fonts/googlesans.ttf);
+    src: url(/assets/fonts/googlesans.woff2);
 }
 
 @font-face {
@@ -88,11 +88,6 @@
 @font-face {
     font-family: space grotesk;
     src: url(/assets/fonts/spacegrotesk.ttf);
-}
-
-@font-face {
-    font-family: interotf;
-    src: url(/assets/fonts/inter.otf);
 }
 
 @font-face {
