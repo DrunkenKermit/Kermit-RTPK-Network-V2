@@ -16,7 +16,9 @@ Providers, in priority order:
     on a Vercel deploy  -> https://ai-gateway.vercel.sh/v1, using
                            AI_GATEWAY_API_KEY, or the VERCEL_OIDC_TOKEN that
                            Vercel injects into every deployment
-    nothing at all      -> https://gen.pollinations.ai, unauthenticated
+    nothing at all      -> https://text.pollinations.ai, anonymous tier
+                           (/openai + /models; the only keyless models that
+                           actually answer, so the picker stays truthful)
 
 The AI Worker Proxy is a self-hosted gateway (fork zxcloli666/AI-Worker-Proxy,
 deploy to Cloudflare, add your provider keys there). It is reached at
@@ -113,12 +115,18 @@ def provider():
             "default": "openai/gpt-5.4-nano",
         }
 
+    # Nothing configured. gen.pollinations.ai now answers 401 to every chat
+    # request without a key, so calling it here would list models that cannot
+    # actually reply. Its older host still serves an anonymous tier, and its
+    # /models endpoint is the honest list of what works keylessly - use that so
+    # the picker never offers a model that fails.
     return {
         "name": "pollinations",
-        "base": "https://gen.pollinations.ai",
-        "chat": "/v1/chat/completions",
+        "base": "https://text.pollinations.ai",
+        "chat": "/openai",
         "models": "/models",
         "key": "",
+        "default": "openai-fast",
     }
 
 
@@ -204,7 +212,13 @@ def text_models():
             # The gateway lists 395 models, only 268 of them chat models.
             continue
 
-        models.append({"name": name, "title": item.get("title") or item.get("name") or name})
+        # Legacy Pollinations entries carry a description but no title; use it
+        # so the picker shows "GPT-OSS 20B ..." instead of a bare id.
+        title = item.get("title") or item.get("name") or name
+        if current["name"] == "pollinations" and not item.get("title") and item.get("description"):
+            title = str(item["description"])[:48]
+
+        models.append({"name": name, "title": title})
 
     return models
 

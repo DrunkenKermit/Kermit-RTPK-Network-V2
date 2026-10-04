@@ -856,17 +856,20 @@
         const MAX_CHATS = 40;
         const MAX_IMAGES = 4;
         const DEFAULT_MODEL = "openai";
-        /* api/chat.py keeps every provider key on the server. It prefers a
-           self-hosted AI Worker Proxy (env AI_WORKER_PROXY_URL / _TOKEN) when
-           configured, else the Pollinations key. Without /api/chat the page
-           calls the public endpoint itself: it allows any origin, so a browser
-           can reach it directly, and its catalogue says which models answer
-           without a key. */
+        /* api/chat.py keeps every provider key on the server, and it is also
+           the honest source of which models work: with a key it lists the
+           provider's whole catalogue, with none it lists the anonymous tier.
+           Without /api/chat the page talks to the older public host itself,
+           which is the only endpoint that still answers without a key. */
         const PROXY_URL = "/api/chat";
-        const PUBLIC_CHAT_URL = "https://gen.pollinations.ai/v1/chat/completions";
-        const PUBLIC_MODELS_URL = "https://gen.pollinations.ai/models";
         const LEGACY_CHAT_URL = "https://text.pollinations.ai/openai";
         const LEGACY_TEXT_URL = "https://text.pollinations.ai/";
+        const LEGACY_MODELS_URL = "https://text.pollinations.ai/models";
+        /* A model's "it answered" result is trusted for this long, then retested. */
+        const MODEL_TTL = 6 * 60 * 60 * 1000;
+        /* Above this many models the catalogue is taken on trust instead of
+           pinging every entry during one page load. */
+        const MODEL_TEST_MAX = 24;
         const HUMAN_STYLE = "Write your reply in a natural, human tone: conversational, no robotic filler, no unnecessary bullet lists, and never use em dashes.";
 
         let chats = loadChats();
@@ -877,7 +880,6 @@
         let pipWindow = null;
         let model = DEFAULT_MODEL;
         let proxyReady = false;
-        let openModels = [];
         try {
             model = localStorage.getItem(MODEL_KEY) || DEFAULT_MODEL;
         } catch (e) { }
@@ -1357,6 +1359,84 @@
             } catch (e) { }
         }
 
+        /* ── Model health check ─────────────────────────────────────────── */
+        /* Retired, key-gated or renamed models are dropped so the picker only
+           ever offers one that replies. Results are cached, so a model is
+           retested at most once every MODEL_TTL. */
+        const MODELS_OK_KEY = "cherri_ai_models_ok";
+
+        function modelCache() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(MODELS_OK_KEY) || "{}");
+                return raw && typeof raw === "object" ? raw : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveModelCache(cache) {
+            try {
+                localStorage.setItem(MODELS_OK_KEY, JSON.stringify(cache));
+            } catch (e) { }
+        }
+
+        /* Ask one model for a single short reply. A network error counts as
+           "unknown" (true), so a flaky moment never hides a working model. */
+        async function modelAnswers(name) {
+            const headers = { "Content-Type": "application/json" };
+            const body = JSON.stringify({
+                model: name,
+                messages: [{ role: "user", content: "hi" }],
+                max_tokens: 4
+            });
+            try {
+                const res = proxyReady
+                    ? await fetch(PROXY_URL, { method: "POST", headers, body })
+                    : await fetch(LEGACY_CHAT_URL, { method: "POST", headers, body });
+                if (!res.ok) return false;
+                return !!readAnswer(await res.json());
+            } catch (e) {
+                return true;
+            }
+        }
+
+        async function keepWorkingModels(list) {
+            if (!Array.isArray(list) || !list.length) return [];
+            // A big catalogue is already curated upstream; do not fan out.
+            if (list.length > MODEL_TEST_MAX) return list;
+
+            const cache = modelCache();
+            const now = Date.now();
+            const good = {};
+            const toTest = [];
+
+            list.forEach((m) => {
+                const entry = cache[m.name];
+                if (entry && typeof entry.t === "number" && now - entry.t < MODEL_TTL) {
+                    // Known result within the TTL: keep it, or drop it, silently.
+                    if (entry.ok) good[m.name] = true;
+                } else {
+                    toTest.push(m);
+                }
+            });
+
+            let index = 0;
+            async function worker() {
+                while (index < toTest.length) {
+                    const m = toTest[index++];
+                    const ok = await modelAnswers(m.name);
+                    cache[m.name] = { ok: ok, t: now };
+                    if (ok) good[m.name] = true;
+                }
+            }
+            const workers = [];
+            for (let i = 0; i < Math.min(4, toTest.length); i++) workers.push(worker());
+            await Promise.all(workers);
+
+            saveModelCache(cache);
+            return list.filter((m) => good[m.name]);
+        }
+
         /* The proxy reports the models the server-side key can reach. */
         async function loadModels() {
             const sel = $("modelSelect");
@@ -1379,24 +1459,30 @@
                 }
             } catch (e) { /* static preview: there is no /api/chat to call */ }
 
-            /* Without /api/chat the picker can still be filled from the public
-               catalogue, which the browser is allowed to read, and which flags
-               the paid models a keyless request cannot use. */
+            /* Without /api/chat, read the anonymous catalogue straight from the
+               older host. It is the only endpoint that answers without a key,
+               so its list is exactly the set of models this page can use. */
             if (!reached) {
                 try {
-                    const res = await fetch(PUBLIC_MODELS_URL, { headers: { Accept: "application/json" } });
+                    const res = await fetch(LEGACY_MODELS_URL, { headers: { Accept: "application/json" } });
                     if (res.ok) {
                         const data = await res.json();
                         const all = Array.isArray(data) ? data : (data && data.data) || [];
                         list = all
-                            .filter((m) => m && m.category === "text" && !m.paid_only)
-                            .map((m) => ({ name: m.name, title: m.title || m.name }));
-                        openModels = list.map((m) => m.name);
+                            .filter((m) => m && (m.name || m.id))
+                            .map((m) => ({
+                                name: m.name || m.id,
+                                title: m.title || m.description || m.name || m.id
+                            }));
                     }
                 } catch (e) { /* offline: the single default stays */ }
             }
 
             proxyReady = reached;
+
+            // Keep only the models that actually reply to a test message.
+            list = await keepWorkingModels(list);
+
             sel.innerHTML = "";
 
             if (!list.length) {
@@ -1438,7 +1524,7 @@
             const messages = [{ role: "user", content: content }];
             const body = JSON.stringify({ model: model || DEFAULT_MODEL, messages: messages });
 
-            // The proxy adds the API key server-side.
+            // The proxy adds the API key server-side, when one is configured.
             if (proxyReady) {
                 try {
                     const res = await fetch(PROXY_URL, { method: "POST", headers: headers, body: body });
@@ -1447,22 +1533,8 @@
                 } catch (e) { /* fall through to the public endpoint */ }
             }
 
-            /* Static preview, where /api/chat does not exist: the public
-               endpoint allows any origin, so the browser calls it directly.
-               Only a model it serves without a key is named, so a premium
-               choice falls back to a free model instead of answering 401. */
-            const openBody = JSON.stringify(
-                openModels.indexOf(model) === -1 ? { messages: messages } : { model: model, messages: messages }
-            );
-            try {
-                const res = await fetch(PUBLIC_CHAT_URL, { method: "POST", headers: headers, body: openBody });
-                if (res.ok) {
-                    const text = readAnswer(await res.json());
-                    if (text) return text;
-                }
-            } catch (e) { /* try the older endpoint */ }
-
-            // Older public endpoint, kept as a last resort.
+            /* No /api/chat, or it did not answer: the anonymous endpoint is the
+               only host that still replies without a key, so call it directly. */
             try {
                 const res = await fetch(LEGACY_CHAT_URL, { method: "POST", headers: headers, body: body });
                 if (res.ok) {

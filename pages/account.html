@@ -425,6 +425,13 @@
                 <div>
                     <div class="section-title">Icon</div>
                     <div class="icon-grid" id="iconGrid"></div>
+                    <button class="btn ghost" id="uploadIconBtn" type="button" style="margin-top: 10px;">
+                        <i class="ri-upload-2-line"></i> Upload your own
+                    </button>
+                    <input id="iconUpload" type="file" accept="image/*" hidden>
+
+                    <div class="section-title" style="margin-top: 18px;">Kermit presets</div>
+                    <div class="icon-grid" id="premadeGrid"></div>
                 </div>
 
                 <!-- Auth: shown while signed out and configured -->
@@ -493,7 +500,10 @@
         (function () {
             "use strict";
 
-            var A = window.KERMIT_ACCOUNT || {};
+            // Filled in init() below. Do NOT read window.KERMIT_ACCOUNT here:
+            // this inline script runs during parsing, while account.js is
+            // loaded with `defer` and has not executed yet.
+            var A = {};
 
             var ICONS = [
                 "ri-user-line", "ri-user-fill", "ri-ghost-fill", "ri-robot-fill", "ri-gamepad-fill",
@@ -562,13 +572,14 @@
                     : "Not signed in";
 
                 var glyph = $("avatarGlyph");
-                glyph.className = profile.icon;
+                if (A.applyIcon) A.applyIcon(glyph, profile.icon);
+                else glyph.className = profile.icon;
 
                 var nameInput = $("usernameInput");
                 if (document.activeElement !== nameInput) nameInput.value = profile.username || "";
 
-                // Icon grid highlight
-                var chips = $("iconGrid").querySelectorAll("button");
+                // Icon grid highlight (both the icon set and the presets)
+                var chips = document.querySelectorAll(".icon-grid button");
                 for (var i = 0; i < chips.length; i++) {
                     chips[i].classList.toggle("active", chips[i].dataset.icon === profile.icon);
                 }
@@ -587,24 +598,142 @@
 
             /* ── icon grid ─────────────────────────────────────────────── */
 
+            // Rounded, colourful tiles in Google's palette. Their product icons
+            // are the inspiration here, not a copy of any specific one.
+            var GOOGLE = {
+                blue: "#4285F4", blueDeep: "#1A73E8",
+                red: "#EA4335", redDeep: "#C5221F",
+                yellow: "#FBBC05", yellowDeep: "#F29900",
+                green: "#34A853", greenDeep: "#188038",
+                paper: "#FFFFFF", paperDeep: "#E8EAED",
+                ink: "#3C4043"
+            };
+
+            function svgTile(c1, c2, glyph) {
+                var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+                    '<defs><linearGradient id="t" x1="0" y1="0" x2="1" y2="1">' +
+                    '<stop offset="0" stop-color="' + c1 + '"/>' +
+                    '<stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs>' +
+                    '<rect width="64" height="64" rx="18" fill="url(#t)"/>' + glyph + '</svg>';
+                return "data:image/svg+xml;base64," + btoa(svg);
+            }
+
+            function letter(text, color) {
+                return '<text x="32" y="44" font-family="Arial,Helvetica,sans-serif" ' +
+                    'font-size="30" font-weight="700" text-anchor="middle" fill="' +
+                    color + '">' + text + '</text>';
+            }
+
+            function buildPremades() {
+                var dots = '<circle cx="23" cy="23" r="7" fill="' + GOOGLE.blue + '"/>' +
+                    '<circle cx="41" cy="23" r="7" fill="' + GOOGLE.red + '"/>' +
+                    '<circle cx="23" cy="41" r="7" fill="' + GOOGLE.yellow + '"/>' +
+                    '<circle cx="41" cy="41" r="7" fill="' + GOOGLE.green + '"/>';
+                var star = '<path d="M32 13l6.2 12.6 13.9 2-10 9.8 2.4 13.8L32 44.7 19.5 51.2 ' +
+                    '21.9 37.4 11.9 27.6l13.9-2z" fill="#FFF"/>';
+                var person = '<circle cx="32" cy="25" r="10" fill="#FFF"/>' +
+                    '<path d="M13 55c0-10.5 8.5-18 19-18s19 7.5 19 18z" fill="#FFF"/>';
+
+                return [
+                    { title: "Google dots", icon: svgTile(GOOGLE.paper, GOOGLE.paperDeep, dots) },
+                    { title: "K", icon: svgTile(GOOGLE.blue, GOOGLE.blueDeep, letter("K", "#FFF")) },
+                    { title: "R", icon: svgTile(GOOGLE.red, GOOGLE.redDeep, letter("R", "#FFF")) },
+                    { title: "T", icon: svgTile(GOOGLE.yellow, GOOGLE.yellowDeep, letter("T", GOOGLE.ink)) },
+                    { title: "P", icon: svgTile(GOOGLE.green, GOOGLE.greenDeep, letter("P", "#FFF")) },
+                    { title: "AI", icon: svgTile(GOOGLE.blueDeep, "#174EA6", letter("AI", "#FFF")) },
+                    { title: "Star", icon: svgTile(GOOGLE.blue, GOOGLE.blueDeep, star) },
+                    { title: "Person", icon: svgTile(GOOGLE.green, GOOGLE.greenDeep, person) }
+                ];
+            }
+
+            function makeChip(value, title, grid) {
+                var profile = A.profile ? A.profile() : { icon: "" };
+                var chip = document.createElement("button");
+                chip.type = "button";
+                chip.dataset.icon = value;
+                chip.title = title;
+                chip.className = value === profile.icon ? "active" : "";
+
+                var glyph = document.createElement("i");
+                if (A.applyIcon) A.applyIcon(glyph, value);
+                else glyph.className = value;
+                chip.appendChild(glyph);
+
+                chip.addEventListener("click", function () {
+                    if (!A.setProfile) return;
+                    A.setProfile({ icon: value });
+                    setMsg($("syncMsg"), "Icon updated.", true);
+                    fireToast("success", "Icon updated!", "fas fa-check-circle");
+                });
+
+                grid.appendChild(chip);
+            }
+
             function buildIcons() {
                 var grid = $("iconGrid");
-                var profile = A.profile ? A.profile() : { icon: "ri-user-fill" };
 
                 ICONS.forEach(function (name) {
-                    var chip = document.createElement("button");
-                    chip.type = "button";
-                    chip.dataset.icon = name;
-                    chip.title = name.replace(/^ri-/, "").replace(/-(fill|line)$/, "");
-                    chip.className = name === profile.icon ? "active" : "";
-                    chip.innerHTML = '<i class="' + name + '"></i>';
-                    chip.addEventListener("click", function () {
-                        if (!A.setProfile) return;
-                        A.setProfile({ icon: name });
-                        setMsg($("syncMsg"), "Icon updated.", true);
-                        fireToast("success", "Icon updated!", "fas fa-check-circle");
+                    makeChip(name, name.replace(/^ri-/, "").replace(/-(fill|line)$/, ""), grid);
+                });
+
+                var premadeGrid = $("premadeGrid");
+                if (premadeGrid) {
+                    buildPremades().forEach(function (p) {
+                        makeChip(p.icon, p.title, premadeGrid);
                     });
-                    grid.appendChild(chip);
+                }
+            }
+
+            /* ── upload your own icon ──────────────────────────────────── */
+
+            function downscaleIcon(file) {
+                return new Promise(function (resolve) {
+                    var url = URL.createObjectURL(file);
+                    var img = new Image();
+                    img.onload = function () {
+                        var size = 128;
+                        var canvas = document.createElement("canvas");
+                        canvas.width = size;
+                        canvas.height = size;
+                        var ctx = canvas.getContext("2d");
+                        var scale = Math.max(size / img.width, size / img.height);
+                        var w = img.width * scale;
+                        var h = img.height * scale;
+                        ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+                        URL.revokeObjectURL(url);
+                        // PNG normally; a photo that would be too big to store
+                        // falls back to a small JPEG.
+                        var png = canvas.toDataURL("image/png");
+                        resolve(png.length <= 100000 ? png : canvas.toDataURL("image/jpeg", 0.82));
+                    };
+                    img.onerror = function () {
+                        URL.revokeObjectURL(url);
+                        resolve(null);
+                    };
+                    img.src = url;
+                });
+            }
+
+            function wireUpload() {
+                var button = $("uploadIconBtn");
+                var input = $("iconUpload");
+                if (!button || !input) return;
+
+                button.addEventListener("click", function () { input.click(); });
+                input.addEventListener("change", function () {
+                    var file = input.files && input.files[0];
+                    input.value = "";
+                    if (!file || !A.setProfile) return;
+
+                    downscaleIcon(file).then(function (dataUrl) {
+                        if (!dataUrl) {
+                            fireToast("error", "That image could not be read.", "fas fa-times-circle");
+                            return;
+                        }
+                        A.setProfile({ icon: dataUrl });
+                        setMsg($("syncMsg"), "Icon updated.", true);
+                        fireToast("success", "Icon uploaded!", "fas fa-check-circle");
+                    });
                 });
             }
 
@@ -691,6 +820,9 @@
             /* ── wire up ───────────────────────────────────────────────── */
 
             function init() {
+                // account.js is deferred, so it is ready by the time init()
+                // runs on DOMContentLoaded - grab the API now, not at parse time.
+                A = window.KERMIT_ACCOUNT || {};
                 if (!A.on) {
                     // account.js failed to load; show the local-only state.
                     $("setupBanner").hidden = false;
@@ -698,6 +830,7 @@
                 }
 
                 buildIcons();
+                wireUpload();
 
                 $("tabLogin").addEventListener("click", function () { setMode("login"); });
                 $("tabSignup").addEventListener("click", function () { setMode("signup"); });

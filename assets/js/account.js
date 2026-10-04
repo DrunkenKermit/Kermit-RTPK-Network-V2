@@ -25,6 +25,12 @@
 
     var DEFAULT_ICON = "ri-user-line";
     var ICON_RE = /^ri-[a-z0-9-]+-(fill|line)$/;
+    // A profile icon can also be a picture the user uploaded, stored inline as
+    // a data URL. 120k characters is roughly a 90 KB image - far more than the
+    // downscaled 128px square the account page produces, but still small enough
+    // to sync to Firestore with the rest of the profile.
+    var IMAGE_ICON_RE = /^data:image\/[a-z0-9.+-]+[;,]/i;
+    var MAX_ICON_LEN = 120000;
     var MAX_USERNAME = 24;
 
     // Firestore documents cap at 1MB; keep the snapshot comfortably under it.
@@ -143,22 +149,62 @@
 
     /* ── profile ─────────────────────────────────────────────────────────── */
 
+    function isImageIcon(value) {
+        return typeof value === "string" &&
+            value.length <= MAX_ICON_LEN &&
+            IMAGE_ICON_RE.test(value);
+    }
+
+    // Either a Remixicon class or an uploaded picture.
+    function isIconValue(value) {
+        return typeof value === "string" &&
+            (ICON_RE.test(value) || isImageIcon(value));
+    }
+
+    // Paint a profile icon onto any element: a Remixicon class, or an uploaded
+    // picture drawn as a round background. Shared so the toolbar, the account
+    // avatar and the picker chips all render a custom icon the same way.
+    function applyIcon(el, icon) {
+        if (!el) return;
+
+        if (isImageIcon(icon)) {
+            el.className = "";
+            el.textContent = "";
+            el.style.display = "inline-block";
+            el.style.width = "1em";
+            el.style.height = "1em";
+            el.style.borderRadius = "50%";
+            el.style.backgroundImage = "url(\"" + icon + "\")";
+            el.style.backgroundSize = "cover";
+            el.style.backgroundPosition = "center";
+            el.style.backgroundRepeat = "no-repeat";
+        } else {
+            el.style.backgroundImage = "";
+            el.style.backgroundSize = "";
+            el.style.backgroundPosition = "";
+            el.style.backgroundRepeat = "";
+            el.style.width = "";
+            el.style.height = "";
+            el.style.borderRadius = "";
+            el.style.display = "";
+            el.className = isIconValue(icon) ? icon : DEFAULT_ICON;
+        }
+    }
+
     function loadProfile() {
         var stored = parseJSON(read(PROFILE_KEY, ""), null) || {};
 
         state.profile.username = typeof stored.username === "string"
             ? stored.username.slice(0, MAX_USERNAME)
             : "";
-        state.profile.icon = typeof stored.icon === "string" && ICON_RE.test(stored.icon)
-            ? stored.icon
-            : DEFAULT_ICON;
+        state.profile.icon = isIconValue(stored.icon) ? stored.icon : DEFAULT_ICON;
     }
 
     function saveProfile(patch) {
         if (patch && typeof patch.username === "string") {
             state.profile.username = patch.username.trim().slice(0, MAX_USERNAME);
         }
-        if (patch && typeof patch.icon === "string" && ICON_RE.test(patch.icon)) {
+        if (patch && isIconValue(patch.icon)) {
             state.profile.icon = patch.icon;
         }
 
@@ -184,9 +230,7 @@
         var glyph = document.querySelector('nav[data-toolbar] a[data-page="account"] i');
         if (!glyph) return;
 
-        if (glyph.className !== state.profile.icon) {
-            glyph.className = state.profile.icon;
-        }
+        applyIcon(glyph, state.profile.icon);
 
         var link = glyph.parentNode;
         if (link) {
@@ -561,12 +605,23 @@
             "auth/popup-blocked": "Your browser blocked the sign-in popup \u2014 allow popups and try again.",
             "auth/popup-closed-by-user": "Sign-in was cancelled.",
             "auth/cancelled-popup-request": "Sign-in was cancelled.",
-            "auth/unauthorized-domain": "This site's domain is not allowed yet \u2014 add it in Firebase \u2192 Authentication \u2192 Settings \u2192 Authorized domains.",
             "auth/configuration-not-found": "Google sign-in is not enabled yet \u2014 turn it on in the Firebase console.",
             "auth/operation-not-allowed": "That sign-in method is not enabled yet in the Firebase console."
         };
 
         if (map[code]) return map[code];
+
+        // Google (OAuth) sign-in only works from domains listed in the Firebase
+        // project, so name the exact address that has to be added.
+        if (code === "auth/unauthorized-domain") {
+            var host = "";
+            try { host = location.hostname; } catch (e) { }
+            return "Google sign-in is blocked: this site's address" +
+                (host ? " (" + host + ")" : "") +
+                " isn't allowed in Firebase yet. Add " + (host || "this domain") +
+                " in Firebase \u2192 Authentication \u2192 Settings \u2192 Authorized domains.";
+        }
+
         if (err && err.message && /Could not load/.test(err.message)) {
             return "Couldn't load the sign-in library \u2014 you may be offline or it is blocked.";
         }
@@ -665,6 +720,7 @@
         sync: sync,
         friendlyError: friendlyError,
         paintToolbar: paintToolbar,
+        applyIcon: applyIcon,
         // Resolves after the session is known and the first sync has settled,
         // but never blocks longer than `timeout` (default 3s) so a slow or
         // unreachable backend cannot hold up a page that is waiting on it.
