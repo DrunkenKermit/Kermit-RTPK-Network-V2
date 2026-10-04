@@ -6,7 +6,12 @@ to the browser is public. This endpoint keeps the keys on the server and
 forwards the request to whichever provider the chosen model belongs to.
 
     GET  /api/chat  -> {"providers": [...], "models": [{"name", "title", "provider"}]}
-    POST /api/chat  -> {model, messages}  -> OpenAI-shaped chat completion
+    POST /api/chat  -> {model, messages, web}  -> OpenAI-shaped chat completion
+
+    When "web" is true the provider is asked to search the web itself: Gemini
+    gets the google_search tool, OpenRouter gets its web plugin. A provider
+    that refuses the parameter is retried once without it, so the answer still
+    comes back. No extra key is needed for either.
 
 Providers (each only shows up once its key is set on the server):
 
@@ -79,6 +84,9 @@ PROVIDERS = {
         "base": "https://openrouter.ai/api/v1",
         "chat": "/chat/completions",
         "kind": "openai",
+        # OpenRouter's web plugin runs the search and folds the results (links
+        # included) into the reply, so "web" needs no extra key here.
+        "web": True,
         # OpenRouter pre-authorises credit for the model's *maximum* output when
         # max_tokens is absent, which makes even cheap models fail with a 402.
         "max_tokens": 4096,
@@ -277,12 +285,14 @@ def upstream(method, url, env_name, payload=None, header_key=None):
         return status, {"error": (raw[:400] or "empty provider response")}
 
 
-def call_openai(provider, model_id, messages, vision=True, env_name=None):
+def call_openai(provider, model_id, messages, vision=True, env_name=None, web=False):
     if not vision:
         messages = text_only(messages)
     body = {"model": model_id, "messages": messages}
     if provider.get("max_tokens"):
         body["max_tokens"] = provider["max_tokens"]
+    if web and provider.get("web"):
+        body["plugins"] = [{"id": "web"}]
     return upstream(
         "POST",
         provider["base"] + provider["chat"],
@@ -291,7 +301,7 @@ def call_openai(provider, model_id, messages, vision=True, env_name=None):
     )
 
 
-def call_gemini(provider, model_id, messages):
+def call_gemini(provider, model_id, messages, web=False):
     contents, system = gemini_payload(messages)
     if not contents:
         return 400, {"error": "messages[] has no usable content"}
@@ -299,6 +309,9 @@ def call_gemini(provider, model_id, messages):
     body = {"contents": contents}
     if system:
         body["systemInstruction"] = {"parts": system}
+    if web:
+        # Lets the model run Google searches and cite what it finds.
+        body["tools"] = [{"google_search": {}}]
 
     url = provider["base"] + "/models/" + model_id + ":generateContent"
     status, data = upstream("POST", url, provider["env"], body, header_key="x-goog-api-key")
@@ -379,16 +392,19 @@ class handler(BaseHTTPRequestHandler):
             })
             return
 
+        # "web" is optional: providers without a web option are simply asked
+        # without it, and one that rejects the parameter is retried once.
+        web = payload.get("web") is True
+        vision = model_vision(provider_key, model_id)
+
         if provider["kind"] == "gemini":
-            status, data = call_gemini(provider, model_id, messages)
+            status, data = call_gemini(provider, model_id, messages, web)
+            if web and status == 400:
+                status, data = call_gemini(provider, model_id, messages, False)
         else:
-            status, data = call_openai(
-                provider,
-                model_id,
-                messages,
-                model_vision(provider_key, model_id),
-                env_name,
-            )
+            status, data = call_openai(provider, model_id, messages, vision, env_name, web)
+            if web and status == 400:
+                status, data = call_openai(provider, model_id, messages, vision, env_name, False)
 
         self._send(status if 200 <= status < 600 else 502, redact(data))
 

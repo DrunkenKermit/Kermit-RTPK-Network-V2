@@ -46,41 +46,85 @@
             color: var(--text);
         }
 
-        /* Styles for the page once the chat is moved into the mini window. */
-        .pip-body {
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            color: var(--text);
+        /* ── Floating chat window (opened from the Screen button) ───────── */
+        .float-tools {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .pip-placeholder {
+        body.float-mode .float-tools {
+            display: flex;
+        }
+
+        /* The narrow window hides tool labels; these two stay readable. */
+        body.float-mode .float-tools .tool span {
+            display: inline;
+        }
+
+        /* Area picker for a screenshot of the shared screen. */
+        .shot-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
             display: none;
-            flex: 1;
             flex-direction: column;
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+        }
+
+        .shot-overlay.show {
+            display: flex;
+        }
+
+        .shot-stage {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            display: flex;
             align-items: center;
             justify-content: center;
-            gap: 14px;
-            padding: 24px;
-            text-align: center;
-            color: var(--text);
+            padding: 12px;
+            overflow: hidden;
+            cursor: crosshair;
+            touch-action: none;
+            user-select: none;
         }
 
-        body.pip-open .pip-placeholder {
-            display: flex;
+        .shot-stage img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            pointer-events: none;
         }
 
-        .pip-placeholder p {
-            margin: 0;
-            font-size: 14px;
-        }
-
-        /* Pop-up fallback for browsers without the mini-window API. */
-        body.mini-mode .ai-sidebar,
-        body.mini-mode #openSide,
-        body.mini-mode #pipBtn {
+        .shot-sel {
+            position: absolute;
             display: none;
+            border: 2px solid var(--accent);
+            background: color-mix(in srgb, var(--accent) 22%, transparent);
+            pointer-events: none;
+        }
+
+        .shot-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+        }
+
+        .shot-bar .tool {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        .shot-hint {
+            flex: 1;
+            font-size: 13px;
+            opacity: 0.85;
         }
 
         .ai-sidebar {
@@ -258,6 +302,19 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+        }
+
+        .ai-subject {
+            flex-shrink: 0;
+            max-width: 150px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-4);
+            background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+            color: var(--bright-text);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
         }
 
         .ai-model {
@@ -771,6 +828,10 @@
                 max-width: 120px;
             }
 
+            .ai-subject {
+                max-width: 104px;
+            }
+
             /* Keep clear of the composer, which owns the bottom of the page. */
             .share-panel {
                 top: 70px;
@@ -797,11 +858,16 @@
             <header class="ai-topbar">
                 <button class="icon-btn" id="openSide" title="Chats"><i class="ri-menu-line"></i></button>
                 <span class="ai-title" id="chatTitle">New chat</span>
+                <select class="ai-subject" id="subjectSelect" title="Subject"></select>
                 <select class="ai-model" id="modelSelect" title="AI model"></select>
-                <button class="icon-btn" id="pipBtn" onclick="togglePip()"
-                    title="Open the chat in a small always-on-top window"><i
-                        class="ri-picture-in-picture-line"></i></button>
             </header>
+
+            <div class="float-tools" id="floatTools">
+                <button class="tool" onclick="floatShot('region')"
+                    title="Screenshot part of the shared screen"><i class="ri-screenshot-line"></i><span>Screenshot</span></button>
+                <button class="tool" onclick="floatShot('full')"
+                    title="Screenshot the whole shared screen"><i class="ri-fullscreen-line"></i><span>Whole screen</span></button>
+            </div>
 
             <div class="ai-messages" id="messages"></div>
 
@@ -815,6 +881,9 @@
                                     class="ri-image-add-line"></i><span>Image</span></button>
                             <button class="tool" id="shareBtn" onclick="shareScreen()"
                                 title="Capture your screen"><i class="ri-computer-line"></i><span>Screen</span></button>
+                            <button class="tool" id="webBtn" onclick="toggleWeb()"
+                                title="Let the AI look things up on the web"><i
+                                    class="ri-global-line"></i><span>Web</span></button>
                             <button class="tool" id="humanBtn" onclick="toggleHumanize()"
                                 title="Natural, human-sounding replies"><i
                                     class="ri-user-heart-line"></i><span>Natural</span></button>
@@ -826,11 +895,6 @@
             </div>
         </main>
 
-        <div class="pip-placeholder">
-            <p>Your chat is open in the mini window.</p>
-            <button class="tool" onclick="togglePip()"><i class="ri-picture-in-picture-exit-line"></i><span>Bring it
-                    back</span></button>
-        </div>
     </div>
 
     <input type="file" id="fileInput" accept="image/*" multiple hidden>
@@ -839,6 +903,17 @@
         <div class="share-actions">
             <button class="tool" onclick="captureFrame()"><i class="ri-camera-lens-line"></i><span>Capture</span></button>
             <button class="tool" onclick="stopShare()"><i class="ri-stop-circle-line"></i><span>Stop</span></button>
+        </div>
+    </div>
+    <div class="shot-overlay" id="shotOverlay">
+        <div class="shot-stage" id="shotStage">
+            <img id="shotImage" alt="">
+            <div class="shot-sel" id="shotSel"></div>
+        </div>
+        <div class="shot-bar">
+            <span class="shot-hint">Drag over the part you want, then tap Attach.</span>
+            <button class="tool" onclick="shotCancel()">Cancel</button>
+            <button class="tool" onclick="shotUse()">Attach</button>
         </div>
     </div>
     <div class="ai-toast" id="toast"></div>
@@ -863,30 +938,47 @@
         const DEFAULT_MODEL = "gemini:gemini-3.5-flash-lite";
         const HUMAN_STYLE = "Write your reply in a natural, human tone: conversational, no robotic filler, no unnecessary bullet lists, and never use em dashes.";
 
+        /* ── Subjects ───────────────────────────────────────────────────── */
+        /* Each subject adds a short brief to the system message, so the same
+           model answers Maths like a mathematician and History like a
+           historian. General adds nothing and is left to handle anything. */
+        const SUBJECTS = [
+            { id: "general", label: "General", brief: "" },
+            { id: "study", label: "Study", brief: "Act as a patient tutor. Break the topic into small steps, check that I have understood each step before moving on, ask me a question or two to test me, and work through examples with me. Do not simply hand over the final answer to a problem I am practising: guide me to it." },
+            { id: "math", label: "Math", brief: "Answer as a mathematician. Restate what is given and what is wanted, show every step of the working, keep notation and units exact, and verify the result at the end. Say when an answer is approximate and why." },
+            { id: "history", label: "History", brief: "Answer as a historian. Give dates, people, and places precisely, explain causes and consequences, separate established fact from interpretation, and name the period or region whenever it matters." },
+            { id: "biology", label: "Biology", brief: "Answer as a biologist. Use correct terminology for cells, organs, systems, and processes, describe mechanisms step by step, and distinguish what is established from what is still debated." },
+            { id: "physics", label: "Physics", brief: "Answer as a physicist. State the principle, give the formula and the meaning of every symbol, keep SI units through the working, show the derivation, and sanity-check the size of the answer." },
+            { id: "economics", label: "Economics", brief: "Answer as an economist. Name the model or mechanism, state its assumptions, reason through incentives and trade-offs, and separate short-run from long-run effects." },
+            { id: "chemistry", label: "Chemistry", brief: "Answer as a chemist. Give correct formulas, names, states, and units, balance equations, explain the mechanism or the reaction conditions, and note safety where it matters." },
+            { id: "literature", label: "Literature", brief: "Answer as a literature teacher. Discuss theme, structure, and literary devices, quote the text where it helps, place the work in its context, and support every claim with evidence from the writing." },
+        ];
+
+        const SUBJECT_KEY = "cherri_ai_subject";
+        const WEB_KEY = "cherri_ai_web";
+
         let chats = loadChats();
         let activeId = chats.length ? chats[0].id : null;
         let humanize = false;
         let attachments = [];
         let mediaStream = null;
-        let pipWindow = null;
         let model = DEFAULT_MODEL;
+        let subject = "general";
+        let web = true;
         try {
             model = localStorage.getItem(MODEL_KEY) || DEFAULT_MODEL;
+            const savedSubject = localStorage.getItem(SUBJECT_KEY);
+            if (savedSubject && SUBJECTS.some((item) => item.id === savedSubject)) subject = savedSubject;
+            if (localStorage.getItem(WEB_KEY) === "0") web = false;
         } catch (e) { }
 
-        /* Reach into the mini window first, so the chat keeps working after
-           the message list has been moved into it. */
-        const $ = (id) =>
-            (pipWindow && pipWindow.document.getElementById(id)) || document.getElementById(id);
+        const $ = (id) => document.getElementById(id);
 
         const messagesEl = $("messages");
         const chatListEl = $("chatList");
         const promptEl = $("prompt");
         const attachmentsEl = $("attachments");
         const modalSide = $("aiSidebar");
-        const aiAppEl = document.querySelector(".ai-app");
-        const aiMainEl = document.querySelector(".ai-main");
-        const toastEl = $("toast");
 
         function uid() {
             return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -1180,6 +1272,20 @@
             toast(humanize ? "Human tone on" : "Human tone off");
         }
 
+        function toggleWeb() {
+            web = !web;
+            try {
+                localStorage.setItem(WEB_KEY, web ? "1" : "0");
+            } catch (e) { }
+            syncWeb();
+            toast(web ? "Web lookups on" : "Web lookups off");
+        }
+
+        function syncWeb() {
+            const btn = $("webBtn");
+            if (btn) btn.classList.toggle("active", web);
+        }
+
         /* ── Attachments ────────────────────────────────────────────────── */
         function pickImage() {
             $("fileInput").click();
@@ -1252,10 +1358,15 @@
                 return;
             }
 
+            /* Open the floating chat before the picker: a window opened after
+               an await counts as blocked, and browsers then refuse it. */
+            openFloatWindow();
+
             let stream;
             try {
                 stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
             } catch (e) {
+                closeFloatWindow();
                 toast("Screen sharing needs to be started from this window.");
                 return;
             }
@@ -1295,51 +1406,162 @@
             if (btn) btn.classList.remove("active");
         }
 
-        /* ── Mini window (always-on-top chat) ───────────────────────────── */
-        function togglePip() {
-            if (pipWindow) {
-                pipWindow.close();
-                return;
-            }
+        /* ── Floating chat window ───────────────────────────────────────── */
+        /* Sharing the screen drops the chat into its own window, so it can sit
+           beside whatever you are working on. That window has no screen access
+           of its own, so it asks this page for a frame of the shared screen. */
+        const FLOAT_URL = "/pages/assistant.html?float=1";
+        const FLOAT_FEATURES = "width=460,height=720,resizable=yes,scrollbars=yes";
+        const SHOT_MAX = 1600;
+        let floatWin = null;
 
-            const dpip = window.documentPictureInPicture;
-            if (!dpip || !dpip.requestWindow) {
-                window.open(location.pathname + "?mini=1", "kermit-mini", "width=400,height=640");
-                return;
-            }
-
-            dpip.requestWindow({ width: 400, height: 620 }).then((win) => {
-                pipWindow = win;
-
-                // The mini window is a separate document, so it needs the styles.
-                document.querySelectorAll('link[rel="stylesheet"], style').forEach((node) => {
-                    win.document.head.append(node.cloneNode(true));
-                });
-                const extra = win.document.createElement("style");
-                extra.textContent =
-                    "html{overflow:hidden;}" +
-                    "body{margin:0;height:100vh;display:flex;flex-direction:column;}" +
-                    ".ai-main{flex:1;min-height:0;}" +
-                    ".pip-body #openSide{display:none;}";
-                win.document.head.append(extra);
-
-                win.document.body.className = "pip-body";
-                win.document.body.append(aiMainEl, toastEl);
-                document.body.classList.add("pip-open");
-                $("pipBtn").classList.add("active");
-
-                win.addEventListener("pagehide", () => {
-                    pipWindow = null;
-                    document.body.classList.remove("pip-open");
-                    aiAppEl.append(aiMainEl);
-                    document.body.append(toastEl);
-                    $("pipBtn").classList.remove("active");
-                });
-            }).catch(() => {
-                pipWindow = null;
-                toast("The mini window could not be opened.");
-            });
+        function openFloatWindow() {
+            if (floatWin && !floatWin.closed) return floatWin;
+            floatWin = window.open(FLOAT_URL, "kermit-float", FLOAT_FEATURES);
+            if (!floatWin) toast("Allow pop-ups to keep the chat beside your screen.");
+            return floatWin;
         }
+
+        function closeFloatWindow() {
+            if (floatWin && !floatWin.closed) floatWin.close();
+            floatWin = null;
+        }
+
+        function sharedFrameDataUrl() {
+            const video = $("screenVideo");
+            if (!mediaStream || !video || !video.videoWidth) return null;
+            const scale = Math.min(1, SHOT_MAX / Math.max(video.videoWidth, video.videoHeight));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+            canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL("image/jpeg", 0.9);
+        }
+
+        window.addEventListener("message", (e) => {
+            if (e.origin !== location.origin) return;
+            const data = e.data;
+            if (!data || data.type !== "kermit-shot-request") return;
+            if (!e.source || !e.source.postMessage) return;
+            e.source.postMessage(
+                { type: "kermit-shot", mode: data.mode, dataUrl: sharedFrameDataUrl() },
+                location.origin
+            );
+        });
+
+        /* ── Screenshots in the floating window ─────────────────────────── */
+        function floatShot(mode) {
+            if (!window.opener || window.opener.closed) {
+                toast("Start Screen sharing from the main chat window first.");
+                return;
+            }
+            window.opener.postMessage({ type: "kermit-shot-request", mode: mode }, location.origin);
+        }
+
+        let shotData = null;
+        let shotRect = null;
+
+        window.addEventListener("message", (e) => {
+            if (e.origin !== location.origin) return;
+            const data = e.data;
+            if (!data || data.type !== "kermit-shot") return;
+            if (!data.dataUrl) { toast("That window is not sharing its screen yet."); return; }
+            if (data.mode === "full") {
+                addAttachment({ dataUrl: data.dataUrl, name: "Screen capture" });
+                toast("Added the shared screen.");
+                return;
+            }
+            shotData = data.dataUrl;
+            shotRect = null;
+            $("shotImage").src = shotData;
+            $("shotSel").style.display = "none";
+            $("shotOverlay").classList.add("show");
+        });
+
+        function shotCancel() {
+            $("shotOverlay").classList.remove("show");
+            shotData = null;
+            shotRect = null;
+        }
+
+        function shotUse() {
+            const img = $("shotImage");
+            if (!shotData || !shotRect || !img || !img.naturalWidth) { shotCancel(); return; }
+            const scaleX = img.naturalWidth / img.clientWidth;
+            const scaleY = img.naturalHeight / img.clientHeight;
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(shotRect.w * scaleX));
+            canvas.height = Math.max(1, Math.round(shotRect.h * scaleY));
+            canvas.getContext("2d").drawImage(
+                img,
+                shotRect.x * scaleX, shotRect.y * scaleY, canvas.width, canvas.height,
+                0, 0, canvas.width, canvas.height
+            );
+            addAttachment({ dataUrl: canvas.toDataURL("image/jpeg", 0.9), name: "Screen area" });
+            shotCancel();
+        }
+
+        (function wireShotStage() {
+            const stage = $("shotStage");
+            const sel = $("shotSel");
+            const img = $("shotImage");
+            if (!stage || !sel || !img) return;
+            let dragging = false;
+            let startX = 0;
+            let startY = 0;
+
+            const pointAt = (event) => {
+                const r = img.getBoundingClientRect();
+                const box = stage.getBoundingClientRect();
+                return {
+                    x: Math.max(0, Math.min(r.width, event.clientX - r.left)),
+                    y: Math.max(0, Math.min(r.height, event.clientY - r.top)),
+                    baseX: r.left - box.left,
+                    baseY: r.top - box.top,
+                };
+            };
+
+            const draw = (baseX, baseY, x, y, w, h) => {
+                sel.style.left = (baseX + x) + "px";
+                sel.style.top = (baseY + y) + "px";
+                sel.style.width = w + "px";
+                sel.style.height = h + "px";
+            };
+
+            stage.addEventListener("pointerdown", (event) => {
+                if (!shotData) return;
+                const p = pointAt(event);
+                dragging = true;
+                startX = p.x;
+                startY = p.y;
+                shotRect = { x: p.x, y: p.y, w: 0, h: 0 };
+                sel.style.display = "block";
+                draw(p.baseX, p.baseY, p.x, p.y, 0, 0);
+                stage.setPointerCapture(event.pointerId);
+            });
+
+            stage.addEventListener("pointermove", (event) => {
+                if (!dragging) return;
+                const p = pointAt(event);
+                const left = Math.min(startX, p.x);
+                const top = Math.min(startY, p.y);
+                const w = Math.abs(p.x - startX);
+                const h = Math.abs(p.y - startY);
+                shotRect = { x: left, y: top, w: w, h: h };
+                draw(p.baseX, p.baseY, left, top, w, h);
+            });
+
+            const end = () => {
+                if (!dragging) return;
+                dragging = false;
+                if (!shotRect || shotRect.w < 8 || shotRect.h < 8) {
+                    shotRect = null;
+                    sel.style.display = "none";
+                }
+            };
+            stage.addEventListener("pointerup", end);
+            stage.addEventListener("pointercancel", end);
+        })();
 
         /* ── Models ─────────────────────────────────────────────────────── */
         function setModel(name) {
@@ -1347,6 +1569,26 @@
             try {
                 localStorage.setItem(MODEL_KEY, name);
             } catch (e) { }
+        }
+
+        function setSubject(id) {
+            subject = SUBJECTS.some((item) => item.id === id) ? id : "general";
+            try {
+                localStorage.setItem(SUBJECT_KEY, subject);
+            } catch (e) { }
+        }
+
+        /* The brief for the chosen subject, plus the web note and the tone
+           note. Sent as a system message, which every provider understands. */
+        function systemPrompt() {
+            const found = SUBJECTS.find((item) => item.id === subject);
+            const parts = [];
+            if (found && found.brief) parts.push(found.brief);
+            if (web) {
+                parts.push("You can look things up on the web. Use it when a fact, figure, date, or source would make the answer better, and cite the links you use.");
+            }
+            if (humanize) parts.push(HUMAN_STYLE);
+            return parts.join("\n\n");
         }
 
         /* api/chat.py lists the models whose provider keys are set, so the
@@ -1429,8 +1671,11 @@
             }
 
             const headers = { "Content-Type": "application/json" };
-            const messages = [{ role: "user", content: content }];
-            const body = JSON.stringify({ model: model || DEFAULT_MODEL, messages: messages });
+            const messages = [];
+            const system = systemPrompt();
+            if (system) messages.push({ role: "system", content: system });
+            messages.push({ role: "user", content: content });
+            const body = JSON.stringify({ model: model || DEFAULT_MODEL, messages: messages, web: web });
 
             // The proxy holds the API keys and talks to the provider.
             const res = await fetch(PROXY_URL, { method: "POST", headers: headers, body: body });
@@ -1463,7 +1708,7 @@
             const node = addMessage(pendingMsg);
 
             try {
-                const answer = await requestText(humanize ? HUMAN_STYLE + "\n\n" + prompt : prompt, images);
+                const answer = await requestText(prompt, images);
                 pendingMsg.pending = false;
                 pendingMsg.text = answer;
                 saveChats();
@@ -1521,15 +1766,29 @@
         $("closeSide").addEventListener("click", closeSidebar);
 
         /* ── Boot ───────────────────────────────────────────────────────── */
-        // Pop-up fallback: the same page opened as a small chat-only window.
+        // The window the Screen button opens: the whole chat, plus the tools
+        // for grabbing a piece of the shared screen.
         try {
-            if (new URLSearchParams(location.search).has("mini")) {
-                document.body.classList.add("mini-mode");
+            if (new URLSearchParams(location.search).has("float")) {
+                document.body.classList.add("float-mode");
             }
         } catch (e) { }
 
         const modelSel = $("modelSelect");
         if (modelSel) modelSel.addEventListener("change", () => setModel(modelSel.value));
+
+        const subjectSel = $("subjectSelect");
+        if (subjectSel) {
+            SUBJECTS.forEach((item) => {
+                const option = document.createElement("option");
+                option.value = item.id;
+                option.textContent = item.label;
+                subjectSel.append(option);
+            });
+            subjectSel.value = subject;
+            subjectSel.addEventListener("change", () => setSubject(subjectSel.value));
+        }
+        syncWeb();
 
         loadModels();
 
