@@ -858,9 +858,9 @@
         /* api/chat.py keeps the provider keys (Hugging Face, OpenRouter,
            Gemini) on the server and is the only endpoint this page talks to.
            Model ids are namespaced like "openrouter:openai/gpt-5-mini" or
-           "gemini:gemini-flash-latest". */
+           "gemini:gemini-3.5-flash-lite". */
         const PROXY_URL = "/api/chat";
-        const DEFAULT_MODEL = "gemini:gemini-flash-latest";
+        const DEFAULT_MODEL = "gemini:gemini-3.5-flash-lite";
         const HUMAN_STYLE = "Write your reply in a natural, human tone: conversational, no robotic filler, no unnecessary bullet lists, and never use em dashes.";
 
         let chats = loadChats();

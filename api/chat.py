@@ -16,7 +16,7 @@ Providers (each only shows up once its key is set on the server):
     OPENROUTER_API_KEY_2  optional second OpenRouter key, used by whichever
                         OpenRouter model names it (see "model_env" below)
 
-Model ids are namespaced by provider, e.g. "gemini:gemini-flash-latest" or
+Model ids are namespaced by provider, e.g. "gemini:gemini-3.5-flash-lite" or
 "openrouter:openai/gpt-5-mini", so the page can tell which key to use without
 guessing. Gemini replies are converted back into the OpenAI shape, so the page
 only ever has to understand one response format.
@@ -48,10 +48,16 @@ PROVIDERS = {
         "env": "GEMINI_API_KEY",
         "base": "https://generativelanguage.googleapis.com/v1beta",
         "kind": "gemini",
-        # "gemini-flash-latest" is Google's rolling alias; today it resolves to
-        # the Gemini 3.8 Flash model the picker names.
+        # Google's newest Flash model ("gemini-flash-latest", currently
+        # gemini-3.8-flash) has a tiny free daily allowance: 20 requests per
+        # project per day, which a chat session burns through in minutes. The
+        # Flash-Lite line is built for high-volume traffic and carries a far
+        # larger free quota, so it is the default here. The previous Flash
+        # generation sits next to it for harder questions; every Gemini model
+        # has its own daily bucket, so the two together outlast either alone.
         "models": [
-            ("gemini-flash-latest", "Gemini 3.8 Flash", True),
+            ("gemini-3.5-flash-lite", "Gemini 3.5 Flash-Lite", True),
+            ("gemini-3.5-flash", "Gemini 3.5 Flash", True),
         ],
     },
     "huggingface": {
