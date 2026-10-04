@@ -283,6 +283,71 @@
             margin-bottom: 10px;
         }
 
+        /* ── profile picture picker ─────────────────────────────────────── */
+
+        .icon-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--bg, #07140b) 70%, black 30%);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 16%, transparent);
+        }
+
+        .picker-preview {
+            width: 46px;
+            height: 46px;
+            flex: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: var(--accent, #63ff93);
+            background: color-mix(in srgb, var(--bg, #07140b) 60%, black 40%);
+            border: 2px solid color-mix(in srgb, var(--accent, #63ff93) 45%, transparent);
+        }
+
+        .icon-upload-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .icon-upload-text strong {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .icon-upload-text span {
+            font-size: 12px;
+            line-height: 1.4;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 50%, transparent);
+        }
+
+        .icon-upload-row .btn {
+            flex: none;
+            padding: 9px 14px;
+        }
+
+        .icon-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .icon-group-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 50%, transparent);
+            margin-bottom: 8px;
+        }
+
         .sync-row {
             display: flex;
             align-items: center;
@@ -428,12 +493,36 @@
                     </div>
 
                     <div style="margin-top: 18px;">
-                        <div class="section-title">Icon</div>
-                        <div class="icon-grid" id="iconGrid"></div>
-                        <button class="btn ghost" id="uploadIconBtn" type="button" style="margin-top: 10px;">
-                            <i class="ri-upload-2-line"></i> Upload your own
-                        </button>
-                        <input id="iconUpload" type="file" accept="image/*" hidden>
+                        <div class="section-title">Profile picture</div>
+
+                        <!-- Your current picture, an upload shortcut, then the
+                             icon sets below. -->
+                        <div class="icon-upload-row">
+                            <div class="picker-preview"><i id="pickerPreview" class="ri-user-line"></i></div>
+                            <div class="icon-upload-text">
+                                <strong>Make it yours</strong>
+                                <span>Pick an icon below, or upload a photo.</span>
+                            </div>
+                            <button class="btn ghost" id="uploadIconBtn" type="button">
+                                <i class="ri-upload-2-line"></i> Upload
+                            </button>
+                            <input id="iconUpload" type="file" accept="image/*" hidden>
+                        </div>
+
+                        <div class="icon-groups">
+                            <div class="icon-group">
+                                <div class="icon-group-label">Letters &amp; logos</div>
+                                <div class="icon-grid" id="iconGridLetters"></div>
+                            </div>
+                            <div class="icon-group">
+                                <div class="icon-group-label">Tiles</div>
+                                <div class="icon-grid" id="iconGridTiles"></div>
+                            </div>
+                            <div class="icon-group">
+                                <div class="icon-group-label">Icons</div>
+                                <div class="icon-grid" id="iconGridIcons"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -479,14 +568,21 @@
                         </div>
                     </div>
                     <p class="hint" style="margin-top: 10px;">
-                        Sync uploads every site setting plus any save data games keep in this
-                        browser, and restores them on your other devices. Changes also sync
-                        automatically while you're signed in.
+                        While you're signed in, your <b>settings, favourites, bookmarks and
+                        game progress</b> are saved to the cloud and restored on every device
+                        you sign into with this account. Changes sync on their own, or press
+                        Sync now to do it straight away.
                     </p>
                     <p class="msg" id="syncMsg"></p>
                 </div>
 
-                <p class="hint">
+                <p class="hint" id="guestNote" hidden>
+                    You're browsing as a <b>guest</b>, so your settings, favourites and game
+                    progress only save on this device and this link. Log in or sign up below
+                    to keep them on every device you use.
+                </p>
+
+                <p class="hint" id="rememberNote" hidden>
                     Signing in remembers you on this browser and lets you set your username
                     and profile icon, which then sync across your devices.
                 </p>
@@ -578,6 +674,12 @@
                 if (A.applyIcon) A.applyIcon(glyph, profile.icon);
                 else glyph.className = profile.icon;
 
+                var preview = $("pickerPreview");
+                if (preview) {
+                    if (A.applyIcon) A.applyIcon(preview, profile.icon);
+                    else preview.className = profile.icon;
+                }
+
                 var nameInput = $("usernameInput");
                 if (document.activeElement !== nameInput) nameInput.value = profile.username || "";
 
@@ -593,6 +695,11 @@
                 var prompt = $("profilePrompt");
                 if (prompt) prompt.hidden = signedIn || !configured;
 
+                var guest = $("guestNote");
+                if (guest) guest.hidden = signedIn || !configured;
+                var remember = $("rememberNote");
+                if (remember) remember.hidden = configured;
+
                 $("authView").hidden = signedIn || !configured;
                 $("accountView").hidden = !signedIn;
 
@@ -602,6 +709,7 @@
                           (status.savedCount ? " · " + status.savedCount + " items saved" : "")
                         : "Not synced yet";
                     $("syncBtn").disabled = !!status.busy;
+                    if (status.error) setMsg($("syncMsg"), status.error, false);
                 }
             }
 
@@ -667,25 +775,26 @@
                     return svgTile(c1, c2, glyph);
                 }
 
+                // `group` decides which section of the picker each tile lands in.
                 return [
-                    { title: "Google dots", icon: svgTile(GOOGLE.paper, GOOGLE.paperDeep, dots) },
-                    { title: "K", icon: tile(GOOGLE.blue, GOOGLE.blueDeep, letter("K", "#FFF")) },
-                    { title: "R", icon: tile(GOOGLE.red, GOOGLE.redDeep, letter("R", "#FFF")) },
-                    { title: "T", icon: tile(GOOGLE.yellow, GOOGLE.yellowDeep, letter("T", "#FFF"), true) },
-                    { title: "P", icon: tile(GOOGLE.green, GOOGLE.greenDeep, letter("P", "#FFF")) },
-                    { title: "A", icon: tile(GOOGLE.blueDeep, "#174EA6", letter("A", "#FFF")) },
-                    { title: "Star", icon: tile(GOOGLE.blue, GOOGLE.blueDeep, star) },
-                    { title: "Person", icon: tile(GOOGLE.green, GOOGLE.greenDeep, person) },
-                    { title: "Heart", icon: tile(GOOGLE.red, GOOGLE.redDeep, heart) },
-                    { title: "Bolt", icon: tile(GOOGLE.yellow, GOOGLE.yellowDeep, bolt, true) },
-                    { title: "Moon", icon: tile(GOOGLE.blueDeep, "#174EA6", moon) },
-                    { title: "Check", icon: tile(GOOGLE.green, GOOGLE.greenDeep, check) },
-                    { title: "Plus", icon: tile(GOOGLE.blue, GOOGLE.blueDeep, plus) },
-                    { title: "Chat", icon: tile(GOOGLE.red, GOOGLE.redDeep, chat) },
-                    { title: "Play", icon: tile(GOOGLE.blueDeep, "#174EA6", play) },
-                    { title: "Music", icon: tile(GOOGLE.green, GOOGLE.greenDeep, music) },
-                    { title: "Sun", icon: tile(GOOGLE.yellow, GOOGLE.yellowDeep, sun, true) },
-                    { title: "Cloud", icon: tile(GOOGLE.blue, GOOGLE.blueDeep, cloud) }
+                    { group: "letters", title: "Google dots", icon: svgTile(GOOGLE.paper, GOOGLE.paperDeep, dots) },
+                    { group: "letters", title: "K", icon: tile(GOOGLE.blue, GOOGLE.blueDeep, letter("K", "#FFF")) },
+                    { group: "letters", title: "R", icon: tile(GOOGLE.red, GOOGLE.redDeep, letter("R", "#FFF")) },
+                    { group: "letters", title: "T", icon: tile(GOOGLE.yellow, GOOGLE.yellowDeep, letter("T", "#FFF"), true) },
+                    { group: "letters", title: "P", icon: tile(GOOGLE.green, GOOGLE.greenDeep, letter("P", "#FFF")) },
+                    { group: "letters", title: "A", icon: tile(GOOGLE.blueDeep, "#174EA6", letter("A", "#FFF")) },
+                    { group: "tiles", title: "Star", icon: tile(GOOGLE.blue, GOOGLE.blueDeep, star) },
+                    { group: "tiles", title: "Person", icon: tile(GOOGLE.green, GOOGLE.greenDeep, person) },
+                    { group: "tiles", title: "Heart", icon: tile(GOOGLE.red, GOOGLE.redDeep, heart) },
+                    { group: "tiles", title: "Bolt", icon: tile(GOOGLE.yellow, GOOGLE.yellowDeep, bolt, true) },
+                    { group: "tiles", title: "Moon", icon: tile(GOOGLE.blueDeep, "#174EA6", moon) },
+                    { group: "tiles", title: "Check", icon: tile(GOOGLE.green, GOOGLE.greenDeep, check) },
+                    { group: "tiles", title: "Plus", icon: tile(GOOGLE.blue, GOOGLE.blueDeep, plus) },
+                    { group: "tiles", title: "Chat", icon: tile(GOOGLE.red, GOOGLE.redDeep, chat) },
+                    { group: "tiles", title: "Play", icon: tile(GOOGLE.blueDeep, "#174EA6", play) },
+                    { group: "tiles", title: "Music", icon: tile(GOOGLE.green, GOOGLE.greenDeep, music) },
+                    { group: "tiles", title: "Sun", icon: tile(GOOGLE.yellow, GOOGLE.yellowDeep, sun, true) },
+                    { group: "tiles", title: "Cloud", icon: tile(GOOGLE.blue, GOOGLE.blueDeep, cloud) }
                 ];
             }
 
@@ -713,15 +822,19 @@
             }
 
             function buildIcons() {
-                var grid = $("iconGrid");
-                if (!grid) return;
+                // Three tidy sections: letters & logos, colourful tiles, and the
+                // plain Remixicon set.
+                var letters = $("iconGridLetters");
+                var tiles = $("iconGridTiles");
+                var icons = $("iconGridIcons");
+                if (!letters || !tiles || !icons) return;
 
                 ICONS.forEach(function (name) {
-                    makeChip(name, name.replace(/^ri-/, "").replace(/-(fill|line)$/, ""), grid);
+                    makeChip(name, name.replace(/^ri-/, "").replace(/-(fill|line)$/, ""), icons);
                 });
 
                 presetIcons().forEach(function (p) {
-                    makeChip(p.icon, p.title, grid);
+                    makeChip(p.icon, p.title, p.group === "letters" ? letters : tiles);
                 });
             }
 
@@ -840,8 +953,10 @@
                 A.sync().then(function (res) {
                     var pulled = res && res.pulled ? res.pulled.applied : 0;
                     var saved = res && res.pushed ? res.pushed.saved : 0;
+                    var skipped = res && res.pushed ? res.pushed.dropped : 0;
                     var text = "Synced \u2014 " + saved + " item(s) uploaded" +
-                        (pulled ? ", " + pulled + " restored from the cloud." : ".");
+                        (pulled ? ", " + pulled + " restored from the cloud." : ".") +
+                        (skipped ? " " + skipped + " item(s) were too large to sync." : "");
                     setMsg($("syncMsg"), text, true);
                     fireToast("success", "Sync complete!", "fas fa-check-circle");
                 }).catch(fail).finally(function () {

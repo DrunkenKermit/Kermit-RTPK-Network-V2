@@ -855,21 +855,12 @@
         const MODEL_KEY = "cherri_ai_model";
         const MAX_CHATS = 40;
         const MAX_IMAGES = 4;
-        const DEFAULT_MODEL = "openai";
-        /* api/chat.py keeps every provider key on the server, and it is also
-           the honest source of which models work: with a key it lists the
-           provider's whole catalogue, with none it lists the anonymous tier.
-           Without /api/chat the page talks to the older public host itself,
-           which is the only endpoint that still answers without a key. */
+        /* api/chat.py keeps the provider keys (Hugging Face, OpenRouter,
+           Gemini) on the server and is the only endpoint this page talks to.
+           Model ids are namespaced like "openrouter:openai/gpt-5-mini" or
+           "gemini:gemini-flash-latest". */
         const PROXY_URL = "/api/chat";
-        const LEGACY_CHAT_URL = "https://text.pollinations.ai/openai";
-        const LEGACY_TEXT_URL = "https://text.pollinations.ai/";
-        const LEGACY_MODELS_URL = "https://text.pollinations.ai/models";
-        /* A model's "it answered" result is trusted for this long, then retested. */
-        const MODEL_TTL = 6 * 60 * 60 * 1000;
-        /* Above this many models the catalogue is taken on trust instead of
-           pinging every entry during one page load. */
-        const MODEL_TEST_MAX = 24;
+        const DEFAULT_MODEL = "gemini:gemini-flash-latest";
         const HUMAN_STYLE = "Write your reply in a natural, human tone: conversational, no robotic filler, no unnecessary bullet lists, and never use em dashes.";
 
         let chats = loadChats();
@@ -879,7 +870,6 @@
         let mediaStream = null;
         let pipWindow = null;
         let model = DEFAULT_MODEL;
-        let proxyReady = false;
         try {
             model = localStorage.getItem(MODEL_KEY) || DEFAULT_MODEL;
         } catch (e) { }
@@ -1359,143 +1349,42 @@
             } catch (e) { }
         }
 
-        /* ── Model health check ─────────────────────────────────────────── */
-        /* Retired, key-gated or renamed models are dropped so the picker only
-           ever offers one that replies. Results are cached, so a model is
-           retested at most once every MODEL_TTL. */
-        const MODELS_OK_KEY = "cherri_ai_models_ok";
-
-        function modelCache() {
-            try {
-                const raw = JSON.parse(localStorage.getItem(MODELS_OK_KEY) || "{}");
-                return raw && typeof raw === "object" ? raw : {};
-            } catch (e) {
-                return {};
-            }
-        }
-
-        function saveModelCache(cache) {
-            try {
-                localStorage.setItem(MODELS_OK_KEY, JSON.stringify(cache));
-            } catch (e) { }
-        }
-
-        /* Ask one model for a single short reply. A network error counts as
-           "unknown" (true), so a flaky moment never hides a working model. */
-        async function modelAnswers(name) {
-            const headers = { "Content-Type": "application/json" };
-            const body = JSON.stringify({
-                model: name,
-                messages: [{ role: "user", content: "hi" }],
-                max_tokens: 4
-            });
-            try {
-                const res = proxyReady
-                    ? await fetch(PROXY_URL, { method: "POST", headers, body })
-                    : await fetch(LEGACY_CHAT_URL, { method: "POST", headers, body });
-                if (!res.ok) return false;
-                return !!readAnswer(await res.json());
-            } catch (e) {
-                return true;
-            }
-        }
-
-        async function keepWorkingModels(list) {
-            if (!Array.isArray(list) || !list.length) return [];
-            // A big catalogue is already curated upstream; do not fan out.
-            if (list.length > MODEL_TEST_MAX) return list;
-
-            const cache = modelCache();
-            const now = Date.now();
-            const good = {};
-            const toTest = [];
-
-            list.forEach((m) => {
-                const entry = cache[m.name];
-                if (entry && typeof entry.t === "number" && now - entry.t < MODEL_TTL) {
-                    // Known result within the TTL: keep it, or drop it, silently.
-                    if (entry.ok) good[m.name] = true;
-                } else {
-                    toTest.push(m);
-                }
-            });
-
-            let index = 0;
-            async function worker() {
-                while (index < toTest.length) {
-                    const m = toTest[index++];
-                    const ok = await modelAnswers(m.name);
-                    cache[m.name] = { ok: ok, t: now };
-                    if (ok) good[m.name] = true;
-                }
-            }
-            const workers = [];
-            for (let i = 0; i < Math.min(4, toTest.length); i++) workers.push(worker());
-            await Promise.all(workers);
-
-            saveModelCache(cache);
-            return list.filter((m) => good[m.name]);
-        }
-
-        /* The proxy reports the models the server-side key can reach. */
+        /* api/chat.py lists the models whose provider keys are set, so the
+           picker only ever offers a model that has a key behind it. */
         async function loadModels() {
             const sel = $("modelSelect");
             if (!sel) return;
 
             sel.innerHTML = "";
-            const loading = document.createElement("option");
-            loading.value = "";
-            loading.textContent = "Loading models...";
-            sel.append(loading);
+            sel.disabled = true;
 
             let list = [];
-            let reached = false;
+            let problem = "";
             try {
                 const res = await fetch(PROXY_URL, { headers: { Accept: "application/json" } });
-                if (res.ok) {
-                    const data = await res.json();
-                    reached = true;
-                    if (data && Array.isArray(data.models)) list = data.models;
+                const data = await res.json().catch(() => null);
+                if (res.ok && data && Array.isArray(data.models)) {
+                    list = data.models;
+                } else {
+                    problem = errorText(data, "The AI service is unavailable.");
                 }
-            } catch (e) { /* static preview: there is no /api/chat to call */ }
-
-            /* Without /api/chat, read the anonymous catalogue straight from the
-               older host. It is the only endpoint that answers without a key,
-               so its list is exactly the set of models this page can use. */
-            if (!reached) {
-                try {
-                    const res = await fetch(LEGACY_MODELS_URL, { headers: { Accept: "application/json" } });
-                    if (res.ok) {
-                        const data = await res.json();
-                        const all = Array.isArray(data) ? data : (data && data.data) || [];
-                        list = all
-                            .filter((m) => m && (m.name || m.id))
-                            .map((m) => ({
-                                name: m.name || m.id,
-                                title: m.title || m.description || m.name || m.id
-                            }));
-                    }
-                } catch (e) { /* offline: the single default stays */ }
+            } catch (e) {
+                problem = "Could not reach the AI service.";
             }
-
-            proxyReady = reached;
-
-            // Keep only the models that actually reply to a test message.
-            list = await keepWorkingModels(list);
 
             sel.innerHTML = "";
 
             if (!list.length) {
                 const opt = document.createElement("option");
-                opt.value = DEFAULT_MODEL;
-                opt.textContent = "Default";
+                opt.value = "";
+                opt.textContent = problem || "No AI keys configured";
                 sel.append(opt);
-                setModel(DEFAULT_MODEL);
-                sel.value = DEFAULT_MODEL;
                 sel.disabled = true;
+                toast(problem || "Add your AI API keys to start chatting.");
                 return;
             }
 
+            // One flat list: no provider categories.
             list.forEach((m) => {
                 if (!m || !m.name) return;
                 const opt = document.createElement("option");
@@ -1503,12 +1392,31 @@
                 opt.textContent = m.title || m.name;
                 sel.append(opt);
             });
+
             if (!list.some((m) => m.name === model)) setModel(list[0].name);
             sel.value = model;
             sel.disabled = false;
         }
 
         /* ── Sending ────────────────────────────────────────────────────── */
+
+        /* Providers report failures in different shapes: a plain string, or a
+           nested object such as Gemini's {error:{code,message}}. Pull a readable
+           sentence out of either, so the user never sees "[object Object]". */
+        function errorText(data, fallback) {
+            const e = data && data.error;
+            if (typeof e === "string" && e) return e;
+            if (e && typeof e === "object") {
+                if (typeof e.message === "string" && e.message) return e.message;
+                const inner = e.message;
+                if (inner && typeof inner === "object" &&
+                    typeof inner.message === "string" && inner.message) {
+                    return inner.message;
+                }
+            }
+            return fallback;
+        }
+
         function readAnswer(data) {
             const choice = data && data.choices && data.choices[0];
             return choice && choice.message ? choice.message.content : null;
@@ -1524,29 +1432,16 @@
             const messages = [{ role: "user", content: content }];
             const body = JSON.stringify({ model: model || DEFAULT_MODEL, messages: messages });
 
-            // The proxy adds the API key server-side, when one is configured.
-            if (proxyReady) {
-                try {
-                    const res = await fetch(PROXY_URL, { method: "POST", headers: headers, body: body });
-                    const text = readAnswer(await res.json().catch(() => null));
-                    if (text) return text;
-                } catch (e) { /* fall through to the public endpoint */ }
+            // The proxy holds the API keys and talks to the provider.
+            const res = await fetch(PROXY_URL, { method: "POST", headers: headers, body: body });
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                throw new Error(errorText(data, "The AI service returned an error."));
             }
-
-            /* No /api/chat, or it did not answer: the anonymous endpoint is the
-               only host that still replies without a key, so call it directly. */
-            try {
-                const res = await fetch(LEGACY_CHAT_URL, { method: "POST", headers: headers, body: body });
-                if (res.ok) {
-                    const text = readAnswer(await res.json());
-                    if (text) return text;
-                }
-            } catch (e) { /* try the plain text endpoint */ }
-
-            const res = await fetch(LEGACY_TEXT_URL + encodeURIComponent(prompt) +
-                "?model=" + encodeURIComponent(model || DEFAULT_MODEL));
-            if (!res.ok) throw new Error("AI request failed");
-            return await res.text();
+            const text = readAnswer(data);
+            if (!text) throw new Error("The AI returned an empty reply.");
+            return text;
         }
 
         async function send() {
@@ -1578,7 +1473,8 @@
             } catch (e) {
                 console.error(e);
                 pendingMsg.pending = false;
-                pendingMsg.text = "Error: there was a problem reaching the AI. Try again in a moment.";
+                pendingMsg.text = "Error: " + ((e && e.message) ||
+                    "there was a problem reaching the AI. Try again in a moment.");
                 saveChats();
                 node.innerHTML = "";
                 node.textContent = pendingMsg.text;

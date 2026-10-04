@@ -68,6 +68,9 @@
     var listeners = [];
     var pushTimer = null;
     var channel = null;
+    // Last cloud problem, in plain words, so the account page can show why a
+    // sync failed instead of leaving the user guessing.
+    var lastError = "";
 
     // Resolved once the first auth state is known and the matching sync (if
     // any) has finished. Game pages await it before starting a game so the
@@ -441,6 +444,7 @@
         }).then(function () {
             state.user = null;
             state.signedIn = false;
+            lastError = "";
             emit();
         });
     }
@@ -472,6 +476,7 @@
             };
 
             return h.db.collection("users").doc(user.uid).set(payload).then(function () {
+                lastError = "";
                 setMeta(now, snap.saved);
                 state.lastSync = now;
                 emit();
@@ -479,6 +484,10 @@
                     try { channel.postMessage({ type: "sync", at: now, count: snap.saved }); } catch (e) { }
                 }
                 return { saved: snap.saved, dropped: snap.dropped };
+            }).catch(function (err) {
+                lastError = friendlyError(err);
+                emit();
+                throw err;
             });
         });
     }
@@ -491,6 +500,7 @@
             var meta = getMeta();
 
             return h.db.collection("users").doc(user.uid).get().then(function (doc) {
+                lastError = "";
                 if (!doc.exists) return { applied: 0, empty: true };
 
                 var cloud = doc.data() || {};
@@ -512,6 +522,10 @@
                 emit();
                 return { applied: applied };
             });
+        }).catch(function (err) {
+            lastError = friendlyError(err);
+            emit();
+            throw err;
         });
     }
 
@@ -524,7 +538,9 @@
             state.profile.username = patch.username.slice(0, MAX_USERNAME);
             touched = true;
         }
-        if (patch && typeof patch.icon === "string" && ICON_RE.test(patch.icon) && patch.icon !== state.profile.icon) {
+        // Accept both a Remixicon class and an uploaded picture, so a custom
+        // profile image restores on other devices too.
+        if (patch && typeof patch.icon === "string" && isIconValue(patch.icon) && patch.icon !== state.profile.icon) {
             state.profile.icon = patch.icon;
             touched = true;
         }
@@ -575,7 +591,8 @@
             profile: { username: state.profile.username, icon: state.profile.icon },
             lastSync: state.lastSync || meta.lastSync,
             savedCount: meta.count,
-            busy: state.busy
+            busy: state.busy,
+            error: lastError
         };
     }
 
@@ -606,10 +623,24 @@
             "auth/popup-closed-by-user": "Sign-in was cancelled.",
             "auth/cancelled-popup-request": "Sign-in was cancelled.",
             "auth/configuration-not-found": "Google sign-in is not enabled yet \u2014 turn it on in the Firebase console.",
-            "auth/operation-not-allowed": "That sign-in method is not enabled yet in the Firebase console."
+            "auth/operation-not-allowed": "That sign-in method is not enabled yet in the Firebase console.",
+            // Firestore (the cloud side of sync) either is not created yet or
+            // its rules do not allow the signed-in user to read/write.
+            "permission-denied": "Cloud sync is blocked. In the Firebase console \u2192 Firestore Database, create the database and publish rules that let a signed-in user read and write their own document. Until then, everything still saves on this device.",
+            "failed-precondition": "Cloud sync needs Firestore turned on. Open the Firebase console \u2192 Firestore Database and click Create database, then try Sync now again.",
+            "not-found": "The Firestore database hasn't been created yet. Open the Firebase console \u2192 Firestore Database and click Create database, then try Sync now again.",
+            "unavailable": "Couldn't reach the cloud just now \u2014 check your connection and press Sync now again.",
+            "deadline-exceeded": "The cloud took too long to answer \u2014 press Sync now to try again.",
+            "resource-exhausted": "This account's cloud save is too large to sync in one go."
         };
 
         if (map[code]) return map[code];
+
+        // Firestore phrases a missing database in its message rather than a
+        // dedicated code, so catch that wording too.
+        if (err && err.message && /does not exist|has not been used|not been enabled|create.*database/i.test(err.message)) {
+            return "Cloud sync needs Firestore turned on. Open the Firebase console \u2192 Firestore Database and click Create database, then press Sync now again.";
+        }
 
         // Google (OAuth) sign-in only works from domains listed in the Firebase
         // project, so name the exact address that has to be added.

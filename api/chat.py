@@ -1,41 +1,28 @@
 """
 Kermit (RTPK) Network - AI proxy.
 
-The site itself is static, so an API key can never live in the page: anything
-shipped to the browser is public. This endpoint keeps the key on the server and
-forwards the request instead.
+The site is static, so an API key can never live in the page: anything shipped
+to the browser is public. This endpoint keeps the keys on the server and
+forwards the request to whichever provider the chosen model belongs to.
 
-    GET  /api/chat   -> {"provider", "keyed", "models": [{"name", "title"}, ...]}
-    POST /api/chat   -> OpenAI-shaped chat completion  {model, messages}
+    GET  /api/chat  -> {"providers": [...], "models": [{"name", "title", "provider"}]}
+    POST /api/chat  -> {model, messages}  -> OpenAI-shaped chat completion
 
-Providers, in priority order:
-    AI_WORKER_PROXY_URL -> your own AI-Worker-Proxy on Cloudflare Workers
-                           (OpenAI-compatible, key + token rotation, failover)
-    NAVY_API_KEY        -> https://api.navy/v1          (OpenAI-compatible)
-    POLLINATIONS_KEY    -> https://gen.pollinations.ai  (they now require a key)
-    on a Vercel deploy  -> https://ai-gateway.vercel.sh/v1, using
-                           AI_GATEWAY_API_KEY, or the VERCEL_OIDC_TOKEN that
-                           Vercel injects into every deployment
-    nothing at all      -> https://text.pollinations.ai, anonymous tier
-                           (/openai + /models; the only keyless models that
-                           actually answer, so the picker stays truthful)
+Providers (each only shows up once its key is set on the server):
 
-The AI Worker Proxy is a self-hosted gateway (fork zxcloli666/AI-Worker-Proxy,
-deploy to Cloudflare, add your provider keys there). It is reached at
-<url>/v1/chat/completions and <url>/v1/models, and it always needs a model:
-the request's model must be one of the route names you defined in routes.json
-(e.g. "fast", "deep-think"). Its token stays on the server, exactly like the
-other keys, so the browser never sees it.
+    GEMINI_API_KEY      Google Gemini                   text + images
+    HUGGINGFACE_API_KEY https://router.huggingface.co    text + images
+    OPENROUTER_API_KEY  https://openrouter.ai/api/v1    text + images
+    OPENROUTER_API_KEY_2  optional second OpenRouter key, used by whichever
+                        OpenRouter model names it (see "model_env" below)
 
-Environment:
-    AI_WORKER_PROXY_URL  your worker URL, e.g. https://ai-proxy.YOU.workers.dev
-    AI_WORKER_PROXY_TOKEN the PROXY_AUTH_TOKEN you set on the worker  (required)
-    AI_WORKER_PROXY_MODEL optional default route name            (default "fast")
-    NAVY_API_KEY         key from your api.navy dashboard
-    POLLINATIONS_KEY     key from https://enter.pollinations.ai/keys
-    AI_GATEWAY_API_KEY   key from the Vercel dashboard; optional, because on
-                         Vercel the deployment's own OIDC token is used when
-                         this is absent. The gateway bills through Vercel.
+Model ids are namespaced by provider, e.g. "gemini:gemini-flash-latest" or
+"openrouter:openai/gpt-5-mini", so the page can tell which key to use without
+guessing. Gemini replies are converted back into the OpenAI shape, so the page
+only ever has to understand one response format.
+
+Set the keys in the project's environment (Settings -> Environment, or the
+hosting env vars). Never put them in this repository.
 """
 
 import json
@@ -44,112 +31,229 @@ import urllib.error
 import urllib.request
 from http.server import BaseHTTPRequestHandler
 
-# Cloudflare in front of api.navy answers 403 to "Python-urllib/x.y", so the
-# client says who it is.
 USER_AGENT = (
     "KermitRTPK-Network/1.0 (+https://github.com/DrunkenKermit/Kermit-RTPK-Network)"
 )
 
 # Vercel rejects a function request body over 4.5 MB before this code is even
-# reached, so there is no point accepting more than that; anywhere else keep
-# room for a screen grab or a few photos.
+# reached; anywhere else keep room for a screen grab or a few photos.
 MAX_BODY = (4 if os.environ.get("VERCEL") else 16) * 1024 * 1024
 TIMEOUT = 120
 
-
-def env_key(*names):
-    for name in names:
-        value = (os.environ.get(name) or "").strip()
-        if value:
-            return value
-    return ""
-
-
-def provider():
-    """The first provider with a credential, Pollinations unauthenticated last."""
-    worker_url = env_key("AI_WORKER_PROXY_URL", "AI_WORKER_PROXY_BASE_URL")
-    worker_token = env_key("AI_WORKER_PROXY_TOKEN", "AI_WORKER_PROXY_KEY")
-    if worker_url and worker_token:
-        return {
-            "name": "worker",
-            "base": worker_url.rstrip("/"),
-            "chat": "/v1/chat/completions",
-            "models": "/v1/models",
-            "key": worker_token,
-            # The worker rejects a request with no model, and only knows the
-            # route names from its routes.json.
-            "default": env_key("AI_WORKER_PROXY_MODEL") or "fast",
-        }
-
-    navy_key = env_key("NAVY_API_KEY")
-    if navy_key:
-        return {
-            "name": "navy",
-            "base": "https://api.navy/v1",
-            "chat": "/chat/completions",
-            "models": "/models",
-            "key": navy_key,
-        }
-
-    pollinations_key = env_key("POLLINATIONS_KEY", "POLLINATIONS_API_KEY")
-    if pollinations_key:
-        return {
-            "name": "pollinations",
-            "base": "https://gen.pollinations.ai",
-            "chat": "/v1/chat/completions",
-            "models": "/models",
-            "key": pollinations_key,
-        }
-
-    # Vercel hands every deployment a short-lived OIDC token, and the AI Gateway
-    # accepts it as a bearer token, so this needs no key configured by hand.
-    gateway_key = env_key("AI_GATEWAY_API_KEY", "VERCEL_OIDC_TOKEN")
-    if gateway_key:
-        return {
-            "name": "gateway",
-            "base": "https://ai-gateway.vercel.sh/v1",
-            "chat": "/chat/completions",
-            "models": "/models",
-            "key": gateway_key,
-            # The gateway rejects a request with no model, unlike the others.
-            "default": "openai/gpt-5.4-nano",
-        }
-
-    # Nothing configured. gen.pollinations.ai now answers 401 to every chat
-    # request without a key, so calling it here would list models that cannot
-    # actually reply. Its older host still serves an anonymous tier, and its
-    # /models endpoint is the honest list of what works keylessly - use that so
-    # the picker never offers a model that fails.
-    return {
-        "name": "pollinations",
-        "base": "https://text.pollinations.ai",
-        "chat": "/openai",
-        "models": "/models",
-        "key": "",
-        "default": "openai-fast",
-    }
+# The whole catalogue. `kind` picks the request/response shape; `vision` says
+# whether the provider accepts image attachments.
+PROVIDERS = {
+    "gemini": {
+        "label": "Google Gemini",
+        "env": "GEMINI_API_KEY",
+        "base": "https://generativelanguage.googleapis.com/v1beta",
+        "kind": "gemini",
+        # "gemini-flash-latest" is Google's rolling alias; today it resolves to
+        # the Gemini 3.8 Flash model the picker names.
+        "models": [
+            ("gemini-flash-latest", "Gemini 3.8 Flash", True),
+        ],
+    },
+    "huggingface": {
+        "label": "Hugging Face",
+        "env": "HUGGINGFACE_API_KEY",
+        "base": "https://router.huggingface.co/v1",
+        "chat": "/chat/completions",
+        "kind": "openai",
+        # Same reason as OpenRouter: cap the ask so a credit check doesn't
+        # reserve the model's whole output window.
+        "max_tokens": 4096,
+        "models": [
+            ("deepseek-ai/DeepSeek-V4.1-Flash", "DeepSeek V4.1 Flash", True),
+        ],
+    },
+    "openrouter": {
+        "label": "OpenRouter",
+        "env": "OPENROUTER_API_KEY",
+        "base": "https://openrouter.ai/api/v1",
+        "chat": "/chat/completions",
+        "kind": "openai",
+        # OpenRouter pre-authorises credit for the model's *maximum* output when
+        # max_tokens is absent, which makes even cheap models fail with a 402.
+        "max_tokens": 4096,
+        # Two OpenRouter keys can be used at once: a model names the env var that
+        # holds its key, and falls back to OPENROUTER_API_KEY when that is unset.
+        # Any other id still works by asking for "openrouter:<id>" directly.
+        "model_env": {
+            "openai/gpt-5-mini": "OPENROUTER_API_KEY",
+            "anthropic/claude-haiku-4.5": "OPENROUTER_API_KEY_2",
+        },
+        "models": [
+            ("openai/gpt-5-mini", "GPT-5 mini", True),
+            ("anthropic/claude-haiku-4.5", "Claude Haiku 4.5", True),
+        ],
+    },
+}
 
 
-def upstream(method, path, payload=None):
-    """Call the provider. Returns (status, json-or-error-dict)."""
-    current = provider()
+def env_key(name):
+    return (os.environ.get(name) or "").strip()
+
+
+def model_env(provider, model_id):
+    """Which env var holds this model's key.
+
+    A provider may map a model to its own key ("model_env"); that key is used
+    when it is set, otherwise the provider's default key is used instead.
+    """
+    named = (provider.get("model_env") or {}).get(model_id)
+    if named and env_key(named):
+        return named
+    return provider["env"]
+
+
+def secret_env_names():
+    """Every env var that can hold a provider key."""
+    names = set()
+    for provider in PROVIDERS.values():
+        names.add(provider["env"])
+        names.update((provider.get("model_env") or {}).values())
+    return names
+
+
+def catalogue():
+    """Every model whose own key is set, ready for the picker."""
+    models = []
+    for provider_key, provider in PROVIDERS.items():
+        for model_id, title, vision in provider["models"]:
+            if not env_key(model_env(provider, model_id)):
+                continue
+            models.append({
+                "name": provider_key + ":" + model_id,
+                "title": title,
+                "provider": provider_key,
+                "vision": vision,
+            })
+    return models
+
+
+def resolve(model):
+    """Map a picker value onto (provider_key, model_id)."""
+    if not isinstance(model, str) or not model:
+        return None, None
+
+    if ":" in model:
+        provider_key, model_id = model.split(":", 1)
+        provider_key = provider_key.strip().lower()
+        if provider_key in PROVIDERS and model_id:
+            return provider_key, model_id.strip()
+
+    # A bare id (e.g. one remembered from before) still works if it is known.
+    for provider_key, provider in PROVIDERS.items():
+        for model_id, _title, _vision in provider["models"]:
+            if model_id == model:
+                return provider_key, model_id
+    return None, None
+
+
+def model_vision(provider_key, model_id):
+    """Whether the chosen model accepts image attachments."""
+    for mid, _title, vision in PROVIDERS[provider_key]["models"]:
+        if mid == model_id:
+            return vision
+    return True
+
+
+def decode_data_url(url):
+    """Turn a data: URL into a Gemini inline_data blob."""
+    if not isinstance(url, str) or not url.startswith("data:"):
+        return None
+    try:
+        head, data = url.split(",", 1)
+    except ValueError:
+        return None
+    if ";base64" not in head:
+        return None
+    mime = head[5:].split(";", 1)[0] or "image/png"
+    return {"mime_type": mime, "data": data}
+
+
+def text_only(messages):
+    """Drop image parts for a model that cannot see images."""
+    out = []
+    for message in messages:
+        content = message.get("content")
+        if isinstance(content, list):
+            text = "\n".join(
+                part.get("text", "")
+                for part in content
+                if isinstance(part, dict) and part.get("type") == "text"
+            )
+            out.append({"role": message.get("role", "user"), "content": text})
+        else:
+            out.append(message)
+    return out
+
+
+def gemini_payload(messages):
+    """Convert OpenAI-shaped messages into Gemini contents + system prompt."""
+    contents = []
+    system = []
+
+    for message in messages:
+        content = message.get("content")
+        role = message.get("role", "user")
+        parts = []
+
+        if isinstance(content, str):
+            if content:
+                parts.append({"text": content})
+        elif isinstance(content, list):
+            for part in content:
+                if not isinstance(part, dict):
+                    continue
+                if part.get("type") == "text" and part.get("text"):
+                    parts.append({"text": part["text"]})
+                elif part.get("type") == "image_url":
+                    blob = decode_data_url((part.get("image_url") or {}).get("url"))
+                    if blob:
+                        parts.append({"inline_data": blob})
+
+        if not parts:
+            continue
+        if role in ("system", "developer"):
+            system.extend(parts)
+        else:
+            contents.append({
+                "role": "model" if role == "assistant" else "user",
+                "parts": parts,
+            })
+
+    return contents, system
+
+
+def gemini_reply(data):
+    """Pull the text out of a Gemini response and wrap it in OpenAI shape."""
+    candidates = (data or {}).get("candidates") or []
+    if not candidates:
+        return None
+    content = (candidates[0] or {}).get("content") or {}
+    parts = content.get("parts") or []
+    text = "".join(p.get("text", "") for p in parts if isinstance(p, dict))
+    return text or None
+
+
+def upstream(method, url, env_name, payload=None, header_key=None):
+    """Call a provider. Returns (status, json)."""
+    key = env_key(env_name)
 
     body = None
-    headers = {
-        "Accept": "application/json",
-        "User-Agent": USER_AGENT,
-    }
-
+    headers = {"Accept": "application/json", "User-Agent": USER_AGENT}
     if payload is not None:
         body = json.dumps(payload).encode("utf-8")
         headers["Content-Type"] = "application/json"
+    if key:
+        if header_key:
+            headers[header_key] = key
+        else:
+            headers["Authorization"] = "Bearer " + key
 
-    if current["key"]:
-        headers["Authorization"] = "Bearer " + current["key"]
-
-    request = urllib.request.Request(
-        current["base"] + path, data=body, headers=headers, method=method
-    )
+    request = urllib.request.Request(url, data=body, headers=headers, method=method)
 
     try:
         with urllib.request.urlopen(request, timeout=TIMEOUT) as response:
@@ -159,68 +263,59 @@ def upstream(method, path, payload=None):
         raw = error.read().decode("utf-8", "replace")
         status = error.code
     except Exception as error:  # DNS, timeout, TLS, ...
-        return 502, {"error": "upstream request failed: %s" % error}
+        return 502, {"error": "Could not reach the provider: %s" % error}
 
     try:
         return status, json.loads(raw)
     except ValueError:
-        return status, {"error": (raw[:400] or "empty upstream response")}
+        return status, {"error": (raw[:400] or "empty provider response")}
 
 
-def text_models():
-    """The provider's chat models, flattened for the picker."""
-    current = provider()
-    status, data = upstream("GET", current["models"])
+def call_openai(provider, model_id, messages, vision=True, env_name=None):
+    if not vision:
+        messages = text_only(messages)
+    body = {"model": model_id, "messages": messages}
+    if provider.get("max_tokens"):
+        body["max_tokens"] = provider["max_tokens"]
+    return upstream(
+        "POST",
+        provider["base"] + provider["chat"],
+        env_name or provider["env"],
+        body,
+    )
 
+
+def call_gemini(provider, model_id, messages):
+    contents, system = gemini_payload(messages)
+    if not contents:
+        return 400, {"error": "messages[] has no usable content"}
+
+    body = {"contents": contents}
+    if system:
+        body["systemInstruction"] = {"parts": system}
+
+    url = provider["base"] + "/models/" + model_id + ":generateContent"
+    status, data = upstream("POST", url, provider["env"], body, header_key="x-goog-api-key")
     if status != 200:
-        return []
+        return status, data
 
-    # Pollinations wraps the catalogue in a list, api.navy and the Vercel AI
-    # Gateway in {"data": [...]}.
-    entries = data if isinstance(data, list) else (data or {}).get("data")
-    if not isinstance(entries, list):
-        return []
+    text = gemini_reply(data)
+    if not text:
+        return 502, {"error": "Gemini returned an empty reply."}
+    return 200, {"choices": [{"message": {"role": "assistant", "content": text}}]}
 
-    models = []
-    for item in entries:
-        if not isinstance(item, dict):
-            continue
 
-        # The id is what the provider wants back in "model", so it wins; the
-        # gateway is the one that also carries a human-readable "name".
-        name = item.get("id") or item.get("name")
-        if not name:
-            continue
-
-        if current["name"] == "worker":
-            # Every entry is a route name defined in routes.json, so all of
-            # them are usable chat models; no filtering needed.
-            pass
-        elif current["name"] == "navy":
-            # The catalogue mixes chat, image, audio and embedding models.
-            endpoint = item.get("endpoint")
-            if endpoint and endpoint != "/v1/chat/completions":
-                continue
-        elif current["name"] == "pollinations":
-            if item.get("category") not in (None, "text"):
-                continue
-            # Without a key the paid-only models answer 401, so leave them out
-            # of the picker rather than let a choice fail later.
-            if item.get("paid_only") and not current["key"]:
-                continue
-        elif item.get("type") not in (None, "language"):
-            # The gateway lists 395 models, only 268 of them chat models.
-            continue
-
-        # Legacy Pollinations entries carry a description but no title; use it
-        # so the picker shows "GPT-OSS 20B ..." instead of a bare id.
-        title = item.get("title") or item.get("name") or name
-        if current["name"] == "pollinations" and not item.get("title") and item.get("description"):
-            title = str(item["description"])[:48]
-
-        models.append({"name": name, "title": title})
-
-    return models
+def redact(data):
+    """Never echo a configured key back to the browser."""
+    text = json.dumps(data)
+    for name in secret_env_names():
+        key = env_key(name)
+        if key and key in text:
+            text = text.replace(key, "[redacted]")
+    try:
+        return json.loads(text)
+    except ValueError:
+        return {"error": text[:400]}
 
 
 class handler(BaseHTTPRequestHandler):
@@ -234,15 +329,13 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        current = provider()
-        self._send(
-            200,
-            {
-                "provider": current["name"],
-                "keyed": bool(current["key"]),
-                "models": text_models(),
-            },
-        )
+        self._send(200, {
+            "providers": [
+                k for k, p in PROVIDERS.items()
+                if any(env_key(model_env(p, mid)) for mid, _t, _v in p["models"])
+            ],
+            "models": catalogue(),
+        })
 
     def do_POST(self):
         try:
@@ -265,15 +358,33 @@ class handler(BaseHTTPRequestHandler):
             self._send(400, {"error": "messages[] is required"})
             return
 
-        current = provider()
+        provider_key, model_id = resolve(payload.get("model"))
+        if not provider_key:
+            self._send(400, {
+                "error": "Unknown model. Make sure its provider's API key is set.",
+            })
+            return
 
-        body = {"messages": messages}
-        model = payload.get("model") or current.get("default")
-        if model:
-            body["model"] = model
+        provider = PROVIDERS[provider_key]
+        env_name = model_env(provider, model_id)
+        if not env_key(env_name):
+            self._send(400, {
+                "error": "%s isn't configured on the server yet." % provider["label"],
+            })
+            return
 
-        status, data = upstream("POST", current["chat"], body)
-        self._send(status if 200 <= status < 600 else 502, data)
+        if provider["kind"] == "gemini":
+            status, data = call_gemini(provider, model_id, messages)
+        else:
+            status, data = call_openai(
+                provider,
+                model_id,
+                messages,
+                model_vision(provider_key, model_id),
+                env_name,
+            )
+
+        self._send(status if 200 <= status < 600 else 502, redact(data))
 
     def log_message(self, *args):
         # Never log request bodies: they can carry the conversations.
