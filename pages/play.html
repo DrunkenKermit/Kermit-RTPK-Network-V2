@@ -14,7 +14,6 @@
     <script src="/assets/js/colors.js"></script>
     <script src="/assets/js/firebase-config.js"></script>
     <script src="/assets/js/account.js" defer></script>
-    <link rel="stylesheet" href="/assets/css/overlay.css">
 </head>
 
 <body style="background: none !important;">
@@ -158,34 +157,6 @@
             background: var(--bg-4);
         }
 
-        #bottom-tip {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            bottom: 5px;
-            font-size: 14px;
-            font-weight: 500;
-            font-style: italic;
-            opacity: .5;
-        }
-
-        .overlay-notice {
-            background: var(--bg-5);
-            color: var(--text);
-            padding: 10px;
-            border: 1px solid var(--border-4);
-            border-radius: 15px;
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            transition: 0.4s;
-            z-index: 3298746986;
-            /* This sits in the middle of the game frame. Without this it stayed
-               invisible but kept swallowing every click aimed at the game. */
-            pointer-events: none;
-        }
     </style>
 
     <div id="particles-container"></div>
@@ -209,54 +180,6 @@
             </button>
         </div>
     </div>
-
-    <div class="overlay-notice">
-        Press Alt + G to open the Game Overlay
-    </div>
-
-    <div id="gameOverlay" class="">
-        <div class="kermit-info">
-            <span id="currentTime">Loading time...</span>
-            <span class="divider"></span>
-            <span id="temperature">Loading temp...</span>
-            <span class="divider"></span>
-            <span id="sessionTime">Loading session time...</span>
-        </div>
-        <div class="record-widget">
-            <h1>Record</h1>
-            <button id="startRecording" style="margin-left: 0;" onclick="startRecording()">
-                <i class="ri-record-circle-line"></i>
-            </button>
-            <button id="stopRecording" disabled style="margin-right: 0;" onclick="stopRecording()">
-                <i class="ri-stop-fill"></i>
-            </button>
-        </div>
-        <div class="game-controls">
-            <h1>Game Controls</h1>
-            <button style="margin-left: 0;"
-                    onclick="refreshGame()" title="Restart">
-                <i class="ri-restart-line"></i>
-            </button>
-            <button onclick="fullscreenGame()" title="Fullscreen">
-                <i class="ri-fullscreen-line" data-fullscreen-icon></i>
-            </button>
-            <button onclick="backToGames()" title="Back to games">
-                <i class="ri-arrow-left-line"></i>
-            </button>
-            <button onclick="popoutGame()" title="Pop out">
-                <i class="ri-external-link-line"></i>
-            </button>
-            <button onclick="downloadGame()" id="downloadBtn" title="Download">
-                <i class="ri-download-line"></i>
-            </button>
-            <button style="margin-right: 0;" onclick="window.location.href = '/pages/games.html'" title="Back to games">
-                <i class="ri-door-open-line"></i>
-            </button>
-        </div>
-        <iframe src="/pages/browser-minimum.html" frameborder="0" class="proxy-widget"></iframe>
-    </div>
-
-    <p id="bottom-tip">If a game doesn't work, try popping it out!</p>
 
     <script>
         const ul = document.getElementById("nav-ul")
@@ -381,33 +304,6 @@
         function loadGame(src) {
             gameframe.src = src;
             gameframe.focus()
-            // Only the games vendored under /stores/gn-math can actually be
-            // downloaded; remote repo games are cross-origin downloads.
-            document.getElementById("downloadBtn").style.display =
-                (src && src.indexOf("/stores/gn-math/") !== -1) ? "" : "none"
-            gameframe.onload = () => {
-                // Games hosted on another domain have no reachable contentDocument
-                // (and a few entries, like Territorial.io, are external links).
-                let doc = null
-                try {
-                    doc = gameframe.contentDocument
-                } catch (e) {
-                    doc = null
-                }
-                if (!doc || !doc.head) return
-                const head = doc.head
-
-                const script = doc.createElement("script");
-                script.textContent = `
-                    window.addEventListener("keydown", (e) => {
-                        if (e.altKey && e.code === "KeyG") {
-                            parent.postMessage({ type: "alt-g" }, "*");
-                        }
-                    });
-                `
-
-                head.appendChild(script)
-            }
         }
 
         // Store games are served through stores/sw.js, which gives them back a
@@ -558,168 +454,6 @@
             });
         }
 
-        const useOverlay = localStorage.getItem("cherri_useOverlay") ?? "yes"
-
-        if (useOverlay === "yes") {
-            initOverlay()
-        }
-
-        function initOverlay() {
-            const controls = document.querySelector(".gamecontrols")
-            const frame = document.querySelector("#gameframe")
-            const overlay = document.getElementById("gameOverlay")
-            const overlayNotice = document.querySelector(".overlay-notice")
-            controls.style.display = "none"
-            document.querySelector("#bottom-tip").style.display = "none"
-            frame.style.height = "100vh"
-            frame.style.width = "100vw"
-            frame.style.border = "none"
-            frame.style.borderRadius = "0"
-            setTimeout(() => {
-                overlayNotice.style.opacity = 1
-            }, 500)
-            setTimeout(() => {
-                overlayNotice.style.opacity = 0
-            }, 3000)
-            window.addEventListener("message", (ev) => {
-                if (ev.data.type === "alt-g") {
-                    if (overlay.classList.contains("active")) {
-                        overlay.classList.remove("active")
-                    } else {
-                        overlay.classList.add("active")
-                    }
-                }
-            });
-            document.addEventListener("keydown", (e) => {
-                if (e.altKey && e.key === "g") {
-                    if (overlay.classList.contains("active")) {
-                        overlay.classList.remove("active")
-                    } else {
-                        overlay.classList.add("active")
-                    }
-                }
-            })
-        }
-
-        async function getTemp() {
-            const loc = await fetch("https://ipapi.co/json/").then(r => r.json());
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true`;
-            const weather = await fetch(url).then(r => r.json());
-            return weather.current_weather.temperature;
-        }
-
-        getTemp().then(t => {
-            document.getElementById("temperature").textContent = Math.trunc((t * 1.8) + 32) + "°F";
-        });
-
-        function getOSTime() {
-            const now = new Date();
-            return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-        }
-
-        setInterval(getOSTime(), 60000)
-
-        document.getElementById("currentTime").textContent = getOSTime()
-
-        let recorder;
-        let chunks = [];
-
-        async function startRecording() {
-            try {
-                const stream = await navigator.mediaDevices.getDisplayMedia({
-                    video: {
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 },
-                        frameRate: { ideal: 60 }
-                    },
-                    audio: true
-                });
-                document.getElementById("stopRecording").disabled = false
-                document.getElementById("startRecording").style.background = "var(--accent)"
-
-                recorder = new MediaRecorder(stream);
-
-                recorder.ondataavailable = e => chunks.push(e.data);
-
-                recorder.onstop = async () => {
-                    const blob = new Blob(chunks, { type: "video/mp4" });
-                    chunks = [];
-
-                    stream.getTracks().forEach(track => track.stop());
-
-                    try {
-                        const handle = await window.showSaveFilePicker({
-                            suggestedName: "Kermit_Game_Recording" + Date.now() + ".mp4",
-                            types: [{
-                                description: "Video Files",
-                                accept: { "video/mp4": [".mp4"] }
-                            }]
-                        });
-
-                        const writable = await handle.createWritable();
-                        await writable.write(blob);
-                        await writable.close();
-
-                    } catch (err) {
-                        if (err.name !== "AbortError") {
-                            console.error("Save failed:", err);
-                        }
-                    }
-                };
-
-                recorder.start();
-
-                console.log("Screen recording started");
-                document.getElementById("stopRecording").disabled = false
-                document.getElementById("startRecording").style.pointerEvents = "none"
-
-
-            } catch (err) {
-                console.error("Error:", err);
-            }
-        }
-
-        function stopRecording() {
-            recorder.stop();
-            console.log("STOP.")
-            document.getElementById("stopRecording").disabled = true
-            document.getElementById("startRecording").style.background = "var(--bg-2)"
-            document.getElementById("startRecording").style.pointerEvents = "auto"
-        }
-
-        const sT = document.getElementById("sessionTime")
-        window.addEventListener("DOMContentLoaded", () => {
-            let elapsed = 0
-
-            function format(ms) {
-                let totalSeconds = Math.floor(ms / 1000)
-                let hours = Math.floor(totalSeconds / 3600)
-                let minutes = Math.floor((totalSeconds % 3600) / 60)
-                let seconds = totalSeconds % 60
-
-                hours = hours < 10 ? '0' + hours : hours;
-                minutes = minutes < 10 ? '0' + minutes : minutes;
-                seconds = seconds < 10 ? '0' + seconds : seconds;
-
-                return `${hours}:${minutes}:${seconds}`;
-            }
-
-            setInterval(() => {
-                elapsed = 1000 + elapsed
-                sT.textContent = format(elapsed)
-            }, 1000)
-        })
-
-
-        function downloadGame() {
-            const src = document.getElementById("gameframe").src
-            const download = document.createElement("a")
-            download.href = src
-            download.download = src.replace(`${window.location.origin}/stores/gn-math/`, "")
-            document.body.append(download)
-            download.click()
-            download.remove()
-        }
     </script>
     <div id="cursor-thank-you-zxs"
         style="position: fixed; top: 0px; left: 0px; width: 16px; height: 16px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 70%, white 30%); pointer-events: none; z-index: 9999; transform: translate(748px, 592px); transition: width 0.15s, height 0.15s, opacity 0.15s; mix-blend-mode: difference; opacity: 0;">

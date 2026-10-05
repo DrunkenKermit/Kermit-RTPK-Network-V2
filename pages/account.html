@@ -244,35 +244,47 @@
             background: color-mix(in srgb, var(--accent, #63ff93) 18%, transparent);
         }
 
+        /* Google-account style picker: a grid of round avatars, a ring on the
+           one you picked, and a larger live preview above it. */
         .icon-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+            gap: 10px;
         }
 
         .icon-grid button {
+            position: relative;
             aspect-ratio: 1;
-            font-size: 22px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: color-mix(in srgb, var(--text, #d7ffe6) 72%, transparent);
             background: color-mix(in srgb, var(--bg, #07140b) 78%, black 22%);
             border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 16%, transparent);
-            border-radius: 10px;
+            border-radius: 50%;
             cursor: pointer;
-            transition: border-color 0.12s ease, color 0.12s ease, transform 0.12s ease;
+            transition: border-color 0.12s ease, color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .icon-grid button img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .icon-grid button:hover {
             transform: translateY(-2px);
             color: var(--accent, #63ff93);
+            border-color: color-mix(in srgb, var(--accent, #63ff93) 45%, transparent);
         }
 
         .icon-grid button.active {
             border-color: var(--accent, #63ff93);
             color: var(--accent, #63ff93);
-            box-shadow: 0 0 12px color-mix(in srgb, var(--accent, #63ff93) 25%, transparent);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #63ff93) 85%, transparent),
+                0 0 14px color-mix(in srgb, var(--accent, #63ff93) 30%, transparent);
         }
 
         .section-title {
@@ -296,17 +308,25 @@
         }
 
         .picker-preview {
-            width: 46px;
-            height: 46px;
+            width: 60px;
+            height: 60px;
             flex: none;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 28px;
+            overflow: hidden;
             color: var(--accent, #63ff93);
             background: color-mix(in srgb, var(--bg, #07140b) 60%, black 40%);
             border: 2px solid color-mix(in srgb, var(--accent, #63ff93) 45%, transparent);
+            box-shadow: 0 0 16px color-mix(in srgb, var(--accent, #63ff93) 22%, transparent);
+        }
+
+        .picker-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .icon-upload-text {
@@ -727,11 +747,12 @@
             };
 
             function svgTile(c1, c2, glyph) {
+                // rx = half the box, so every tile renders as a round avatar.
                 var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
                     '<defs><linearGradient id="t" x1="0" y1="0" x2="1" y2="1">' +
                     '<stop offset="0" stop-color="' + c1 + '"/>' +
                     '<stop offset="1" stop-color="' + c2 + '"/></linearGradient></defs>' +
-                    '<rect width="64" height="64" rx="18" fill="url(#t)"/>' + glyph + '</svg>';
+                    '<rect width="64" height="64" rx="32" fill="url(#t)"/>' + glyph + '</svg>';
                 return "data:image/svg+xml;base64," + btoa(svg);
             }
 

@@ -75,5 +75,3 @@ window.addEventListener("DOMContentLoaded", () => {
     document.getElementById("create-btn").disabled = false;
   }
 });
-
-showToast("success", "VMs are still in beta! Report bugs in the Discord or on the repo.", "fas fa-exclamation-circle")

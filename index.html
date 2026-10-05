@@ -109,8 +109,7 @@
                 </a>
             </li>
             <li>
-                <a onclick="navTo('assistant'); showToast('success', 'AI is in beta! Report bugs on the repo', 'fas fa-exclamation-triangle')"
-                    href="#" data-page="ai" title="AI Assistant">
+                <a onclick="navTo('assistant')" href="#" data-page="ai" title="AI Assistant">
                     <i class="ri-robot-2-line"></i>
                 </a>
             </li>
@@ -150,7 +149,6 @@
         <p id="splash" class="text-medium font-light text-white/50">
             wsp
         </p>
-        <br><br>
     </div>
 
     <div class="toast-container fixed right-4 top-4 w-1/4">
@@ -220,10 +218,6 @@
                         "color: white; background: linear-gradient(to bottom right, #040c16, #000000); border-radius: 5px; font-weight: bold; padding: 6px; font-family: sans-serif;",
                         "color: white; background: transparent; border-radius: 0px; padding: 0px;"
                     );
-                    setTimeout(() => {
-                        showToast("success", "Ultraviolet worker initialized!", "fas fa-check-circle")
-                        console.log("shown toast")
-                    }, 1000)
                 }).catch(e => {
                     console.log("Error registering service worker (UV): " + e)
                     showToast("error", "Failed to register service worker", "fas fa-times-circle")
@@ -235,10 +229,6 @@
                         "color: white; background: linear-gradient(to bottom right, #040c16, #000000); border-radius: 5px; font-weight: bold; padding: 6px; font-family: sans-serif;",
                         "color: white; background: transparent; border-radius: 0px; padding: 0px;"
                     );
-                    setTimeout(() => {
-                        showToast("success", "Scramjet worker initialized", "fas fa-check-circle")
-                        console.log("shown toast")
-                    }, 1000)
                 }).catch(e => {
                     console.log("Error registering service worker (SJ): " + e)
                     showToast("error", "Failed to register service worker", "fas fa-times-circle")
@@ -335,20 +325,6 @@
     <!-- The home search box was removed from this page; rSearch() is kept for
          the in-page browser but nothing on the home page calls it any more. -->
     <script defer>
-        const kermitAttr = document.querySelector("kermitattr")
-        const siteVersion = kermitAttr.getAttribute("version")
-        const savedVer = localStorage.getItem("cherri_siteVersion") ?? ""
-
-        window.addEventListener("DOMContentLoaded", () => {
-            if (savedVer === null || !savedVer) {
-                showToast("success", "Welcome to Kermit (RTPK) Network!", "fas fa-rocket")
-                localStorage.setItem("cherri_siteVersion", siteVersion)
-            } else if (savedVer !== siteVersion) {
-                showToast("success", "Kermit (RTPK) Network was updated! Check settings for more info.", "fas fa-check-circle")
-                localStorage.setItem("cherri_siteVersion", siteVersion)
-            }
-        })
-
         function resetTheme() {
             localStorage.setItem("cherri_theme", "default")
             window.location.reload()

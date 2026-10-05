@@ -7,14 +7,43 @@ body {
     background-color: transparent;
 }
 
+/* ── Theme tokens ─────────────────────────────────────────────────────────
+   Theme files only carry the core palette, so the rest is derived from the
+   active accent here (and in assets/css/elements.css for the subpages). */
+:root {
+    --current-accent: var(--accent);
+    --current-accent-contrast: var(--bg);
+    --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
+    --accent-line: color-mix(in srgb, var(--accent) 42%, transparent);
+    --grad-a: var(--accent);
+    --grad-b: var(--accent-2, var(--accent));
+    --grad-soft: linear-gradient(135deg,
+            color-mix(in srgb, var(--accent) 20%, transparent),
+            transparent 62%);
+    --glow-soft: 0 0 26px color-mix(in srgb, var(--accent) 20%, transparent);
+    --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 30px rgba(0, 0, 0, 0.34);
+    --shadow-2: 0 24px 60px rgba(0, 0, 0, 0.45);
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --font-body: "geist", "inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display: "geist", "inter", system-ui, sans-serif;
+}
+
 html {
-    /* Kermit (RTPK) backdrop: accent glow over the green gradient, veiled so content stays legible */
+    /* Kermit (RTPK) backdrop: two accent glows over a diagonal accent gradient,
+       veiled just enough to stay legible. The veil is lighter than before so the
+       theme colour actually reads instead of fading to flat dark. */
     background:
-        radial-gradient(circle at 50% 8%,
-            color-mix(in srgb, var(--accent) 26%, transparent), transparent 55rem),
-        linear-gradient(color-mix(in srgb, var(--bg) 84%, transparent),
-            color-mix(in srgb, var(--bg) 94%, transparent)),
-        linear-gradient(135deg, var(--accent-2), var(--accent));
+        radial-gradient(60rem 42rem at 50% -12%,
+            color-mix(in srgb, var(--accent) 22%, transparent), transparent 72%),
+        radial-gradient(52rem 38rem at 88% 112%,
+            color-mix(in srgb, var(--accent-2, var(--accent)) 20%, transparent), transparent 72%),
+        linear-gradient(160deg,
+            color-mix(in srgb, var(--bg) 74%, transparent),
+            color-mix(in srgb, var(--bg) 90%, transparent)),
+        linear-gradient(135deg, var(--accent-2, var(--accent)), var(--accent));
+    background-attachment: fixed;
 }
 
 
@@ -1794,4 +1823,16 @@ span.online-count {
     #homeContent h1 {
         font-size: clamp(1.5rem, 8.5vw, 2.6rem);
     }
+}
+
+/* ── Home hero ─────────────────────────────────────────────────────────────
+   The landing page is intentionally just the title and the rotating splash
+   line; this keeps those two elements centred as a single stack. */
+#homeContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: min(900px, 94vw);
+    padding: 0 16px;
 }

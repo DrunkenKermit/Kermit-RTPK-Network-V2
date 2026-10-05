@@ -614,7 +614,7 @@ async function fixProxy() {
    entry point is wrapped so a chrome hiccup can never interrupt navigation. */
 
 const BOOKMARKS_KEY = "cherri_bookmarks";
-const MAX_BOOKMARKS = 8;
+const MAX_BOOKMARKS = 10;
 
 // Chrome bookkeeping must never be able to break navigation, so all of it goes
 // through this guard.
@@ -681,7 +681,7 @@ function renderChrome() {
   }
 }
 
-// The start page shows eight slots, so this keeps the list to eight and says so
+// The start page shows ten slots, so this keeps the list to ten and says so
 // rather than silently ignoring the click.
 function toggleBookmark() {
   const cTab = currentTab();

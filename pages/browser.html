@@ -109,7 +109,9 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            padding: 10px 12px;
+            /* Extra top padding keeps a comfortable gap between the browser
+               tabs and the toolbar above them. */
+            padding: 48px 12px 10px;
             background: color-mix(in srgb, var(--bg) 82%, transparent 18%);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-4);
@@ -364,7 +366,7 @@
            width:400px), so the measured frame offset below it stays right. */
         @media (max-width: 780px) {
             .browser-controls {
-                padding: 8px;
+                padding: 42px 8px 8px;
                 gap: 6px;
             }
 

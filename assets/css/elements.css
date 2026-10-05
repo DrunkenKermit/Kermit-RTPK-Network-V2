@@ -2,14 +2,45 @@ body {
     margin: 0;
 }
 
+/* ── Theme tokens ─────────────────────────────────────────────────────────
+   The theme files (assets/css/themes/*.css) only carry the core palette, so
+   the full token set the pages rely on is derived here from whatever theme is
+   active. `--current-accent` and friends therefore resolve on every theme
+   instead of only the default one. */
+:root {
+    --current-accent: var(--accent);
+    --current-accent-contrast: var(--bg);
+    --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
+    --accent-line: color-mix(in srgb, var(--accent) 42%, transparent);
+    --grad-a: var(--accent);
+    --grad-b: var(--accent-2, var(--accent));
+    --grad-soft: linear-gradient(135deg,
+            color-mix(in srgb, var(--accent) 20%, transparent),
+            transparent 62%);
+    --glow-soft: 0 0 26px color-mix(in srgb, var(--accent) 20%, transparent);
+    --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 30px rgba(0, 0, 0, 0.34);
+    --shadow-2: 0 24px 60px rgba(0, 0, 0, 0.45);
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --font-body: "geist", "inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display: "geist", "inter", system-ui, sans-serif;
+}
+
 html {
-    /* Kermit (RTPK) backdrop: accent glow over the green gradient, veiled so content stays legible */
+    /* Kermit (RTPK) backdrop: two accent glows over a diagonal accent gradient,
+       veiled just enough to stay legible. The veil is lighter than before so the
+       theme colour actually reads instead of fading to flat dark. */
     background:
-        radial-gradient(circle at 50% 8%,
-            color-mix(in srgb, var(--accent) 26%, transparent), transparent 55rem),
-        linear-gradient(color-mix(in srgb, var(--bg) 84%, transparent),
-            color-mix(in srgb, var(--bg) 94%, transparent)),
-        linear-gradient(135deg, var(--accent-2), var(--accent));
+        radial-gradient(60rem 42rem at 50% -12%,
+            color-mix(in srgb, var(--accent) 22%, transparent), transparent 72%),
+        radial-gradient(52rem 38rem at 88% 112%,
+            color-mix(in srgb, var(--accent-2, var(--accent)) 20%, transparent), transparent 72%),
+        linear-gradient(160deg,
+            color-mix(in srgb, var(--bg) 74%, transparent),
+            color-mix(in srgb, var(--bg) 90%, transparent)),
+        linear-gradient(135deg, var(--accent-2, var(--accent)), var(--accent));
+    background-attachment: fixed;
     color: var(--text);
 }
 
@@ -31,20 +62,67 @@ html {
 
 /* Page headings on the subpages: same gradient treatment as the home page's
    title, so "Games" / "Apps" do not look like a different site. */
+/* ── Page header ───────────────────────────────────────────────────────────
+   One header treatment for every subpage: the same gradient title and the same
+   muted subtitle underneath. Games, Apps, Movies, Watch and the rest all share
+   these two classes, so the pages read as a single product instead of a set of
+   separately-built screens. */
 .page-title {
     display: block;
     text-align: center;
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 500;
-    line-height: 1.15;
+    font-family: var(--font-display, "geist", "inter", system-ui, sans-serif);
+    font-size: clamp(2.1rem, 5vw, 3.1rem);
+    font-weight: 600;
+    line-height: 1.1;
     margin: 0 0 10px;
     padding: 0 12px;
     box-sizing: border-box;
     overflow-wrap: break-word;
-    background: linear-gradient(to bottom right, var(--accent), var(--accent-2));
+    background: linear-gradient(120deg,
+            var(--accent),
+            color-mix(in srgb, var(--accent) 55%, var(--accent-2, var(--accent))),
+            var(--accent-2, var(--accent)));
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
+    filter: drop-shadow(0 6px 26px color-mix(in srgb, var(--accent) 24%, transparent));
+    letter-spacing: -0.035em;
+    animation: kermitRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* A one-line description under a page title. Muted, centred, and the same
+   size everywhere so the header block is visually identical across pages. */
+.page-sub {
+    display: block;
+    text-align: center;
+    margin: 0 0 6px;
+    padding: 0 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text);
+    opacity: 0.72;
+    animation: kermitRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+}
+
+@keyframes kermitRise {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Respect a user who has asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+
+    .page-title,
+    .page-sub {
+        animation: none;
+    }
 }
 
 a {
@@ -138,14 +216,38 @@ li a {
     width: 150px;
 }
 
+/* Shared nav menu: one accent indicator and one hover treatment, so the menu
+   looks the same on Games, Apps, the Browser and everywhere else. */
+li a::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    width: 3px;
+    height: 60%;
+    border-radius: 3px;
+    background: var(--accent);
+    transform: translateY(-50%) scaleY(0);
+    transform-origin: center;
+    transition: transform 0.18s ease;
+}
+
 li a:hover {
     background: var(--bg-3);
     color: var(--bright-text);
 }
 
+li a:hover::before {
+    transform: translateY(-50%) scaleY(0.55);
+}
+
 li a.active {
     background: var(--bg-3);
     color: var(--bright-text);
+}
+
+li a.active::before {
+    transform: translateY(-50%) scaleY(1);
 }
 
 .ri {
@@ -184,14 +286,84 @@ input {
     border-radius: 10px;
     padding: 10px;
     color: white;
-    transition: 0.2s;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     width: 400px;
+    max-width: 100%;
+    box-sizing: border-box;
     height: 30px;
-    font-size: 17px;
+    font-size: 16px;
 }
 
 input::placeholder {
     color: var(--text);
+    opacity: 0.7;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent-line, var(--accent));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+/* ── Fit the screen ────────────────────────────────────────────────────────
+   Every page should fill the viewport it is opened on, whatever the device,
+   rather than leaving dead space or overflowing sideways. These rules are
+   deliberately generic so they apply to every subpage that loads this sheet. */
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100dvh;
+    box-sizing: border-box;
+}
+
+img,
+svg,
+video,
+canvas {
+    max-width: 100%;
+}
+
+iframe {
+    max-width: 100%;
+}
+
+table {
+    max-width: 100%;
+}
+
+/* Slim, themed scrollbars instead of the chunky default ones. */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--accent) 42%, transparent) transparent;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--accent) 38%, transparent);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--accent) 60%, transparent);
+    background-clip: padding-box;
+}
+
+/* Focus ring for keyboard users only, so mouse clicks stay clean. */
+:focus-visible {
+    outline: 2px solid var(--accent-line, var(--accent));
+    outline-offset: 2px;
 }
 
 .custom-select {

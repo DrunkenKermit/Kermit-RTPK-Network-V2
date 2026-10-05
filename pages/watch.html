@@ -22,7 +22,7 @@
 <style>
 
     button {
-        font-family: arial !important;
+        font-family: var(--font-body, "geist", "inter", system-ui, sans-serif) !important;
     }
 
     html {
@@ -49,7 +49,7 @@
     input {
         background: var(--bg-2) !important;
         font-size: 14px !important;
-        font-family: Arial !important;
+        font-family: var(--font-body, "geist", "inter", system-ui, sans-serif) !important;
         padding: 10px 20px !important;
     }
 
@@ -62,11 +62,58 @@
         position: absolute;
         left: 50%;
         transform: translateX(-50%);
-        font-family: arial;
     }
 
-    span {
-        font-family: Arial;
+    /* Same header treatment as the shared sheet and the catalogue pages. */
+    .page-title {
+        display: block;
+        text-align: center;
+        font-family: var(--font-display, "geist", "inter", system-ui, sans-serif);
+        font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+        font-weight: 600;
+        line-height: 1.15;
+        margin: 0 0 10px;
+        letter-spacing: -0.03em;
+        overflow-wrap: break-word;
+        background: linear-gradient(120deg,
+                var(--accent),
+                color-mix(in srgb, var(--accent) 55%, var(--accent-2, var(--accent))),
+                var(--accent-2, var(--accent)));
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+        filter: drop-shadow(0 6px 26px color-mix(in srgb, var(--accent) 24%, transparent));
+        animation: kermitRise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .page-sub {
+        display: block;
+        text-align: center;
+        margin: 0 0 6px;
+        font-size: 15px;
+        line-height: 1.5;
+        color: var(--text);
+        opacity: 0.72;
+    }
+
+    @keyframes kermitRise {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+        .page-title,
+        .page-sub {
+            animation: none;
+        }
     }
 </style>
 
@@ -76,7 +123,7 @@
 <a href="/pages/movies.html" class="inline-block mb-6 text-[var(--text)] transition-all hover:text-[var(--bright-text)]">← Back to
     Browse</a>
         <div x-show="content">
-            <h1 class="text-4xl font-bold mb-4" x-text="content?.title || content?.name"></h1>
+            <h1 class="page-title" x-text="content?.title || content?.name"></h1>
 
             <div class="mb-6 flex items-center space-x-4 text-[var(--text)]">
                 <span x-show="content?.release_date" x-text="new Date(content.release_date).getFullYear()"></span>
@@ -145,7 +192,7 @@
 
             <div class="bg-[var(--bg)] rounded-3xl p-6">
                 <h3 class="text-xl font-semibold mb-4">Overview</h3>
-                <p class="text-[var(--text)]" style="font-family: Arial;" x-text="content?.overview"></p>
+                <p class="text-[var(--text)]" x-text="content?.overview"></p>
             </div>
             <br><br>
         </div>

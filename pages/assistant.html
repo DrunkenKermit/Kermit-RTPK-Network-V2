@@ -14,7 +14,6 @@
     <script src="/assets/js/colors.js"></script>
     <script src="/assets/js/firebase-config.js"></script>
     <script src="/assets/js/account.js" defer></script>
-    <link rel="stylesheet" href="/assets/css/overlay.css">
     <script src="/assets/js/t.js"></script>
     <link rel="stylesheet" href="/assets/css/t.css">
     <link rel="stylesheet" href="/assets/css/ai-elements.css">
@@ -44,6 +43,8 @@
             z-index: 5;
             background: transparent;
             color: var(--text);
+            /* A little breathing room between the top bar and the toolbar above. */
+            padding-top: 48px;
         }
 
         /* ── Floating chat window (opened from the Screen button) ───────── */
@@ -62,6 +63,11 @@
         /* The narrow window hides tool labels; these two stay readable. */
         body.float-mode .float-tools .tool span {
             display: inline;
+        }
+
+        /* This window only follows the shared screen; it never starts a share. */
+        body.float-mode #shareBtn {
+            display: none;
         }
 
         /* Area picker for a screenshot of the shared screen. */
@@ -1407,22 +1413,68 @@
         }
 
         /* ── Floating chat window ───────────────────────────────────────── */
-        /* Sharing the screen drops the chat into its own window, so it can sit
-           beside whatever you are working on. That window has no screen access
-           of its own, so it asks this page for a frame of the shared screen. */
+        /* Sharing the screen drops the chat into its own always-on-top window
+           so it follows you everywhere: it keeps showing while you switch
+           browser tabs, windows, apps, and even virtual desktops. That window
+           has no screen access of its own, so it asks this page for a frame of
+           the shared screen. */
         const FLOAT_URL = "/pages/assistant.html?float=1";
         const FLOAT_FEATURES = "width=460,height=720,resizable=yes,scrollbars=yes";
         const SHOT_MAX = 1600;
         let floatWin = null;
+        let floatPip = null; // the always-on-top picture-in-picture window, when used
+
+        /* Put the chat in a Document Picture-in-Picture window: a small window
+           the browser keeps on top of everything, so it stays visible across
+           tabs and desktops. The chat runs in a frame inside it and keeps
+           talking to this page for screen shots. */
+        function openPiPWindow() {
+            return documentPictureInPicture
+                .requestWindow({ width: 460, height: 760 })
+                .then((pip) => {
+                    floatPip = pip;
+                    floatWin = pip;
+                    const doc = pip.document;
+                    doc.documentElement.style.height = "100%";
+                    doc.body.style.cssText = "margin:0;height:100%;overflow:hidden;background:#000";
+                    const frame = doc.createElement("iframe");
+                    frame.src = FLOAT_URL;
+                    frame.style.cssText = "border:0;width:100%;height:100%;display:block;background:#000";
+                    doc.body.append(frame);
+                    /* Messages from the frame arrive on the PiP window. */
+                    pip.addEventListener("message", handleShotRequest);
+                    pip.addEventListener("pagehide", () => {
+                        if (floatWin === pip) floatWin = null;
+                        if (floatPip === pip) floatPip = null;
+                    });
+                    return pip;
+                });
+        }
 
         function openFloatWindow() {
-            if (floatWin && !floatWin.closed) return floatWin;
+            if (floatWin && !floatWin.closed) {
+                try { floatWin.focus(); } catch (e) { }
+                return floatWin;
+            }
+            /* Prefer the always-on-top window. It has to be requested straight
+               from the click, before any await, or the browser blocks it. */
+            if (window.documentPictureInPicture) {
+                openPiPWindow().catch(() => {
+                    floatWin = window.open(FLOAT_URL, "kermit-float", FLOAT_FEATURES);
+                    if (!floatWin) toast("Allow pop-ups to keep the chat beside your screen.");
+                });
+                return;
+            }
             floatWin = window.open(FLOAT_URL, "kermit-float", FLOAT_FEATURES);
             if (!floatWin) toast("Allow pop-ups to keep the chat beside your screen.");
             return floatWin;
         }
 
         function closeFloatWindow() {
+            if (floatPip) {
+                try { floatPip.close(); } catch (e) { }
+                floatPip = null;
+            }
             if (floatWin && !floatWin.closed) floatWin.close();
             floatWin = null;
         }
@@ -1438,7 +1490,7 @@
             return canvas.toDataURL("image/jpeg", 0.9);
         }
 
-        window.addEventListener("message", (e) => {
+        function handleShotRequest(e) {
             if (e.origin !== location.origin) return;
             const data = e.data;
             if (!data || data.type !== "kermit-shot-request") return;
@@ -1447,15 +1499,19 @@
                 { type: "kermit-shot", mode: data.mode, dataUrl: sharedFrameDataUrl() },
                 location.origin
             );
-        });
+        }
+        window.addEventListener("message", handleShotRequest);
 
         /* ── Screenshots in the floating window ─────────────────────────── */
         function floatShot(mode) {
-            if (!window.opener || window.opener.closed) {
+            /* A pop-up chats with its opener; the frame inside the
+               picture-in-picture window chats with its parent window. */
+            const host = window.opener || (window.parent !== window ? window.parent : null);
+            if (!host || host.closed) {
                 toast("Start Screen sharing from the main chat window first.");
                 return;
             }
-            window.opener.postMessage({ type: "kermit-shot-request", mode: mode }, location.origin);
+            host.postMessage({ type: "kermit-shot-request", mode: mode }, location.origin);
         }
 
         let shotData = null;

@@ -24,6 +24,22 @@
     --current-accent: #63ff93;
     --current-accent-contrast: #07140b;
     --accent-soft: rgba(99, 255, 147, 0.18);
+    --accent-line: rgba(99, 255, 147, 0.42);
+
+    /* Gradients, glow, elevation and radius tokens. Theme files only carry the
+       core palette, so every theme inherits these from whichever stylesheet is
+       loaded (here, and derived-from-accent in elements.css / styles/index.css). */
+    --grad-a: #63ff93;
+    --grad-b: #0d8f3f;
+    --grad-soft: linear-gradient(135deg, rgba(99, 255, 147, 0.2), transparent 62%);
+    --glow-soft: 0 0 26px rgba(99, 255, 147, 0.2);
+    --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 30px rgba(0, 0, 0, 0.34);
+    --shadow-2: 0 24px 60px rgba(0, 0, 0, 0.45);
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --font-body: "geist", "inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-display: "geist", "inter", system-ui, sans-serif;
 }
 
 #reset-theme {

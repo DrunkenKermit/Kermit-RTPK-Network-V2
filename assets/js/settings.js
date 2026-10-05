@@ -100,9 +100,6 @@
         toggleSwitch("cursor-toggle", read("cherri_customCursor", "yes") === "yes", "updateCur()") +
         '<br><br>' +
 
-        '<h2>Game Overlay</h2>' +
-        '<p>Enable or disable the game overlay, which provides useful tools while gaming such as a browser, recording tools, etc. Turn off if you\'re experiencing performance issues.</p>' +
-        toggleSwitch("overlay-toggle", read("cherri_useOverlay", "yes") === "yes", "updateOverlaySettings()") +
         '<br><br><br>' +
         '</div>' +
 
@@ -289,19 +286,6 @@
             write("cherri_customCursor", "no");
             if (typeof window.applyKermitCursor === "function") window.applyKermitCursor("default");
             toast("success", "Custom cursor is now off!", "fas fa-check-circle");
-        }
-    };
-
-    window.updateOverlaySettings = function () {
-        var toggle = document.getElementById("overlay-toggle");
-        if (!toggle) return;
-
-        if (toggle.checked) {
-            write("cherri_useOverlay", "yes");
-            toast("success", "Game overlay is now on!", "fas fa-check-circle");
-        } else {
-            write("cherri_useOverlay", "no");
-            toast("success", "Game overlay is now off!", "fas fa-check-circle");
         }
     };
 

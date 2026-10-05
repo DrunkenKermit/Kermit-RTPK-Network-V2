@@ -280,9 +280,13 @@
                 canvas.setAttribute("aria-hidden", "true");
                 document.body.appendChild(canvas);
             }
+            // The mask fades the effect out toward the edges so it blends with the
+            // themed backdrop instead of ending on a hard rectangle.
             canvas.style.cssText =
                 "position:fixed;left:0;top:0;width:100%;height:100%;" +
-                "z-index:-1;opacity:.55;pointer-events:none;";
+                "z-index:-1;opacity:.5;pointer-events:none;" +
+                "-webkit-mask-image:radial-gradient(circle at 50% 42%, #000 34%, transparent 96%);" +
+                "mask-image:radial-gradient(circle at 50% 42%, #000 34%, transparent 96%);";
             ctx = canvas.getContext("2d");
         }
 
@@ -339,7 +343,9 @@
             }
             fogEl.style.cssText =
                 "position:fixed;left:0;top:0;width:100%;height:100%;" +
-                "z-index:-1;opacity:.45;pointer-events:none;";
+                "z-index:-1;opacity:.5;pointer-events:none;" +
+                "-webkit-mask-image:radial-gradient(circle at 50% 42%, #000 34%, transparent 96%);" +
+                "mask-image:radial-gradient(circle at 50% 42%, #000 34%, transparent 96%);";
         }
 
         window.VANTA.FOG({

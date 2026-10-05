@@ -74,6 +74,24 @@
         root.classList.toggle("toolbar-bottom", !isHidden && pos === "bottom");
         root.classList.toggle("toolbar-hidden", isHidden);
 
+        // Keep the bar's own inline display in step with the hidden state. The
+        // home page's navTo() writes `nav.style.display` directly, and an inline
+        // style beats the .toolbar-hidden rule - so the arrow would say "hidden"
+        // (and the handle would appear) while the bar stayed on screen. Forcing
+        // the hidden value inline (and clearing it when shown again) makes the
+        // stored state the single source of truth.
+        var bar = toolbar();
+        if (bar) {
+            if (isHidden) {
+                bar.style.setProperty("display", "none", "important");
+            } else {
+                bar.style.removeProperty("display");
+                // navTo() fades the bar out for store pages; clear that too so a
+                // bar brought back with the handle is never stuck at opacity 0.
+                bar.style.removeProperty("opacity");
+            }
+        }
+
         if (isHidden) {
             handle();
         } else {

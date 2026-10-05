@@ -6,10 +6,12 @@
  *   - Sign up / sign in with email + password, or Google (Firebase Auth).
  *   - Profile: username + icon, stored locally (cherri_profile) and on the
  *     account document, painted onto the toolbar account button.
- *   - Sync: every cherri_* setting and any localStorage save data (game
- *     progress) is snapshotted to Firestore (users/{uid}) and can be restored
- *     on another device. Changes made in one tab are pushed automatically, so
- *     two open tabs stay in step.
+ *   - Sync: every user setting and any localStorage save data is snapshotted
+ *     to Firestore (users/{uid}) and can be restored on another device. That
+ *     covers the proxy/browser settings (backend, Wisp, search engine, tab
+ *     cloaking), the site settings (theme, background, toolbar) and the
+ *     browser favourites plus game progress. Changes made in one tab are
+ *     pushed automatically, so two open tabs stay in step.
  *   - Local-only mode: when assets/js/firebase-config.js has not been filled
  *     in, everything still works on this device - only the cloud parts pause.
  *
@@ -675,7 +677,10 @@
                     loadProfile();
                     paintToolbar();
                     emit();
-                } else if (key !== META_KEY && key.indexOf(SETTING_PREFIX) === 0) {
+                } else if (key !== META_KEY && usableKey(key)) {
+                    // Any user data worth syncing: cherri_* settings, the proxy /
+                    // browser preferences, the favourites list and game progress
+                    // all land here, not just the cherri_* keys.
                     schedulePush();
                 }
             }
@@ -696,7 +701,7 @@
             return;
         }
         if (e.key === META_KEY) return;
-        if (e.key.indexOf(SETTING_PREFIX) !== 0) return;
+        if (!usableKey(e.key)) return;
 
         schedulePush();
     });

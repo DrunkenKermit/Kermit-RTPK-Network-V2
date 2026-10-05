@@ -121,9 +121,10 @@
             transform: translateX(-50%);
             z-index: 1000;
             /* Without a top offset the heading sat flush against the top edge of
-               the page, so it read as cut off. */
+               the page, so it read as cut off. The extra top padding also keeps
+               a comfortable gap between the title and the toolbar above it. */
             top: 0;
-            padding-top: 18px;
+            padding-top: 64px;
             box-sizing: border-box;
         }
 
@@ -245,7 +246,7 @@
         .games-heading {
             text-align: center;
             color: var(--text);
-            font-family: Arial;
+            font-family: var(--font-body, "geist", "inter", system-ui, sans-serif);
             font-size: 14px;
             margin-top: 4px;
             opacity: .75;
@@ -276,7 +277,7 @@
             border-radius: 10px;
             padding: 15px 14px;
             cursor: pointer;
-            font-family: Arial;
+            font-family: var(--font-body, "geist", "inter", system-ui, sans-serif);
             font-size: 14px;
             transition: 0.2s;
             white-space: nowrap;
@@ -308,7 +309,7 @@
             padding: 10px 14px;
             cursor: pointer;
             color: var(--text);
-            font-family: Arial;
+            font-family: var(--font-body, "geist", "inter", system-ui, sans-serif);
             font-size: 14px;
             white-space: nowrap;
             transition: 0.2s;
@@ -328,7 +329,7 @@
 
             .hcenter {
                 width: 100%;
-                padding: 0 10px;
+                padding: 44px 10px 0;
                 box-sizing: border-box;
             }
 
@@ -391,7 +392,7 @@
     <div id="particles-container"></div>
     <div class="hcenter games-tools-wrap">
         <h1 class="page-title">Games</h1>
-        <p class="games-heading" id="gameMeta">Loading games...</p>
+        <p class="page-sub" id="gameMeta">Loading games...</p>
         <div class="games-tools">
             <input class="game-search" id="gameSearch" style="margin: 3px;" type="text"
                 placeholder="Search for a game..." autocomplete="off">
@@ -406,7 +407,7 @@
         </div>
     </div>
 
-    <div class="apps-container hcenter" style="top: 210px;">
+    <div class="apps-container hcenter" style="top: 256px;">
     </div>
 
 

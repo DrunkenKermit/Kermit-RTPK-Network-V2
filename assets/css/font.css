@@ -1,6 +1,7 @@
-/* Kermit (RTPK) Network heading font */
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap");
-
+/* Kermit (RTPK) Network type system.
+   One clean geometric grotesque across the whole site. Headings and body both
+   use Geist (bundled), with Inter as a fallback, so nothing reads as a dated
+   serif/magazine look and there is no extra webfont round-trip. */
 @font-face {
     font-family: onest;
     src: url("/assets/fonts/onest.ttf");
@@ -126,15 +127,28 @@
     font-weight: 900;
 }
 
-/* Kermit (RTPK) Network type: Space Grotesk body, Playfair Display headings */
+/* One modern stack everywhere. --font-body / --font-display are set per theme
+   (see assets/css/elements.css and styles/index.css) and fall back cleanly. */
 * {
-    font-family: "space grotesk", inter, sfc, system-ui, sans-serif;
+    font-family: var(--font-body, "geist", "inter", system-ui, -apple-system, "Segoe UI", sans-serif);
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    letter-spacing: -0.011em;
 }
 
 h1,
 h2,
-h3 {
-    font-family: "Playfair Display", "space grotesk", serif;
+h3,
+h4,
+h5 {
+    font-family: var(--font-display, "geist", "inter", system-ui, sans-serif);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
 }
 
 /*
