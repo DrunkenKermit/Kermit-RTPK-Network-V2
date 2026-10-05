@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Drive Home: this is what the tab says for the five seconds the decoy is
+    <!-- Drive Home: this is what the tab says for the ten seconds the decoy is
          on screen, together with Drive's own logo as the icon. -->
     <title>Home - Google Drive</title>
     <link rel="icon" type="image/svg+xml" href="/assets/img/drive.svg">
@@ -135,7 +135,7 @@
             height: 32px;
             margin: 0 6px 0 8px;
             border-radius: 50%;
-            background: #8b3a2f;
+            background: #1a73e8;
             color: #fff;
             font-size: 14px;
             font-weight: 500;
@@ -166,20 +166,22 @@
             height: 56px;
             margin: 8px 0 14px 4px;
             padding: 0 24px 0 16px;
-            border: 1px solid transparent;
+            border: 1px solid #f0f0f0;
             border-radius: 16px;
-            background: var(--surface);
+            background: #fff;
             color: var(--ink);
             font-size: 14px;
             font-weight: 500;
+            box-shadow: 0 1px 2px rgba(60, 64, 67, .3), 0 1px 3px 1px rgba(60, 64, 67, .15);
             transition: box-shadow .15s ease;
         }
 
         .new-btn:hover {
-            box-shadow: 0 1px 4px rgba(60, 64, 67, .3);
+            box-shadow: 0 1px 3px rgba(60, 64, 67, .3), 0 4px 8px 3px rgba(60, 64, 67, .15);
         }
 
         .navlink {
+            position: relative;
             display: flex;
             align-items: center;
             gap: 16px;
@@ -204,6 +206,18 @@
 
         .navlink i {
             font-size: 20px;
+        }
+
+        .navlink .tw {
+            position: absolute;
+            left: 2px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid var(--muted-2);
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
         }
 
         .side-gap {
@@ -232,8 +246,8 @@
         .storage .bar i {
             display: block;
             height: 100%;
-            /* Roughly matches the "used" figure below: 2.6 of 15 GB. */
-            width: 17%;
+            /* Roughly matches the "used" figure below: 4.4 MB of 15 GB. */
+            width: 2%;
             background: var(--blue-icon);
         }
 
@@ -552,6 +566,7 @@
         }
 
         @media (max-width: 860px) {
+
             .sidebar,
             .rail {
                 display: none;
@@ -576,10 +591,7 @@
                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
         </symbol>
         <symbol id="ic-gear" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8" />
-            <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-                <path d="M12 2.6v3M12 18.4v3M2.6 12h3M18.4 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1" />
-            </g>
+            <path d="M19.4 13a7.7 7.7 0 0 0 0-2l2-1.6a.5.5 0 0 0 .1-.6l-1.9-3.3a.5.5 0 0 0-.6-.2l-2.4 1a7.4 7.4 0 0 0-1.7-1l-.4-2.5a.5.5 0 0 0-.5-.4h-3.8a.5.5 0 0 0-.5.4l-.4 2.5c-.6.2-1.2.6-1.7 1l-2.4-1a.5.5 0 0 0-.6.2L2.5 8.8a.5.5 0 0 0 .1.6l2 1.6a7.7 7.7 0 0 0 0 2l-2 1.6a.5.5 0 0 0-.1.6l1.9 3.3c.1.2.4.3.6.2l2.4-1c.5.4 1.1.8 1.7 1l.4 2.5c0 .2.2.4.5.4h3.8c.3 0 .5-.2.5-.4l.4-2.5c.6-.2 1.2-.6 1.7-1l2.4 1c.2.1.5 0 .6-.2l1.9-3.3a.5.5 0 0 0-.1-.6zM12 15.6A3.6 3.6 0 1 1 15.6 12 3.6 3.6 0 0 1 12 15.6z" fill="currentColor" />
         </symbol>
         <symbol id="ic-apps" viewBox="0 0 24 24">
             <g fill="currentColor">
@@ -606,7 +618,10 @@
             <path d="M4 10.6 12 4l8 6.6V20h-5.6v-5.4h-4.8V20H4z" fill="#0b57d0" />
         </symbol>
         <symbol id="ic-drive-small" viewBox="0 0 24 24">
-            <path d="M9 4h6l6 10.4-3 5.2H6L3 14.4z" fill="none" stroke="currentColor" stroke-width="1.6" />
+            <g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+                <rect x="3.2" y="4.2" width="17.6" height="15.6" rx="2.2" />
+                <path d="M12 9.2l3.4 5.6H8.6z" fill="currentColor" stroke="none" />
+            </g>
         </symbol>
         <symbol id="ic-computer" viewBox="0 0 24 24">
             <g fill="none" stroke="currentColor" stroke-width="1.7">
@@ -718,6 +733,26 @@
             <path d="M14 3l4 4h-4z" fill="#a1c2fa" />
             <path d="M9 16l2.5-3 2 2.2 1.5-1.7L18 17H9z" fill="#fff" />
         </symbol>
+        <symbol id="ic-bulb" viewBox="0 0 24 24">
+            <path d="M12 2.6a6 6 0 0 1 3.6 10.8c-.6.5-1 1.2-1.1 2v.4h-5v-.4c-.1-.8-.5-1.5-1.1-2A6 6 0 0 1 12 2.6z" fill="none" stroke="currentColor" stroke-width="1.7" />
+            <path d="M9.5 18.4h5M10.3 21h3.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+        </symbol>
+        <symbol id="ic-check-circ" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="1.7" />
+            <path d="M8.4 12.2l2.4 2.4 4.8-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+        </symbol>
+        <symbol id="ic-list-check" viewBox="0 0 24 24">
+            <g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 7h10M10 12h10M10 17h10" />
+                <path d="M3.5 12.4l1.9 1.9 3.3-3.8" />
+            </g>
+        </symbol>
+        <symbol id="ic-plus-g" viewBox="0 0 24 24">
+            <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z" fill="currentColor" />
+        </symbol>
+        <symbol id="ic-folder-shared" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-5 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 8h-8v-1c0-1.33 2.67-2 4-2s4 .67 4 2v1z" fill="#5f6368" />
+        </symbol>
     </svg>
 
     <header class="topbar">
@@ -739,7 +774,7 @@
         <button class="icon-btn" type="button" aria-label="Google apps"><svg class="icon">
                 <use href="#ic-apps" />
             </svg></button>
-        <div class="avatar">D</div>
+        <div class="avatar" role="img" title="Kendrick Vasquez" aria-label="Google Account: Kendrick Vasquez">K</div>
     </header>
 
     <div class="shell">
@@ -754,10 +789,10 @@
             <a class="navlink active" href="#home" data-nav="1"><svg class="icon">
                     <use href="#ic-home" />
                 </svg>Home</a>
-            <a class="navlink" href="#my-drive" data-nav="1"><svg class="icon">
+            <a class="navlink" href="#my-drive" data-nav="1"><span class="tw"></span><svg class="icon">
                     <use href="#ic-drive-small" />
                 </svg>My Drive</a>
-            <a class="navlink" href="#computers" data-nav="1"><svg class="icon">
+            <a class="navlink" href="#computers" data-nav="1"><span class="tw"></span><svg class="icon">
                     <use href="#ic-computer" />
                 </svg>Computers</a>
 
@@ -788,7 +823,7 @@
             <div class="side-sep"></div>
             <div class="storage">
                 <div class="bar"><i></i></div>
-                <p>2.6 GB of 15 GB used</p>
+                <p>4.4 MB of 15 GB used</p>
                 <a class="more" href="#upgrade">Get more storage</a>
             </div>
         </aside>
@@ -859,11 +894,11 @@
             <div class="folders" data-panel="folders">
                 <button class="folder" type="button">
                     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-folder-blue" />
+                        <use href="#ic-folder-shared" />
                     </svg>
                     <span class="meta">
                         <span class="name">Biology Group Project</span>
-                        <span class="sub">In Shared with me</span>
+                        <span class="sub">in Shared with me</span>
                     </span>
                     <svg class="kebab icon" aria-hidden="true">
                         <use href="#ic-kebab" />
@@ -871,11 +906,11 @@
                 </button>
                 <button class="folder" type="button">
                     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-folder-blue" />
+                        <use href="#ic-folder-shared" />
                     </svg>
                     <span class="meta">
                         <span class="name">World History Notes</span>
-                        <span class="sub">In Shared with me</span>
+                        <span class="sub">in Shared with me</span>
                     </span>
                     <svg class="kebab icon" aria-hidden="true">
                         <use href="#ic-kebab" />
@@ -883,23 +918,23 @@
                 </button>
                 <button class="folder" type="button">
                     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-folder-blue" />
-                    </svg>
-                    <span class="meta">
-                        <span class="name">Book Reports - Term 1</span>
-                        <span class="sub">In Shared with me</span>
-                    </span>
-                    <svg class="kebab icon" aria-hidden="true">
-                        <use href="#ic-kebab" />
-                    </svg>
-                </button>
-                <button class="folder" type="button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-folder-blue" />
+                        <use href="#ic-folder-shared" />
                     </svg>
                     <span class="meta">
                         <span class="name">Yearbook Photos 2026</span>
-                        <span class="sub">In Shared with me</span>
+                        <span class="sub">in Shared with me</span>
+                    </span>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+                <button class="folder" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-folder-shared" />
+                    </svg>
+                    <span class="meta">
+                        <span class="name">Family Photos</span>
+                        <span class="sub">in Shared with me</span>
                     </span>
                     <svg class="kebab icon" aria-hidden="true">
                         <use href="#ic-kebab" />
@@ -916,7 +951,7 @@
                 </button>
                 <span class="viewtoggle">
                     <button class="on" type="button" aria-label="List layout"><svg class="icon">
-                            <use href="#ic-list" />
+                            <use href="#ic-list-check" />
                         </svg></button>
                     <button type="button" aria-label="Grid layout"><svg class="icon">
                             <use href="#ic-grid" />
@@ -942,61 +977,9 @@
 
                 <button class="file-row" type="button">
                     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-sheet" />
-                    </svg>
-                    <span class="name">Reading Log - Semester 1</span>
-                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-people" />
-                    </svg>
-                    <svg class="kebab icon" aria-hidden="true">
-                        <use href="#ic-kebab" />
-                    </svg>
-                </button>
-
-                <button class="file-row" type="button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-video" />
-                    </svg>
-                    <span class="name">Science Fair Presentation.mp4</span>
-                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-people" />
-                    </svg>
-                    <svg class="kebab icon" aria-hidden="true">
-                        <use href="#ic-kebab" />
-                    </svg>
-                </button>
-
-                <button class="file-row" type="button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-video" />
-                    </svg>
-                    <span class="name">Band Concert 2026.mp4</span>
-                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-people" />
-                    </svg>
-                    <svg class="kebab icon" aria-hidden="true">
-                        <use href="#ic-kebab" />
-                    </svg>
-                </button>
-
-                <button class="file-row" type="button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
                         <use href="#ic-doc" />
                     </svg>
                     <span class="name">Class Notes - Algebra 2</span>
-                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-people" />
-                    </svg>
-                    <svg class="kebab icon" aria-hidden="true">
-                        <use href="#ic-kebab" />
-                    </svg>
-                </button>
-
-                <button class="file-row" type="button">
-                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-video" />
-                    </svg>
-                    <span class="name">Volleyball Game vs Northside.mp4</span>
                     <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                         <use href="#ic-people" />
                     </svg>
@@ -1020,9 +1003,9 @@
 
                 <button class="file-row" type="button">
                     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-                        <use href="#ic-video" />
+                        <use href="#ic-doc" />
                     </svg>
-                    <span class="name">Chemistry Lab Demo.mp4</span>
+                    <span class="name">Chemistry Lab Report</span>
                     <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                         <use href="#ic-people" />
                     </svg>
@@ -1035,7 +1018,7 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
                         <use href="#ic-sheet" />
                     </svg>
-                    <span class="name">Weekly Planner 2026-2027</span>
+                    <span class="name">Reading Log - Semester 1</span>
                     <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                         <use href="#ic-people" />
                     </svg>
@@ -1048,7 +1031,59 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
                         <use href="#ic-video" />
                     </svg>
-                    <span class="name">End of Year Assembly.mp4</span>
+                    <span class="name">Science Fair Slides.mp4</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-doc" />
+                    </svg>
+                    <span class="name">Scholarship Essay Draft</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-doc" />
+                    </svg>
+                    <span class="name">Grocery List</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-video" />
+                    </svg>
+                    <span class="name">Weekend Trip Photos.mp4</span>
+                    <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-people" />
+                    </svg>
+                    <svg class="kebab icon" aria-hidden="true">
+                        <use href="#ic-kebab" />
+                    </svg>
+                </button>
+
+                <button class="file-row" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                        <use href="#ic-sheet" />
+                    </svg>
+                    <span class="name">Monthly Budget</span>
                     <svg class="shared" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
                         <use href="#ic-people" />
                     </svg>
@@ -1064,24 +1099,24 @@
         <aside class="rail">
             <button type="button" aria-label="Calendar"><span class="badge">31</span></button>
             <button type="button" aria-label="Keep"><svg class="icon" style="color:#fbbc04">
-                    <use href="#ic-sparkle" />
+                    <use href="#ic-bulb" />
                 </svg></button>
             <button type="button" aria-label="Tasks"><svg class="icon" style="color:#1a73e8">
-                    <use href="#ic-info" />
+                    <use href="#ic-check-circ" />
                 </svg></button>
             <button type="button" aria-label="Contacts"><svg class="icon" style="color:#1a73e8">
                     <use href="#ic-person" />
                 </svg></button>
             <span class="sep"></span>
             <button type="button" aria-label="Get add-ons"><svg class="icon">
-                    <use href="#ic-plus" />
+                    <use href="#ic-plus-g" />
                 </svg></button>
         </aside>
     </div>
 
     <script>
         // Tab decoy: this page is shown first, then hands over to the real site
-        // five seconds after it finishes loading. The redirect is built from
+        // ten seconds after it finishes loading. The redirect is built from
         // window.location.origin on purpose: a bare "/" (or a <base> tag) would
         // otherwise resolve against google.com instead of this site.
         try {
@@ -1093,7 +1128,7 @@
                 // "?launch=1" is the site's own flag for "already past the decoy",
                 // so the hand-off cannot loop even if sessionStorage is blocked.
                 window.location.replace(window.location.origin + "/?launch=1")
-            }, 5000)
+            }, 10000)
         })
 
         // Keep the decoy inert: nothing navigates away. The sidebar only changes
