@@ -1,21 +1,21 @@
-/* Ember — red only.
+/* Orchid — pink and dark pink only.
    Theme files carry only the core palette; the gradient, glow and shadow
    tokens are derived from --accent / --accent-2 in elements.css and
    styles/index.css, so this applies to every page, background and the cursor. */
 :root {
-    --bg: #170808;
-    --bg-2: #260d0d;
-    --bg-3: #3b1414;
-    --bg-4: #561d1d8c;
-    --bg-5: #110505;
+    --bg: #1a0a14;
+    --bg-2: #291022;
+    --bg-3: #401a36;
+    --bg-4: #5c29508c;
+    --bg-5: #13070f;
     --border: rgba(255, 255, 255, 0.78);
     --border-2: rgba(255, 255, 255, 0.44);
     --border-3: rgba(255, 255, 255, 0.19);
     --border-4: rgba(255, 255, 255, 0.1);
     --text: rgba(255, 255, 255, 0.84);
     --bright-text: #ffffff;
-    --accent: #ef4444;
-    --accent-2: #b91c1c;
+    --accent: #f472b6;
+    --accent-2: #be185d;
 }
 
 #reset-theme {

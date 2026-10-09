@@ -4,40 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kermit (RTPK) Network | mini browser</title>
+    <title>Kermit (RTPK) Network | mini slides</title>
     <link rel="shortcut icon" href="/assets/img/fav.png" type="image/png" id="tabIcon">
     <script src="/assets/js/background.js" defer></script>
     <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
     <link rel="stylesheet" href="/assets/css/elements.css">
     <link rel="stylesheet" href="/assets/css/font.css">
     <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
-    <script src="/baremux/index.js"></script>
     <script src="/assets/js/colors.js"></script>
-    <script src="/homework/math.all.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/eruda@3.4.3/eruda.min.js"></script>
     <script>
-        async function swium() {
-            await navigator.serviceWorker.register("/sw.js").then(() => {
-                console.log(
-                    "%cKermit" + "%c SJ sw registered!",
-                    "color: white; background: linear-gradient(to bottom right, #e2588d, #dbd7d7); border-radius: 5px; font-weight: bold; padding: 6px; font-family: monospace;",
-                    "color: white; background: transparent; border-radius: 0px; padding: 0px;"
-                );
-            }).catch(e => {
-                console.log("Error registering service worker (SJ): " + e)
-            });
+        // The proxy engine is one page now (/proxy.html: the vendored GUST build,
+        // over a Wisp WebSocket tunnel), so there is no Service Worker to register
+        // - but a visitor from the old Scramjet/Ultraviolet version still has one
+        // installed, and it would intercept this page's own routes. Unregister it.
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.getRegistrations().then((regs) => {
+                regs.forEach((reg) => {
+                    const worker = reg.active || reg.waiting || reg.installing;
+                    const path = worker && worker.scriptURL ? new URL(worker.scriptURL, location.href).pathname : "";
+                    if (/^\/(?:sw\.js|uv\/sw\.js)$/.test(path)) reg.unregister();
+                });
+            }).catch(() => { });
         }
-
-        window.addEventListener("load", () => {
-            swium();
-        });
     </script>
 </head>
 
 <body>
 
     <style>
-        .browser-container {
+        .slides-container {
             background: var(--bg);
             width: 100%;
             height: 100vh;
@@ -48,7 +44,7 @@
             transition: 0.2s;
         }
 
-        .browser-frame {
+        .slides-frame {
             width: 100%;
             height: 100vh;
             position: fixed;
@@ -62,13 +58,13 @@
             pointer-events: none;
         }
 
-        .browser-frame.active {
+        .slides-frame.active {
             display: block;
             opacity: 1;
             pointer-events: all;
         }
 
-        .browser-controls {
+        .slides-controls {
             position: fixed;
             width: 100%;
             left: 0;
@@ -85,14 +81,14 @@
             margin-bottom: 10px;
         }
 
-        .browser-buttons {
+        .slides-buttons {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 5px;
         }
 
-        .browser-buttons .hcontainer {
+        .slides-buttons .hcontainer {
             display: flex;
             position: absolute;
             left: 50%;
@@ -102,7 +98,7 @@
             width: 95%;
         }
 
-        .browser-buttons button {
+        .slides-buttons button {
             height: 40px;
             width: 40px;
             flex-shrink: 0;
@@ -116,7 +112,7 @@
             color: var(--bright-text);
         }
 
-        .browser-buttons button:hover {
+        .slides-buttons button:hover {
             background: var(--bg-3);
             color: var(--bright-text);
         }
@@ -125,7 +121,7 @@
             font-size: 20px;
         }
 
-        .browser-buttons input {
+        .slides-buttons input {
             background: var(--bg-3);
             border: 1px solid var(--border-4);
             border-radius: 10px;
@@ -139,12 +135,12 @@
             font-size: 14px;
         }
 
-        .browser-buttons input:focus {
+        .slides-buttons input:focus {
             outline: none;
             border: 1px solid var(--accent);
         }
 
-        .browser-buttons input::placeholder {
+        .slides-buttons input::placeholder {
             color: var(--text);
         }
 
@@ -214,7 +210,7 @@
             color: var(--bright-text);
         }
 
-        .browser-loading {
+        .slides-loading {
             background: var(--bg-2);
             height: 3px;
             width: 200px;
@@ -225,7 +221,7 @@
             border-radius: 100px;
         }
 
-        .browser-loading::after {
+        .slides-loading::after {
             content: "";
             position: absolute;
             height: 100%;
@@ -234,10 +230,10 @@
             border-radius: 100px;
             bottom: 0;
             width: 100%;
-            animation: browser-loading-lol .75s infinite ease;
+            animation: slides-loading-lol .75s infinite ease;
         }
 
-        @keyframes browser-loading-lol {
+        @keyframes slides-loading-lol {
             0% {
                 transform-origin: left;
                 transform: scaleX(0);
@@ -260,14 +256,14 @@
         }
     </style>
 
-    <div class="browser-container">
-        <div class="browser-controls">
+    <div class="slides-container">
+        <div class="slides-controls">
             <div class="tabs">
                 <button class="newtab" onclick="newTab()">
                     <i class="ri-add-line ri"></i>
                 </button>
             </div>
-            <div class="browser-buttons">
+            <div class="slides-buttons">
                 <div class="hcontainer">
                     <button onclick="b()">
                         <i class="ri-arrow-left-line ri"></i>
@@ -285,9 +281,9 @@
                 </div>
             </div>
         </div>
-        <div class="browser-loading"></div>
+        <div class="slides-loading"></div>
     </div>
-    <script src="/assets/js/browserfunctions.js"></script>
+    <script src="/assets/js/slidesfunctions.js"></script>
     <script defer>
         function rSearch(input) {
             newTab()
@@ -301,7 +297,7 @@
                 }
             }
 
-            const b = document.querySelector(".browser-container")
+            const b = document.querySelector(".slides-container")
             const frames = document.querySelectorAll(".viewframe")
 
             b.style.opacity = 1
@@ -327,14 +323,11 @@
         });
 
         const params = new URLSearchParams(window.location.search)
-        
-        async function waitThenSearch() {
-            await connection.setTransport("/libcurl/index.mjs", [{ websocket: localStorage.getItem("cherri_wispUrl") ?? "wss://wisp.rhw.one/" }])
 
-            rSearch(params.get("launch"))
-        }
-
-        waitThenSearch()
+        // The engine page brings up its own tunnel, so there is nothing to connect
+        // here first: hand it the URL and GUST boots on its own.
+        const launch = params.get("launch")
+        if (launch) rSearch(launch)
     </script>
     <div id="cursor-thank-you-zxs"
         style="position: fixed; top: 0px; left: 0px; width: 16px; height: 16px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 70%, white 30%); pointer-events: none; z-index: 9999; transform: translate(748px, 592px); transition: width 0.15s, height 0.15s, opacity 0.15s; mix-blend-mode: difference; opacity: 0;">

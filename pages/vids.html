@@ -1,0 +1,1886 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kermit (RTPK) Network | ai</title>
+    <!-- Link embeds: pasted anywhere that renders a preview card for a link
+         (Discord, Google Docs, Slack, iMessage), this URL shows Google Drive
+         instead of the site - the same cloak as the Drive decoy page
+         (/pages/drive.html) and the "Google Drive" tab-cloak option. Crawlers
+         read these tags straight out of the HTML without running any script,
+         so they have to be static, and the logo is a PNG because embed
+         crawlers do not render SVG. Kept identical on every page a link might
+         point at. -->
+    <meta name="description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Google Drive">
+    <meta property="og:title" content="Home - Google Drive">
+    <meta property="og:description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta property="og:image" content="/assets/img/drive.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="457">
+    <meta property="og:image:alt" content="Google Drive">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Home - Google Drive">
+    <meta name="twitter:description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta name="twitter:image" content="/assets/img/drive.png">
+    <link rel="shortcut icon" href="/assets/img/fav.png" type="image/png" id="tabIcon">
+    <script src="/assets/js/background.js" defer></script>
+    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
+    <link rel="stylesheet" href="/assets/css/elements.css">
+    <link rel="stylesheet" href="/assets/css/font.css">
+    <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
+    <script src="/assets/js/colors.js"></script>
+    <script src="/assets/js/firebase-config.js"></script>
+    <script src="/assets/js/forms.js" defer></script>
+    <script src="/assets/js/t.js"></script>
+    <link rel="stylesheet" href="/assets/css/t.css">
+    <link rel="stylesheet" href="/assets/css/vids-elements.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/lib/highlight.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/atom-one-dark.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+</head>
+
+<body>
+    <style>
+        html,
+        body {
+            overflow: hidden;
+            height: 100%;
+        }
+
+        /* ── Layout ──────────────────────────────────────────────────────── */
+        /* The page paints no background of its own, so the site backdrop
+           shows straight through. Every colour comes from the site theme. */
+        .ai-app {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            z-index: 5;
+            background: transparent;
+            color: var(--text);
+            /* A little breathing room between the top bar and the toolbar above. */
+            padding-top: 48px;
+        }
+
+        /* ── Floating chat window (opened from the Screen button) ───────── */
+        .float-tools {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        body.float-mode .float-tools {
+            display: flex;
+        }
+
+        /* The narrow window hides tool labels; these two stay readable. */
+        body.float-mode .float-tools .tool span {
+            display: inline;
+        }
+
+        /* This window only follows the shared screen; it never starts a share. */
+        body.float-mode #shareBtn {
+            display: none;
+        }
+
+        /* Area picker for a screenshot of the shared screen. */
+        .shot-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 60;
+            display: none;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+        }
+
+        .shot-overlay.show {
+            display: flex;
+        }
+
+        .shot-stage {
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            overflow: hidden;
+            cursor: crosshair;
+            touch-action: none;
+            user-select: none;
+        }
+
+        .shot-stage img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            pointer-events: none;
+        }
+
+        .shot-sel {
+            position: absolute;
+            display: none;
+            border: 2px solid var(--accent);
+            background: color-mix(in srgb, var(--accent) 22%, transparent);
+            pointer-events: none;
+        }
+
+        .shot-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+        }
+
+        .shot-bar .tool {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        .shot-hint {
+            flex: 1;
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .ai-sidebar {
+            width: 264px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 16px 14px;
+            box-sizing: border-box;
+            background: color-mix(in srgb, var(--bg) 45%, transparent);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border-4);
+        }
+
+        .ai-side-head {
+            position: relative;
+            padding: 8px 4px 14px;
+        }
+
+        /* Robot mark stacked above the name. */
+        .ai-brand {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.2;
+            color: var(--bright-text);
+        }
+
+        .ai-brand i {
+            font-size: 32px;
+            color: var(--accent);
+        }
+
+        .ai-newchat {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            background: var(--accent);
+            color: var(--current-accent-contrast);
+            font-size: 14px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.18s;
+        }
+
+        .ai-newchat:hover {
+            filter: brightness(1.07);
+        }
+
+        .ai-chatlist {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-right: 2px;
+        }
+
+        .ai-chatitem {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            color: var(--text);
+            font-size: 14px;
+            transition: 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .ai-chatitem:hover {
+            background: var(--bg-3);
+            color: var(--bright-text);
+        }
+
+        .ai-chatitem.active {
+            background: var(--bg-3);
+            border-color: var(--border-3);
+            color: var(--bright-text);
+            font-weight: 500;
+        }
+
+        .ai-chatitem span {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .ai-chatitem .chat-del,
+        .ai-chatitem .chat-edit {
+            opacity: 0;
+            border: none;
+            background: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 15px;
+            padding: 2px;
+            border-radius: 6px;
+            transition: 0.15s;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .ai-chatitem:hover .chat-del,
+        .ai-chatitem:hover .chat-edit {
+            opacity: 0.7;
+        }
+
+        .ai-chatitem .chat-del:hover,
+        .ai-chatitem .chat-edit:hover {
+            opacity: 1;
+            color: var(--accent);
+        }
+
+        .chat-rename {
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+            height: auto;
+            padding: 4px 8px;
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            background: var(--bg-2);
+            color: var(--bright-text);
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .ai-side-foot {
+            font-size: 11px;
+            line-height: 1.5;
+            color: var(--text);
+            opacity: 0.5;
+            padding: 6px 4px 0;
+        }
+
+        /* ── Main column ─────────────────────────────────────────────────── */
+        .ai-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-topbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-4);
+            background: color-mix(in srgb, var(--bg) 45%, transparent);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .ai-title {
+            flex: 1;
+            min-width: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--bright-text);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .ai-subject {
+            flex-shrink: 0;
+            max-width: 150px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-4);
+            background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+            color: var(--bright-text);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .ai-model {
+            flex-shrink: 0;
+            max-width: 190px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border-4);
+            background: color-mix(in srgb, var(--bg-2) 70%, transparent);
+            color: var(--bright-text);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .ai-model:disabled {
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        /* Floating controls shown while you share your screen. */
+        .share-panel {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            width: 300px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 16px;
+            border: 1px solid var(--border-4);
+            background: color-mix(in srgb, var(--bg-2) 82%, transparent);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+            z-index: 60;
+        }
+
+        .share-panel.show {
+            display: flex;
+        }
+
+        .share-panel video {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            border-radius: 10px;
+            background: var(--bg-3);
+        }
+
+        .share-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .share-actions .tool {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            border: 1px solid var(--border-4);
+            background: var(--bg-2);
+            color: var(--bright-text);
+            font-size: 17px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.18s;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-3);
+            border-color: var(--border-3);
+            color: var(--accent);
+        }
+
+        .icon-btn.active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        #openSide,
+        #closeSide {
+            display: none;
+        }
+
+        /* Pinned to the corner so the brand above stays centred. */
+        #closeSide {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 26px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .my-message,
+        .ai-message {
+            max-width: min(720px, 84%) !important;
+            line-height: 1.65;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            box-sizing: border-box;
+        }
+
+        /* Yours is a bubble; replies are plain text, so a long thread stays
+           readable instead of turning into a stack of chat cards. */
+        .my-message {
+            align-self: flex-end;
+            padding: 10px 15px;
+            border-radius: 18px 18px 6px 18px;
+            background: var(--accent);
+            color: var(--current-accent-contrast);
+        }
+
+        .ai-message {
+            align-self: flex-start;
+            padding: 0 2px;
+            color: var(--bright-text);
+        }
+
+        .my-message .bubble-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .my-message .bubble-images img {
+            max-width: 180px;
+            max-height: 180px;
+            border-radius: 12px;
+            border: 1px solid var(--border-4);
+        }
+
+        .ai-empty {
+            margin: auto;
+            text-align: center;
+            max-width: 520px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+
+        .ai-empty h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--bright-text);
+        }
+
+        .ai-empty p {
+            margin: 0;
+        }
+
+        /* ── Composer ────────────────────────────────────────────────────── */
+        .ai-composer {
+            padding: 12px 16px 16px;
+            border-top: 1px solid var(--border-4);
+        }
+
+        .ai-wrap {
+            max-width: 860px;
+            margin: 0 auto;
+            background: color-mix(in srgb, var(--bg-2) 62%, transparent);
+            border: 1px solid var(--border-4);
+            border-radius: 18px;
+            padding: 12px 14px;
+            box-shadow: 0 8px 26px rgba(0, 0, 0, 0.22);
+            transition: 0.18s;
+        }
+
+        .ai-wrap:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+        }
+
+        .ai-attachments {
+            display: none;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 2px 2px 10px;
+        }
+
+        .ai-chip {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-4);
+        }
+
+        .ai-chip img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .ai-chip .chip-x {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(0, 0, 0, 0.65);
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .ai-inputrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ai-tools {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tool {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border-4);
+            background: var(--bg-2);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.15s;
+        }
+
+        .tool i {
+            font-size: 16px;
+        }
+
+        .tool:hover {
+            background: var(--bg-3);
+            color: var(--bright-text);
+        }
+
+        .tool.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 14%, transparent);
+        }
+
+        /* Pushes the send button to the right end of the composer row. */
+        .ai-inputrow .send-btn {
+            margin-left: auto;
+        }
+
+        #prompt {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: var(--bright-text);
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.55;
+            padding: 4px 4px 0;
+            resize: none;
+            max-height: 180px;
+            outline: none;
+            height: 26px;
+            box-sizing: border-box;
+        }
+
+        #prompt::placeholder {
+            color: var(--text);
+        }
+
+        .send-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            border: none;
+            background: var(--accent);
+            color: var(--current-accent-contrast);
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.18s;
+        }
+
+        .send-btn:hover {
+            filter: brightness(1.08);
+        }
+
+        /* ── Markdown / misc ─────────────────────────────────────────────── */
+        .ai-message {
+            white-space: normal !important;
+        }
+
+        .ai-message pre {
+            background: var(--bg-5);
+            border: 1px solid var(--border-4);
+            padding: 12px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+
+        /* Inline code stays inline; vids-elements.css forces it to a block. */
+        .ai-message :not(pre) > code {
+            display: inline;
+            width: auto;
+            padding: 2px 6px;
+            border-radius: 6px;
+            background: var(--bg-3);
+            white-space: normal;
+        }
+
+        .ai-message code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .ai-message pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .ai-message p {
+            margin: 8px 0;
+        }
+
+        .ai-message ul,
+        .ai-message ol {
+            position: static;
+            left: auto;
+            top: auto;
+            transform: none;
+            opacity: 1;
+            pointer-events: auto;
+            width: auto;
+            height: auto;
+            overflow: visible;
+            background: none;
+            border: none;
+            border-radius: 0;
+            font-weight: inherit;
+            margin: 8px 0;
+            padding-left: 22px;
+            list-style-type: disc;
+        }
+
+        .ai-message ol {
+            list-style-type: decimal;
+        }
+
+        .ai-message li {
+            display: list-item;
+            margin-left: 0;
+            margin-bottom: 6px;
+            overflow: visible;
+            text-wrap: normal;
+        }
+
+        .ai-message img {
+            max-width: 100%;
+            border-radius: 14px;
+        }
+
+        svg.loading {
+            width: 1.25em;
+            transform-origin: center;
+            animation: rotate4 1.2s linear infinite;
+        }
+
+        .loading circle {
+            fill: none;
+            stroke: var(--text);
+            stroke-width: 4;
+            stroke-dasharray: 1, 200;
+            stroke-linecap: round;
+            animation: dash4 1.5s ease-in-out infinite;
+        }
+
+        @keyframes rotate4 {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes dash4 {
+            0% {
+                stroke-dasharray: 1, 200;
+                stroke-dashoffset: 0;
+            }
+
+            50% {
+                stroke-dasharray: 90, 200;
+                stroke-dashoffset: -35px;
+            }
+
+            100% {
+                stroke-dashoffset: -125px;
+            }
+        }
+
+        .ai-toast {
+            position: fixed;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--bg-2);
+            border: 1px solid var(--border-4);
+            color: var(--bright-text);
+            padding: 10px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.2s;
+            z-index: 50;
+        }
+
+        .ai-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-3);
+            border-radius: 2000px;
+        }
+
+        ::-webkit-scrollbar {
+            background: transparent;
+            width: 6px;
+        }
+
+        /* ── Mobile: the sidebar becomes an overlay ──────────────────────── */
+        @media (max-width: 760px) {
+            .ai-sidebar {
+                position: fixed;
+                inset: 0 auto 0 0;
+                z-index: 20;
+                background: var(--bg-2);
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+                transform: translateX(-100%);
+                transition: transform 0.22s ease;
+            }
+
+            .ai-sidebar.open {
+                transform: translateX(0);
+            }
+
+            #openSide,
+            #closeSide {
+                display: inline-flex;
+            }
+
+            .my-message,
+            .ai-message {
+                max-width: 92% !important;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .tool span {
+                display: none;
+            }
+
+            .tool {
+                padding: 0 10px;
+            }
+
+            .ai-composer {
+                padding: 10px 10px 14px;
+            }
+
+            .ai-model {
+                max-width: 120px;
+            }
+
+            .ai-subject {
+                max-width: 104px;
+            }
+
+            /* Keep clear of the composer, which owns the bottom of the page. */
+            .share-panel {
+                top: 70px;
+                bottom: auto;
+                right: 10px;
+                left: 10px;
+                width: auto;
+            }
+        }
+    </style>
+
+    <div class="ai-app">
+        <aside class="ai-sidebar" id="aiSidebar">
+            <div class="ai-side-head">
+                <span class="ai-brand"><i class="ri ri-robot-2-fill"></i>Kermit AI</span>
+                <button class="icon-btn" id="closeSide" title="Close menu"><i class="ri-close-line"></i></button>
+            </div>
+            <button class="ai-newchat" onclick="newChat()"><i class="ri-add-line"></i> New chat</button>
+            <div class="ai-chatlist" id="chatList"></div>
+            <div class="ai-side-foot">Chats are saved in this browser.</div>
+        </aside>
+
+        <main class="ai-main">
+            <header class="ai-topbar">
+                <button class="icon-btn" id="openSide" title="Chats"><i class="ri-menu-line"></i></button>
+                <span class="ai-title" id="chatTitle">New chat</span>
+                <select class="ai-subject" id="subjectSelect" title="Subject"></select>
+                <select class="ai-model" id="modelSelect" title="AI model"></select>
+            </header>
+
+            <div class="float-tools" id="floatTools">
+                <button class="tool" onclick="floatShot('region')"
+                    title="Screenshot part of the shared screen"><i class="ri-screenshot-line"></i><span>Screenshot</span></button>
+                <button class="tool" onclick="floatShot('full')"
+                    title="Screenshot the whole shared screen"><i class="ri-fullscreen-line"></i><span>Whole screen</span></button>
+            </div>
+
+            <div class="ai-messages" id="messages"></div>
+
+            <div class="ai-composer">
+                <div class="ai-wrap">
+                    <div class="ai-attachments" id="attachments"></div>
+                    <textarea id="prompt" rows="1" placeholder="Message Kermit AI..."></textarea>
+                    <div class="ai-inputrow">
+                        <div class="ai-tools">
+                            <button class="tool" onclick="pickImage()" title="Attach an image"><i
+                                    class="ri-image-add-line"></i><span>Image</span></button>
+                            <button class="tool" id="shareBtn" onclick="shareScreen()"
+                                title="Capture your screen"><i class="ri-computer-line"></i><span>Screen</span></button>
+                            <button class="tool" id="webBtn" onclick="toggleWeb()"
+                                title="Let the AI look things up on the web"><i
+                                    class="ri-global-line"></i><span>Web</span></button>
+                            <button class="tool" id="humanBtn" onclick="toggleHumanize()"
+                                title="Natural, human-sounding replies"><i
+                                    class="ri-user-heart-line"></i><span>Natural</span></button>
+                        </div>
+                        <button class="send-btn" onclick="send()" title="Send (Enter)"><i
+                                class="ri-send-plane-2-fill"></i></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" multiple hidden>
+    <div class="share-panel" id="sharePanel">
+        <video id="screenVideo" muted playsinline></video>
+        <div class="share-actions">
+            <button class="tool" onclick="captureFrame()"><i class="ri-camera-lens-line"></i><span>Capture</span></button>
+            <button class="tool" onclick="stopShare()"><i class="ri-stop-circle-line"></i><span>Stop</span></button>
+        </div>
+    </div>
+    <div class="shot-overlay" id="shotOverlay">
+        <div class="shot-stage" id="shotStage">
+            <img id="shotImage" alt="">
+            <div class="shot-sel" id="shotSel"></div>
+        </div>
+        <div class="shot-bar">
+            <span class="shot-hint">Drag over the part you want, then tap Attach.</span>
+            <button class="tool" onclick="shotCancel()">Cancel</button>
+            <button class="tool" onclick="shotUse()">Attach</button>
+        </div>
+    </div>
+    <div class="ai-toast" id="toast"></div>
+
+    <script src="/assets/js/vm.js" defer></script>
+    <div id="cursor-thank-you-zxs"
+        style="position: fixed; top: 0px; left: 0px; width: 16px; height: 16px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 70%, white 30%); pointer-events: none; z-index: 9999; mix-blend-mode: difference; opacity: 0;">
+    </div>
+    <script src="/assets/js/cursor.js"></script>
+
+    <script>
+        /* ── Chats (localStorage) ───────────────────────────────────────── */
+        const CHATS_KEY = "kermit_ai_chats";
+        const MODEL_KEY = "kermit_ai_model";
+        const MAX_CHATS = 40;
+        const MAX_IMAGES = 4;
+        /* api/chat.py keeps the provider keys (Hugging Face, OpenRouter,
+           Gemini) on the server and is the only endpoint this page talks to.
+           Model ids are namespaced like "openrouter:openai/gpt-5-mini" or
+           "gemini:gemini-3.5-flash-lite". */
+        const PROXY_URL = "/api/chat";
+        const DEFAULT_MODEL = "gemini:gemini-3.5-flash-lite";
+        const HUMAN_STYLE = "Write your reply in a natural, human tone: conversational, no robotic filler, no unnecessary bullet lists, and never use em dashes.";
+
+        /* ── Subjects ───────────────────────────────────────────────────── */
+        /* Each subject adds a short brief to the system message, so the same
+           model answers Maths like a mathematician and History like a
+           historian. General adds nothing and is left to handle anything. */
+        const SUBJECTS = [
+            { id: "general", label: "General", brief: "" },
+            { id: "study", label: "Study", brief: "Act as a patient tutor. Break the topic into small steps, check that I have understood each step before moving on, ask me a question or two to test me, and work through examples with me. Do not simply hand over the final answer to a problem I am practising: guide me to it." },
+            { id: "math", label: "Math", brief: "Answer as a mathematician. Restate what is given and what is wanted, show every step of the working, keep notation and units exact, and verify the result at the end. Say when an answer is approximate and why." },
+            { id: "history", label: "History", brief: "Answer as a historian. Give dates, people, and places precisely, explain causes and consequences, separate established fact from interpretation, and name the period or region whenever it matters." },
+            { id: "biology", label: "Biology", brief: "Answer as a biologist. Use correct terminology for cells, organs, systems, and processes, describe mechanisms step by step, and distinguish what is established from what is still debated." },
+            { id: "physics", label: "Physics", brief: "Answer as a physicist. State the principle, give the formula and the meaning of every symbol, keep SI units through the working, show the derivation, and sanity-check the size of the answer." },
+            { id: "economics", label: "Economics", brief: "Answer as an economist. Name the model or mechanism, state its assumptions, reason through incentives and trade-offs, and separate short-run from long-run effects." },
+            { id: "chemistry", label: "Chemistry", brief: "Answer as a chemist. Give correct formulas, names, states, and units, balance equations, explain the mechanism or the reaction conditions, and note safety where it matters." },
+            { id: "literature", label: "Literature", brief: "Answer as a literature teacher. Discuss theme, structure, and literary devices, quote the text where it helps, place the work in its context, and support every claim with evidence from the writing." },
+        ];
+
+        const SUBJECT_KEY = "kermit_ai_subject";
+        const WEB_KEY = "kermit_ai_web";
+
+        let chats = loadChats();
+        let activeId = chats.length ? chats[0].id : null;
+        let humanize = false;
+        let attachments = [];
+        let mediaStream = null;
+        let model = DEFAULT_MODEL;
+        let subject = "general";
+        let web = true;
+        try {
+            model = localStorage.getItem(MODEL_KEY) || DEFAULT_MODEL;
+            const savedSubject = localStorage.getItem(SUBJECT_KEY);
+            if (savedSubject && SUBJECTS.some((item) => item.id === savedSubject)) subject = savedSubject;
+            if (localStorage.getItem(WEB_KEY) === "0") web = false;
+        } catch (e) { }
+
+        const $ = (id) => document.getElementById(id);
+
+        const messagesEl = $("messages");
+        const chatListEl = $("chatList");
+        const promptEl = $("prompt");
+        const attachmentsEl = $("attachments");
+        const modalSide = $("aiSidebar");
+
+        function uid() {
+            return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+        }
+
+        function loadChats() {
+            try {
+                const raw = JSON.parse(localStorage.getItem(CHATS_KEY) || "[]");
+                return Array.isArray(raw)
+                    ? raw.filter((c) => c && c.id && Array.isArray(c.messages))
+                    : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveChats() {
+            try {
+                localStorage.setItem(CHATS_KEY, JSON.stringify(chats));
+            } catch (e) {
+                // Quota: drop stored image data from the older chats, keep the newest.
+                try {
+                    chats.forEach((c, i) => {
+                        if (i === 0) return;
+                        c.messages.forEach((m) => { m.images = []; });
+                    });
+                    localStorage.setItem(CHATS_KEY, JSON.stringify(chats));
+                } catch (e2) { /* give up quietly */ }
+            }
+        }
+
+        function toast(msg) {
+            const el = $("toast");
+            el.textContent = msg;
+            el.classList.add("show");
+            clearTimeout(el._t);
+            el._t = setTimeout(() => el.classList.remove("show"), 2200);
+        }
+
+        function activeChat() {
+            return chats.find((c) => c.id === activeId) || null;
+        }
+
+        function newChat() {
+            const c = { id: uid(), title: "New chat", messages: [] };
+            chats.unshift(c);
+            activeId = c.id;
+            if (chats.length > MAX_CHATS) chats = chats.slice(0, MAX_CHATS);
+            saveChats();
+            renderChats();
+            renderMessages();
+            closeSidebar();
+            promptEl.focus();
+        }
+
+        function selectChat(id) {
+            activeId = id;
+            renderChats();
+            renderMessages();
+            closeSidebar();
+        }
+
+        function renderChats() {
+            chatListEl.innerHTML = "";
+            chats.forEach((c) => {
+                const item = document.createElement("div");
+                item.className = "ai-chatitem" + (c.id === activeId ? " active" : "");
+                item.dataset.chatId = c.id;
+
+                const label = document.createElement("span");
+                label.textContent = c.title || "New chat";
+                label.title = "Double-click to rename";
+                label.ondblclick = (e) => {
+                    e.stopPropagation();
+                    startRename(c.id);
+                };
+
+                const edit = document.createElement("button");
+                edit.className = "chat-edit";
+                edit.title = "Rename chat";
+                edit.innerHTML = '<i class="ri-edit-line"></i>';
+                edit.onclick = (e) => {
+                    e.stopPropagation();
+                    startRename(c.id);
+                };
+
+                const del = document.createElement("button");
+                del.className = "chat-del";
+                del.title = "Delete chat";
+                del.innerHTML = '<i class="ri-delete-bin-6-line"></i>';
+                del.onclick = (e) => {
+                    e.stopPropagation();
+                    const idx = chats.findIndex((x) => x.id === c.id);
+                    if (idx === -1) return;
+                    chats.splice(idx, 1);
+                    if (activeId === c.id) activeId = chats.length ? chats[0].id : null;
+                    if (!chats.length) return newChat();
+                    saveChats();
+                    renderChats();
+                    renderMessages();
+                };
+
+                item.append(label, edit, del);
+                item.onclick = () => selectChat(c.id);
+                chatListEl.append(item);
+            });
+        }
+
+        /* Rename in place: the label turns into an input until you confirm. */
+        function startRename(id) {
+            const chat = chats.find((c) => c.id === id);
+            const item = [...chatListEl.children].find((el) => el.dataset.chatId === id);
+            const label = item && item.querySelector("span");
+            if (!chat || !label) return;
+
+            const input = document.createElement("input");
+            input.className = "chat-rename";
+            input.value = chat.title || "";
+            input.maxLength = 60;
+            label.replaceWith(input);
+            input.focus();
+            input.select();
+
+            let done = false;
+            const commit = (save) => {
+                if (done) return;
+                done = true;
+                if (save) {
+                    const value = input.value.trim();
+                    if (value) {
+                        chat.title = value;
+                        if (chat.id === activeId) $("chatTitle").textContent = value;
+                        saveChats();
+                    }
+                }
+                renderChats();
+            };
+
+            input.addEventListener("click", (e) => e.stopPropagation());
+            input.addEventListener("blur", () => commit(true));
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    commit(true);
+                } else if (e.key === "Escape") {
+                    e.preventDefault();
+                    commit(false);
+                }
+            });
+        }
+
+        /* ── Rendering ──────────────────────────────────────────────────── */
+        marked.setOptions({
+            gfm: true,
+            breaks: true,
+            langPrefix: "language-",
+            highlight: function (code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(code, { language: lang }).value;
+                    } catch (err) { }
+                }
+                return code;
+            }
+        });
+
+        function renderContent(container, markdown) {
+            let processed = markdown.replace(/\\\[/g, "$$").replace(/\\\]/g, "$$");
+            processed = processed.replace(/\\\(/g, "$").replace(/\\\)/g, "$");
+            container.innerHTML = marked.parse(processed);
+
+            container.querySelectorAll("pre code").forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            renderMathInElement(container, {
+                delimiters: [
+                    { left: "$$", right: "$$", display: true },
+                    { left: "$", right: "$", display: false },
+                    { left: "\\[", right: "\\]", display: true },
+                    { left: "\\(", right: "\\)", display: false }
+                ],
+                throwOnError: false
+            });
+        }
+
+        const SPINNER = '<svg viewBox="25 25 50 50" class="loading"><circle r="20" cy="50" cx="50"></circle></svg>';
+
+        function messageNode(msg) {
+            const el = document.createElement("div");
+            el.className = msg.role === "user" ? "my-message" : "ai-message";
+
+            if (msg.role === "user") {
+                if (msg.images && msg.images.length) {
+                    const grid = document.createElement("div");
+                    grid.className = "bubble-images";
+                    msg.images.forEach((im) => {
+                        const img = document.createElement("img");
+                        img.src = im.dataUrl;
+                        img.alt = im.name || "attachment";
+                        grid.append(img);
+                    });
+                    el.append(grid);
+                }
+                if (msg.text) {
+                    const p = document.createElement("div");
+                    p.textContent = msg.text;
+                    el.append(p);
+                }
+                return el;
+            }
+
+            if (msg.pending) {
+                el.innerHTML = SPINNER;
+                return el;
+            }
+            if (msg.image) {
+                const img = document.createElement("img");
+                img.src = msg.image;
+                img.alt = "Generated image";
+                el.append(img);
+                return el;
+            }
+            renderContent(el, msg.text || "");
+            return el;
+        }
+
+        function renderMessages() {
+            messagesEl.innerHTML = "";
+            const chat = activeChat();
+            $("chatTitle").textContent = chat ? chat.title : "New chat";
+
+            if (!chat || !chat.messages.length) {
+                renderEmpty();
+                return;
+            }
+            chat.messages.forEach((m) => messagesEl.append(messageNode(m)));
+            scrollDown();
+        }
+
+        function renderEmpty() {
+            const box = document.createElement("div");
+            box.className = "ai-empty";
+            box.innerHTML = "<h2>Kermit AI</h2>" +
+                "<p>Ask a question, attach an image, or share your screen to get help with what you are looking at.</p>";
+            messagesEl.append(box);
+        }
+
+        function scrollDown() {
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+
+        // Append a message to the open chat and return its DOM node.
+        function addMessage(msg) {
+            const chat = activeChat() || (newChat(), activeChat());
+            chat.messages.push(msg);
+
+            if (msg.role === "user" && msg.text && chat.title === "New chat") {
+                chat.title = msg.text.slice(0, 42);
+                $("chatTitle").textContent = chat.title;
+                renderChats();
+            }
+
+            saveChats();
+            if (messagesEl.querySelector(".ai-empty")) messagesEl.innerHTML = "";
+            const node = messageNode(msg);
+            messagesEl.append(node);
+            scrollDown();
+            return node;
+        }
+
+        /* ── Humanizer ──────────────────────────────────────────────────── */
+        function humanizeText(s) {
+            let t = (s || "").trim().replace(/\s+/g, " ");
+            if (!t) return t;
+            t = t.replace(/^(hey|hi|hello|yo)[,!.\s]+/i, "");
+            t = t.replace(/^(please\s+)?(can you|could you|would you|i want you to|i need you to|i'd like you to)\s+/i, "");
+            t = t.replace(/\bkindly\b/gi, "please");
+            t = t.replace(/\b(utilize|utilise)\b/gi, "use");
+            t = t.replace(/\bleverage\b/gi, "use");
+            t = t.replace(/\bcommence\b/gi, "start");
+            t = t.replace(/\bin order to\b/gi, "to");
+            t = t.replace(/\bat this point in time\b/gi, "now");
+            t = t.trim();
+            return t.charAt(0).toUpperCase() + t.slice(1);
+        }
+
+        function toggleHumanize() {
+            humanize = !humanize;
+            $("humanBtn").classList.toggle("active", humanize);
+            toast(humanize ? "Human tone on" : "Human tone off");
+        }
+
+        function toggleWeb() {
+            web = !web;
+            try {
+                localStorage.setItem(WEB_KEY, web ? "1" : "0");
+            } catch (e) { }
+            syncWeb();
+            toast(web ? "Web lookups on" : "Web lookups off");
+        }
+
+        function syncWeb() {
+            const btn = $("webBtn");
+            if (btn) btn.classList.toggle("active", web);
+        }
+
+        /* ── Attachments ────────────────────────────────────────────────── */
+        function pickImage() {
+            $("fileInput").click();
+        }
+
+        function downscale(file) {
+            return new Promise((resolve) => {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => {
+                    const scale = Math.min(1, 900 / Math.max(img.width, img.height));
+                    const c = document.createElement("canvas");
+                    c.width = Math.max(1, Math.round(img.width * scale));
+                    c.height = Math.max(1, Math.round(img.height * scale));
+                    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+                    URL.revokeObjectURL(url);
+                    resolve(c.toDataURL("image/jpeg", 0.82));
+                };
+                img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+                img.src = url;
+            });
+        }
+
+        function addAttachment(a) {
+            if (!a || !a.dataUrl) return;
+            if (attachments.length >= MAX_IMAGES) {
+                toast("Up to " + MAX_IMAGES + " images per message.");
+                return;
+            }
+            attachments.push(a);
+            renderAttachments();
+        }
+
+        function renderAttachments() {
+            attachmentsEl.innerHTML = "";
+            attachments.forEach((a, i) => {
+                const chip = document.createElement("div");
+                chip.className = "ai-chip";
+                const img = document.createElement("img");
+                img.src = a.dataUrl;
+                img.alt = a.name || "attachment";
+                const x = document.createElement("button");
+                x.className = "chip-x";
+                x.title = "Remove";
+                x.innerHTML = '<i class="ri-close-line"></i>';
+                x.onclick = () => { attachments.splice(i, 1); renderAttachments(); };
+                chip.append(img, x);
+                attachmentsEl.append(chip);
+            });
+            attachmentsEl.style.display = attachments.length ? "flex" : "none";
+        }
+
+        $("fileInput").addEventListener("change", async (e) => {
+            for (const f of e.target.files) {
+                if (f.type && f.type.startsWith("image/")) {
+                    const dataUrl = await downscale(f);
+                    addAttachment({ dataUrl, name: f.name });
+                }
+            }
+            e.target.value = "";
+        });
+
+        /* ── Screen share ───────────────────────────────────────────────── */
+        /* The stream stays live so you can keep selecting things on screen
+           and capture frames whenever you want to ask about them. */
+        async function shareScreen() {
+            if (mediaStream) { stopShare(); return; }
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+                toast("Screen sharing is not available in this browser.");
+                return;
+            }
+
+            /* Open the floating chat before the picker: a window opened after
+               an await counts as blocked, and browsers then refuse it. */
+            openFloatWindow();
+
+            let stream;
+            try {
+                stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+            } catch (e) {
+                closeFloatWindow();
+                toast("Screen sharing needs to be started from this window.");
+                return;
+            }
+
+            mediaStream = stream;
+            const video = $("screenVideo");
+            video.srcObject = stream;
+            await video.play().catch(() => { });
+            $("sharePanel").classList.add("show");
+            $("shareBtn").classList.add("active");
+            stream.getVideoTracks()[0].addEventListener("ended", stopShare);
+            toast("Sharing. Capture a frame whenever you want to ask about it.");
+        }
+
+        function captureFrame() {
+            const video = $("screenVideo");
+            if (!mediaStream || !video) return;
+            if (!video.videoWidth) { toast("Waiting for the shared screen..."); return; }
+            const scale = Math.min(1, 900 / Math.max(video.videoWidth, video.videoHeight));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.round(video.videoWidth * scale);
+            canvas.height = Math.round(video.videoHeight * scale);
+            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+            addAttachment({ dataUrl: canvas.toDataURL("image/jpeg", 0.85), name: "Screen capture" });
+        }
+
+        function stopShare() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach((t) => t.stop());
+                mediaStream = null;
+            }
+            const video = $("screenVideo");
+            if (video) video.srcObject = null;
+            const panel = $("sharePanel");
+            if (panel) panel.classList.remove("show");
+            const btn = $("shareBtn");
+            if (btn) btn.classList.remove("active");
+        }
+
+        /* ── Floating chat window ───────────────────────────────────────── */
+        /* Sharing the screen drops the chat into its own always-on-top window
+           so it follows you everywhere: it keeps showing while you switch
+           browser tabs, windows, apps, and even virtual desktops. That window
+           has no screen access of its own, so it asks this page for a frame of
+           the shared screen. */
+        const FLOAT_URL = "/pages/vids.html?float=1";
+        const FLOAT_FEATURES = "width=460,height=720,resizable=yes,scrollbars=yes";
+        const SHOT_MAX = 1600;
+        let floatWin = null;
+        let floatPip = null; // the always-on-top picture-in-picture window, when used
+
+        /* Put the chat in a Document Picture-in-Picture window: a small window
+           the browser keeps on top of everything, so it stays visible across
+           tabs and desktops. The chat runs in a frame inside it and keeps
+           talking to this page for screen shots. */
+        function openPiPWindow() {
+            return documentPictureInPicture
+                .requestWindow({ width: 460, height: 760 })
+                .then((pip) => {
+                    floatPip = pip;
+                    floatWin = pip;
+                    const doc = pip.document;
+                    doc.documentElement.style.height = "100%";
+                    doc.body.style.cssText = "margin:0;height:100%;overflow:hidden;background:#000";
+                    const frame = doc.createElement("iframe");
+                    frame.src = FLOAT_URL;
+                    frame.style.cssText = "border:0;width:100%;height:100%;display:block;background:#000";
+                    doc.body.append(frame);
+                    /* Messages from the frame arrive on the PiP window. */
+                    pip.addEventListener("message", handleShotRequest);
+                    pip.addEventListener("pagehide", () => {
+                        if (floatWin === pip) floatWin = null;
+                        if (floatPip === pip) floatPip = null;
+                    });
+                    return pip;
+                });
+        }
+
+        function openFloatWindow() {
+            if (floatWin && !floatWin.closed) {
+                try { floatWin.focus(); } catch (e) { }
+                return floatWin;
+            }
+            /* Prefer the always-on-top window. It has to be requested straight
+               from the click, before any await, or the browser blocks it. */
+            if (window.documentPictureInPicture) {
+                openPiPWindow().catch(() => {
+                    floatWin = window.open(FLOAT_URL, "kermit-float", FLOAT_FEATURES);
+                    if (!floatWin) toast("Allow pop-ups to keep the chat beside your screen.");
+                });
+                return;
+            }
+            floatWin = window.open(FLOAT_URL, "kermit-float", FLOAT_FEATURES);
+            if (!floatWin) toast("Allow pop-ups to keep the chat beside your screen.");
+            return floatWin;
+        }
+
+        function closeFloatWindow() {
+            if (floatPip) {
+                try { floatPip.close(); } catch (e) { }
+                floatPip = null;
+            }
+            if (floatWin && !floatWin.closed) floatWin.close();
+            floatWin = null;
+        }
+
+        function sharedFrameDataUrl() {
+            const video = $("screenVideo");
+            if (!mediaStream || !video || !video.videoWidth) return null;
+            const scale = Math.min(1, SHOT_MAX / Math.max(video.videoWidth, video.videoHeight));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(video.videoWidth * scale));
+            canvas.height = Math.max(1, Math.round(video.videoHeight * scale));
+            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL("image/jpeg", 0.9);
+        }
+
+        function handleShotRequest(e) {
+            if (e.origin !== location.origin) return;
+            const data = e.data;
+            if (!data || data.type !== "kermit-shot-request") return;
+            if (!e.source || !e.source.postMessage) return;
+            e.source.postMessage(
+                { type: "kermit-shot", mode: data.mode, dataUrl: sharedFrameDataUrl() },
+                location.origin
+            );
+        }
+        window.addEventListener("message", handleShotRequest);
+
+        /* ── Screenshots in the floating window ─────────────────────────── */
+        function floatShot(mode) {
+            /* A pop-up chats with its opener; the frame inside the
+               picture-in-picture window chats with its parent window. */
+            const host = window.opener || (window.parent !== window ? window.parent : null);
+            if (!host || host.closed) {
+                toast("Start Screen sharing from the main chat window first.");
+                return;
+            }
+            host.postMessage({ type: "kermit-shot-request", mode: mode }, location.origin);
+        }
+
+        let shotData = null;
+        let shotRect = null;
+
+        window.addEventListener("message", (e) => {
+            if (e.origin !== location.origin) return;
+            const data = e.data;
+            if (!data || data.type !== "kermit-shot") return;
+            if (!data.dataUrl) { toast("That window is not sharing its screen yet."); return; }
+            if (data.mode === "full") {
+                addAttachment({ dataUrl: data.dataUrl, name: "Screen capture" });
+                toast("Added the shared screen.");
+                return;
+            }
+            shotData = data.dataUrl;
+            shotRect = null;
+            $("shotImage").src = shotData;
+            $("shotSel").style.display = "none";
+            $("shotOverlay").classList.add("show");
+        });
+
+        function shotCancel() {
+            $("shotOverlay").classList.remove("show");
+            shotData = null;
+            shotRect = null;
+        }
+
+        function shotUse() {
+            const img = $("shotImage");
+            if (!shotData || !shotRect || !img || !img.naturalWidth) { shotCancel(); return; }
+            const scaleX = img.naturalWidth / img.clientWidth;
+            const scaleY = img.naturalHeight / img.clientHeight;
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.max(1, Math.round(shotRect.w * scaleX));
+            canvas.height = Math.max(1, Math.round(shotRect.h * scaleY));
+            canvas.getContext("2d").drawImage(
+                img,
+                shotRect.x * scaleX, shotRect.y * scaleY, canvas.width, canvas.height,
+                0, 0, canvas.width, canvas.height
+            );
+            addAttachment({ dataUrl: canvas.toDataURL("image/jpeg", 0.9), name: "Screen area" });
+            shotCancel();
+        }
+
+        (function wireShotStage() {
+            const stage = $("shotStage");
+            const sel = $("shotSel");
+            const img = $("shotImage");
+            if (!stage || !sel || !img) return;
+            let dragging = false;
+            let startX = 0;
+            let startY = 0;
+
+            const pointAt = (event) => {
+                const r = img.getBoundingClientRect();
+                const box = stage.getBoundingClientRect();
+                return {
+                    x: Math.max(0, Math.min(r.width, event.clientX - r.left)),
+                    y: Math.max(0, Math.min(r.height, event.clientY - r.top)),
+                    baseX: r.left - box.left,
+                    baseY: r.top - box.top,
+                };
+            };
+
+            const draw = (baseX, baseY, x, y, w, h) => {
+                sel.style.left = (baseX + x) + "px";
+                sel.style.top = (baseY + y) + "px";
+                sel.style.width = w + "px";
+                sel.style.height = h + "px";
+            };
+
+            stage.addEventListener("pointerdown", (event) => {
+                if (!shotData) return;
+                const p = pointAt(event);
+                dragging = true;
+                startX = p.x;
+                startY = p.y;
+                shotRect = { x: p.x, y: p.y, w: 0, h: 0 };
+                sel.style.display = "block";
+                draw(p.baseX, p.baseY, p.x, p.y, 0, 0);
+                stage.setPointerCapture(event.pointerId);
+            });
+
+            stage.addEventListener("pointermove", (event) => {
+                if (!dragging) return;
+                const p = pointAt(event);
+                const left = Math.min(startX, p.x);
+                const top = Math.min(startY, p.y);
+                const w = Math.abs(p.x - startX);
+                const h = Math.abs(p.y - startY);
+                shotRect = { x: left, y: top, w: w, h: h };
+                draw(p.baseX, p.baseY, left, top, w, h);
+            });
+
+            const end = () => {
+                if (!dragging) return;
+                dragging = false;
+                if (!shotRect || shotRect.w < 8 || shotRect.h < 8) {
+                    shotRect = null;
+                    sel.style.display = "none";
+                }
+            };
+            stage.addEventListener("pointerup", end);
+            stage.addEventListener("pointercancel", end);
+        })();
+
+        /* ── Models ─────────────────────────────────────────────────────── */
+        function setModel(name) {
+            model = name;
+            try {
+                localStorage.setItem(MODEL_KEY, name);
+            } catch (e) { }
+        }
+
+        function setSubject(id) {
+            subject = SUBJECTS.some((item) => item.id === id) ? id : "general";
+            try {
+                localStorage.setItem(SUBJECT_KEY, subject);
+            } catch (e) { }
+        }
+
+        /* The brief for the chosen subject, plus the web note and the tone
+           note. Sent as a system message, which every provider understands. */
+        function systemPrompt() {
+            const found = SUBJECTS.find((item) => item.id === subject);
+            const parts = [];
+            if (found && found.brief) parts.push(found.brief);
+            if (web) {
+                parts.push("You can look things up on the web. Use it when a fact, figure, date, or source would make the answer better, and cite the links you use.");
+            }
+            if (humanize) parts.push(HUMAN_STYLE);
+            return parts.join("\n\n");
+        }
+
+        /* api/chat.py lists the models whose provider keys are set, so the
+           picker only ever offers a model that has a key behind it. */
+        async function loadModels() {
+            const sel = $("modelSelect");
+            if (!sel) return;
+
+            sel.innerHTML = "";
+            sel.disabled = true;
+
+            let list = [];
+            let problem = "";
+            try {
+                const res = await fetch(PROXY_URL, { headers: { Accept: "application/json" } });
+                const data = await res.json().catch(() => null);
+                if (res.ok && data && Array.isArray(data.models)) {
+                    list = data.models;
+                } else {
+                    problem = errorText(data, "The AI service is unavailable.");
+                }
+            } catch (e) {
+                problem = "Could not reach the AI service.";
+            }
+
+            sel.innerHTML = "";
+
+            if (!list.length) {
+                const opt = document.createElement("option");
+                opt.value = "";
+                opt.textContent = problem || "No AI keys configured";
+                sel.append(opt);
+                sel.disabled = true;
+                toast(problem || "Add your AI API keys to start chatting.");
+                return;
+            }
+
+            // One flat list: no provider categories.
+            list.forEach((m) => {
+                if (!m || !m.name) return;
+                const opt = document.createElement("option");
+                opt.value = m.name;
+                opt.textContent = m.title || m.name;
+                sel.append(opt);
+            });
+
+            if (!list.some((m) => m.name === model)) setModel(list[0].name);
+            sel.value = model;
+            sel.disabled = false;
+        }
+
+        /* ── Sending ────────────────────────────────────────────────────── */
+
+        /* Providers report failures in different shapes: a plain string, or a
+           nested object such as Gemini's {error:{code,message}}. Pull a readable
+           sentence out of either, so the user never sees "[object Object]". */
+        function errorText(data, fallback) {
+            const e = data && data.error;
+            if (typeof e === "string" && e) return e;
+            if (e && typeof e === "object") {
+                if (typeof e.message === "string" && e.message) return e.message;
+                const inner = e.message;
+                if (inner && typeof inner === "object" &&
+                    typeof inner.message === "string" && inner.message) {
+                    return inner.message;
+                }
+            }
+            return fallback;
+        }
+
+        function readAnswer(data) {
+            const choice = data && data.choices && data.choices[0];
+            return choice && choice.message ? choice.message.content : null;
+        }
+
+        async function requestText(prompt, images) {
+            const content = images.length ? [{ type: "text", text: prompt }] : prompt;
+            if (images.length) {
+                images.forEach((im) => content.push({ type: "image_url", image_url: { url: im.dataUrl } }));
+            }
+
+            const headers = { "Content-Type": "application/json" };
+            const messages = [];
+            const system = systemPrompt();
+            if (system) messages.push({ role: "system", content: system });
+            messages.push({ role: "user", content: content });
+            const body = JSON.stringify({ model: model || DEFAULT_MODEL, messages: messages, web: web });
+
+            // The proxy holds the API keys and talks to the provider.
+            const res = await fetch(PROXY_URL, { method: "POST", headers: headers, body: body });
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                throw new Error(errorText(data, "The AI service returned an error."));
+            }
+            const text = readAnswer(data);
+            if (!text) throw new Error("The AI returned an empty reply.");
+            return text;
+        }
+
+        async function send() {
+            const raw = promptEl.value.trim();
+            if (!raw && !attachments.length) return;
+            if (!activeChat()) newChat();
+
+            const images = attachments.slice();
+            let prompt = humanize ? humanizeText(raw) : raw;
+            if (!prompt) prompt = "Describe this image.";
+
+            promptEl.value = "";
+            autoGrow();
+            attachments = [];
+            renderAttachments();
+
+            addMessage({ role: "user", text: prompt, images: images });
+            const pendingMsg = { role: "ai", pending: true, text: "" };
+            const node = addMessage(pendingMsg);
+
+            try {
+                const answer = await requestText(prompt, images);
+                pendingMsg.pending = false;
+                pendingMsg.text = answer;
+                saveChats();
+                node.innerHTML = "";
+                await anim(node, answer, 8);
+                renderContent(node, answer);
+            } catch (e) {
+                console.error(e);
+                pendingMsg.pending = false;
+                pendingMsg.text = "Error: " + ((e && e.message) ||
+                    "there was a problem reaching the AI. Try again in a moment.");
+                saveChats();
+                node.innerHTML = "";
+                node.textContent = pendingMsg.text;
+            }
+            scrollDown();
+        }
+
+        function anim(container, markdown, speed) {
+            return new Promise((resolve) => {
+                let i = 0;
+                let buffer = "";
+                function step() {
+                    if (i < markdown.length) {
+                        buffer += markdown[i];
+                        container.textContent = buffer;
+                        i++;
+                        if (i % 4 === 0 || i === markdown.length) scrollDown();
+                        setTimeout(step, speed);
+                    } else {
+                        resolve();
+                    }
+                }
+                step();
+            });
+        }
+
+        /* ── Input handling ─────────────────────────────────────────────── */
+        function autoGrow() {
+            promptEl.style.height = "auto";
+            promptEl.style.height = Math.min(promptEl.scrollHeight, 180) + "px";
+        }
+
+        promptEl.addEventListener("input", autoGrow);
+        promptEl.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                send();
+            }
+        });
+
+        function openSidebar() { modalSide.classList.add("open"); }
+        function closeSidebar() { modalSide.classList.remove("open"); }
+        $("openSide").addEventListener("click", openSidebar);
+        $("closeSide").addEventListener("click", closeSidebar);
+
+        /* ── Boot ───────────────────────────────────────────────────────── */
+        // The window the Screen button opens: the whole chat, plus the tools
+        // for grabbing a piece of the shared screen.
+        try {
+            if (new URLSearchParams(location.search).has("float")) {
+                document.body.classList.add("float-mode");
+            }
+        } catch (e) { }
+
+        const modelSel = $("modelSelect");
+        if (modelSel) modelSel.addEventListener("change", () => setModel(modelSel.value));
+
+        const subjectSel = $("subjectSelect");
+        if (subjectSel) {
+            SUBJECTS.forEach((item) => {
+                const option = document.createElement("option");
+                option.value = item.id;
+                option.textContent = item.label;
+                subjectSel.append(option);
+            });
+            subjectSel.value = subject;
+            subjectSel.addEventListener("change", () => setSubject(subjectSel.value));
+        }
+        syncWeb();
+
+        loadModels();
+
+        if (!chats.length) {
+            chats = [{ id: uid(), title: "New chat", messages: [] }];
+            activeId = chats[0].id;
+            saveChats();
+        }
+        renderChats();
+        renderMessages();
+        autoGrow();
+    </script>
+</body>
+
+</html>

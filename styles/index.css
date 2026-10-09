@@ -20,7 +20,7 @@ body {
     --grad-soft: linear-gradient(135deg,
             color-mix(in srgb, var(--accent) 20%, transparent),
             transparent 62%);
-    --glow-soft: 0 0 26px color-mix(in srgb, var(--accent) 20%, transparent);
+    --glow-soft: 0 0 30px color-mix(in srgb, var(--accent) 34%, transparent);
     --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 30px rgba(0, 0, 0, 0.34);
     --shadow-2: 0 24px 60px rgba(0, 0, 0, 0.45);
     --radius-sm: 10px;
@@ -36,14 +36,22 @@ html {
        theme colour actually reads instead of fading to flat dark. */
     background:
         radial-gradient(60rem 42rem at 50% -12%,
-            color-mix(in srgb, var(--accent) 22%, transparent), transparent 72%),
+            color-mix(in srgb, var(--accent) 32%, transparent), transparent 72%),
         radial-gradient(52rem 38rem at 88% 112%,
-            color-mix(in srgb, var(--accent-2, var(--accent)) 20%, transparent), transparent 72%),
+            color-mix(in srgb, var(--accent-2, var(--accent)) 30%, transparent), transparent 72%),
+        radial-gradient(90rem 62rem at 50% 48%,
+            color-mix(in srgb, var(--accent) 16%, transparent), transparent 74%),
         linear-gradient(160deg,
             color-mix(in srgb, var(--bg) 74%, transparent),
             color-mix(in srgb, var(--bg) 90%, transparent)),
         linear-gradient(135deg, var(--accent-2, var(--accent)), var(--accent));
     background-attachment: fixed;
+}
+
+/* Whole-site glow: a soft accent halo on interactive surfaces. Derived from the
+   active theme, so it works on every palette. Deliberately subtle. */
+button:not(:disabled):hover {
+    box-shadow: var(--glow-soft);
 }
 
 
@@ -340,7 +348,7 @@ nav ul li.disabled {
     flex-direction: row;
 }
 
-.settings-container,
+.folders-container,
 .chat-container {
     background: color-mix(in srgb, var(--bg) 30%, transparent 70%);
     backdrop-filter: blur(10px);
@@ -362,7 +370,7 @@ nav ul li.disabled {
     filter: drop-shadow(0 0 15px var(--bg-5));
 }
 
-.settings-sidebar {
+.folders-sidebar {
     width: 25%;
     padding: 2px;
     position: relative;
@@ -371,7 +379,7 @@ nav ul li.disabled {
     top: 0;
 }
 
-.settings-section {
+.folders-section {
     padding: 10px;
     background: transparent;
     border-radius: 15px;
@@ -380,11 +388,11 @@ nav ul li.disabled {
     margin: 2px;
 }
 
-.settings-section.active {
+.folders-section.active {
     background: var(--bg-3);
 }
 
-.settings-section:hover {
+.folders-section:hover {
     background: var(--bg-2);
 }
 
@@ -393,11 +401,11 @@ nav ul li.disabled {
     flex-direction: column;
 }
 
-.settings-section i {
+.folders-section i {
     margin-right: 6px;
 }
 
-.settings-content-container {
+.folders-content-container {
     width: 67%;
     position: absolute;
     right: 0;
@@ -422,24 +430,24 @@ nav ul li.disabled {
     border-radius: 2349876px;
 }
 
-.settings-content-container h2 {
+.folders-content-container h2 {
     font-size: 24px;
     margin-bottom: 7px;
     font-weight: 550;
 }
 
-.settings-content-container p {
+.folders-content-container p {
     color: var(--text);
     font-size: 14px;
     font-weight: 350;
     margin-bottom: 7px;
 }
 
-.settings-page {
+.folders-page {
     display: none;
 }
 
-.settings-page.settings-active {
+.folders-page.folders-active {
     display: block;
 }
 
@@ -478,14 +486,14 @@ p a:hover {
     color: var(--text);
 }
 
-.settings-hidden {
+.folders-hidden {
     transform: translate(-50%, -50%) scale(.9);
     opacity: 0;
     pointer-events: none;
     transform-origin: center center;
 }
 
-.settings-shown {
+.folders-shown {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
     pointer-events: all;
@@ -502,7 +510,7 @@ p a:hover {
     backdrop-filter: blur(3px) brightness(0.75);
 }
 
-.browser-container {
+.slides-container {
     background: var(--bg-5);
     width: 100%;
     height: 100vh;
@@ -515,11 +523,11 @@ p a:hover {
     pointer-events: none;
 }
 
-/* In-page browser chrome (home page). Laid out like /pages/browser.html: one
+/* In-page browser chrome (home page). Laid out like /pages/slides.html: one
    stacked bar with the tab strip above a single control row. The old rules used
    100px-tall rows with negative margins and absolutely positioned controls, so
    the tabs and the URL bar overlapped and everything looked crammed. */
-.browser-frame {
+.slides-frame {
     width: calc(100% - 20px);
     height: calc(100vh - 124px);
     position: fixed;
@@ -534,13 +542,13 @@ p a:hover {
     pointer-events: none;
 }
 
-.browser-frame.active {
+.slides-frame.active {
     display: block;
     opacity: 1;
     pointer-events: all;
 }
 
-.browser-controls {
+.slides-controls {
     position: fixed;
     width: 100%;
     left: 0;
@@ -566,14 +574,14 @@ p a:hover {
     scrollbar-width: none;
 }
 
-.browser-buttons {
+.slides-buttons {
     display: flex;
     align-items: center;
     gap: 6px;
     width: 100%;
 }
 
-.browser-buttons .hcontainer {
+.slides-buttons .hcontainer {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -581,7 +589,7 @@ p a:hover {
     min-width: 0;
 }
 
-.browser-buttons button {
+.slides-buttons button {
     height: 40px;
     width: 40px;
     flex: none;
@@ -595,11 +603,11 @@ p a:hover {
     color: var(--bright-text);
 }
 
-.browser-buttons button:hover {
+.slides-buttons button:hover {
     background: var(--bg-3);
 }
 
-.browser-buttons input {
+.slides-buttons input {
     flex: 1 1 auto;
     min-width: 0;
     background: var(--bg-2);
@@ -614,7 +622,7 @@ p a:hover {
     font-size: 14px;
 }
 
-.browser-buttons input:focus {
+.slides-buttons input:focus {
     background: var(--bg-3);
     border-color: var(--accent);
     outline: none;
@@ -704,14 +712,14 @@ p a:hover {
     filter: drop-shadow(0 0 15px black);
 }
 
-.dashboard-container.settings-hidden {
+.dashboard-container.folders-hidden {
     transform: translate(-50%, -50%) scale(.9);
     opacity: 0;
     pointer-events: none;
     transform-origin: center center;
 }
 
-.dashboard-container.settings-shown {
+.dashboard-container.folders-shown {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
     pointer-events: all;
@@ -893,7 +901,7 @@ button.button:hover {
     margin: 0;
 }
 
-.settings-list {
+.folders-list {
     background: #1d1d1d;
     border-radius: 20px;
     padding: 20px;
@@ -1029,22 +1037,21 @@ button.button:hover {
     background: rgb(80 30 30);
 }
 
-.auth-container.settings-hidden {
+.auth-container.folders-hidden {
     transform: translate(-50%, -50%) scale(.9);
     opacity: 0;
     pointer-events: none;
     transform-origin: center center;
 }
 
-.auth-container.settings-shown {
+.auth-container.folders-shown {
     transform: translate(-50%, -50%) scale(1);
     opacity: 1;
     pointer-events: all;
     transform-origin: center center;
 }
 
-#particles-container,
-#vanta-fog-container {
+#particles-container {
     position: fixed;
     z-index: 0;
     opacity: 0.3;
@@ -1056,18 +1063,39 @@ button.button:hover {
 }
 
 /* ── Toolbar layout ──────────────────────────────────────────────────────────
-   One long line by default, optional left rail or bottom bar
-   (see assets/js/toolbar.js).                                                  */
-/* A straight bar spanning the page with its buttons centred, and every slot a
-   step smaller than the subpage menus so it stays compact. */
+   A full-width bar docked to the bottom edge by default, with an optional top
+   bar or left rail (see assets/js/toolbar.js).                                 */
+/* ChromeOS-shelf-style bar: it spans the full width and sits flush against the
+   bottom edge of the window, with the page filling everything above it. The bar
+   used to be an inset, rounded "floating pill", and the strip of background it
+   left between itself and the page read as the two tearing apart - so the bar
+   now touches the page edge to edge and the page is inset by the bar's measured
+   height instead (assets/js/toolbar.js). */
 nav[data-toolbar] {
-    width: calc(100% - 24px);
-    max-width: calc(100% - 24px);
-    height: 56px;
-    padding-left: 8px;
-    padding-right: 8px;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    height: 48px;
+    padding: 0 max(8px, env(safe-area-inset-right)) 0 max(8px, env(safe-area-inset-left));
+    border: none;
+    border-top: 1px solid var(--border-4);
+    border-radius: 0;
+    transform: none;
     justify-content: center;
     overflow: visible;
+    /* Slightly more opaque than the floating pill was: at full width a heavy
+       blur smears the page through the bar and is what made the edge shimmer. */
+    background: color-mix(in srgb, var(--bg) 72%, transparent 28%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.28);
+    /* A docked bar is a surface, not a label over the page: clicks on it must
+       not fall through to the content behind it. */
+    pointer-events: auto;
     transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
@@ -1078,12 +1106,13 @@ nav[data-toolbar] ul {
 }
 
 nav[data-toolbar] ul li {
-    width: 46px;
-    height: 46px;
-    margin: 2px;
+    width: 40px;
+    height: 40px;
+    margin: 0 2px;
+    border-radius: 8px;
 }
 
-/* Kept explicit: `nav[data-toolbar] ul li` above sets a 46px width and would
+/* Kept explicit: `nav[data-toolbar] ul li` above sets a 40px width and would
    otherwise turn the thin separators into blocks. */
 nav[data-toolbar] ul li.divider {
     width: 3px;
@@ -1100,12 +1129,12 @@ nav[data-toolbar] a i {
 }
 
 nav[data-toolbar] .toolbar-logo {
-    width: 72px;
-    height: 46px;
+    width: 66px;
+    height: 40px;
 }
 
 nav[data-toolbar] .toolbar-logo .kermit-art {
-    transform: scale(0.29);
+    transform: scale(0.25);
 }
 
 nav[data-toolbar] ul li.toolbar-end {
@@ -1124,19 +1153,34 @@ nav[data-toolbar] ul li.toolbar-hide a:hover {
     opacity: 1;
 }
 
+/* Top dock: the same bar mirrored onto the top edge. */
+html.toolbar-top nav[data-toolbar] {
+    top: 0;
+    bottom: auto;
+    border-top: none;
+    border-bottom: 1px solid var(--border-4);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* Left dock: a vertical rail flush to the left edge. */
 html.toolbar-left nav[data-toolbar] {
-    left: 12px;
-    top: 12px;
+    left: 0;
+    right: auto;
+    top: 0;
+    bottom: 0;
     transform: none;
-    width: 78px;
-    height: auto;
-    max-height: calc(100vh - 24px);
+    width: 70px;
+    height: 100%;
+    max-height: 100%;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 6px 0;
+    padding: 8px 0;
     overflow-x: hidden;
     overflow-y: auto;
-    border-radius: 10px;
+    border: none;
+    border-right: 1px solid var(--border-4);
+    border-radius: 0;
+    box-shadow: 10px 0 28px rgba(0, 0, 0, 0.28);
 }
 
 html.toolbar-left nav[data-toolbar] ul {
@@ -1144,58 +1188,106 @@ html.toolbar-left nav[data-toolbar] ul {
     width: 100%;
 }
 
+html.toolbar-left nav[data-toolbar] ul li {
+    margin: 2px auto;
+}
+
 html.toolbar-left nav[data-toolbar] ul li.toolbar-end {
-    margin-left: 0;
-    margin-top: auto;
+    margin: auto auto 0;
 }
 
 html.toolbar-left nav[data-toolbar] ul li.divider {
     width: 34px;
     height: 3px;
+    margin: 4px auto;
 }
 
 html.toolbar-left #homeContent {
     left: calc(50% + (var(--toolbar-left-space, 0px) / 2));
 }
 
-/* Bottom bar: same toolbar, docked to the bottom edge instead of the top.
-   The left/bottom insets for #contentFrame and #homeContent come from the
-   measured variables above, so there is nothing to override here. */
-html.toolbar-bottom nav[data-toolbar] {
-    top: auto;
-    bottom: 12px;
-    margin-top: 0;
-}
+/* The bottom dock is the default, so it needs no override of its own: the
+   --toolbar-*-space variables measured in assets/js/toolbar.js inset #contentFrame
+   and #homeContent for every dock. */
 
-/* Hidden toolbar: the nav leaves the stage and a small handle brings it back.
-   The handle only exists while the toolbar is hidden (see toolbar.js).        */
+/* Hidden toolbar: the nav leaves the stage and the grip below brings it back
+   (see assets/js/toolbar.js). */
 html.toolbar-hidden nav[data-toolbar] {
     display: none;
 }
 
-/* While the toolbar is folded away this tab stays centred at the top edge, so
-   the same arrow brings it back (see assets/js/toolbar.js). */
+/* Folded away, the bar leaves a grip on the edge it is docked to - centred
+   along the bottom by default - and the page runs the full window underneath
+   it, so the grip floats over the page instead of holding a strip of it back.
+   It is the only way back to the bar, so it is accent coloured, oversized for
+   its own height and softly pulsing to be noticed rather than hunted for
+   (see assets/js/toolbar.js). */
 #toolbarHandle {
     display: none;
     position: fixed;
-    top: 0;
+    bottom: 0;
     left: 50%;
-    margin-left: -28px;
-    width: 56px;
-    height: 32px;
+    margin-left: -44px;
+    width: 88px;
+    height: 40px;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
-    border-radius: 0 0 12px 12px;
-    border: 1px solid var(--border-4);
-    border-top: none;
-    background: color-mix(in srgb, var(--bg) 55%, transparent 45%);
-    backdrop-filter: blur(10px);
-    color: var(--text);
-    opacity: 0.7;
+    font-size: 26px;
+    border-radius: 16px 16px 0 0;
+    border: 1px solid var(--accent-line, var(--border-4));
+    border-bottom: none;
+    background: color-mix(in srgb, var(--accent) 22%, color-mix(in srgb, var(--bg) 86%, transparent));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.35), 0 0 20px color-mix(in srgb, var(--accent) 38%, transparent);
+    color: var(--accent);
+    opacity: 1;
     z-index: 9324768;
     cursor: pointer;
-    transition: opacity 0.2s ease, scale 0.2s ease;
+    transition: opacity 0.2s ease, scale 0.2s ease, background 0.2s ease;
+    animation: toolbar-grip-pulse 2.6s ease-in-out infinite;
+}
+
+/* A slow halo so the grip reads as "the toolbar is down here" at a glance. */
+@keyframes toolbar-grip-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.3), 0 0 12px color-mix(in srgb, var(--accent) 30%, transparent);
+    }
+
+    50% {
+        box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.3), 0 0 26px color-mix(in srgb, var(--accent) 62%, transparent);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #toolbarHandle {
+        animation: none;
+    }
+}
+
+html.toolbar-top #toolbarHandle {
+    bottom: auto;
+    top: 0;
+    border-radius: 0 0 16px 16px;
+    border: 1px solid var(--accent-line, var(--border-4));
+    border-top: none;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35), 0 0 20px color-mix(in srgb, var(--accent) 38%, transparent);
+}
+
+/* With the rail on the left the grip moves to the left edge, vertically centred. */
+html.toolbar-left #toolbarHandle {
+    bottom: auto;
+    left: 0;
+    top: 50%;
+    margin: -40px 0 0;
+    width: 40px;
+    height: 80px;
+    border-radius: 0 16px 16px 0;
+    border: 1px solid var(--accent-line, var(--border-4));
+    border-left: none;
+    box-shadow: 10px 0 28px rgba(0, 0, 0, 0.35), 0 0 20px color-mix(in srgb, var(--accent) 38%, transparent);
 }
 
 html.toolbar-hidden #toolbarHandle {
@@ -1204,7 +1296,8 @@ html.toolbar-hidden #toolbarHandle {
 
 #toolbarHandle:hover {
     opacity: 1;
-    scale: 1.05;
+    scale: 1.06;
+    background: color-mix(in srgb, var(--accent) 34%, color-mix(in srgb, var(--bg) 84%, transparent));
 }
 
 /* ── Button polish ─────────────────────────────────────────────────────────── */
@@ -1235,7 +1328,7 @@ select:focus-visible {
     outline-offset: 2px;
 }
 
-.browser-loading {
+.slides-loading {
     background: var(--bg);
     height: 3px;
     width: 200px;
@@ -1246,7 +1339,7 @@ select:focus-visible {
     border-radius: 100px;
 }
 
-.browser-loading::after {
+.slides-loading::after {
     content: "";
     position: absolute;
     height: 100%;
@@ -1255,10 +1348,10 @@ select:focus-visible {
     border-radius: 100px;
     bottom: 0;
     width: 100%;
-    animation: browser-loading-lol .75s infinite ease;
+    animation: slides-loading-lol .75s infinite ease;
 }
 
-@keyframes browser-loading-lol {
+@keyframes slides-loading-lol {
     0% {
         transform-origin: left;
         transform: scaleX(0);
@@ -1748,44 +1841,44 @@ span.online-count {
 
     /* The settings overlay is 625px wide on desktop, which runs off the side of
        a phone. Keep it inside the viewport. */
-    .settings-container,
+    .folders-container,
     .chat-container {
         width: calc(100vw - 24px);
         max-width: 625px;
         height: 80vh;
     }
 
-    .settings-sidebar {
+    .folders-sidebar {
         width: 30%;
     }
 
-    .settings-content-container {
+    .folders-content-container {
         width: 64%;
         margin-left: 6px;
     }
 
-    .settings-content-container h2 {
+    .folders-content-container h2 {
         font-size: 19px;
     }
 
     /* Browser chrome on a phone: keep it one row and let the URL bar shrink,
        so the fixed frame offset below the chrome stays correct. */
-    .browser-controls {
+    .slides-controls {
         padding: 8px;
         gap: 6px;
     }
 
-    .browser-buttons {
+    .slides-buttons {
         flex-wrap: nowrap;
     }
 
-    .browser-buttons button,
+    .slides-buttons button,
     .newtab {
         height: 36px;
         width: 36px;
     }
 
-    .browser-buttons input {
+    .slides-buttons input {
         height: 36px;
         padding: 0 12px;
         font-size: 13px;

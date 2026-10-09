@@ -1,17 +1,39 @@
 // thanks to https://waves.lat for custom dropdowns || https://gitlab.com/waveslab/waves
-const appSettings = {
-  backend: localStorage.getItem("cherri_backend") || "Scramjet",
-  searchEngine: localStorage.getItem("cherri_searchEngine") || "DuckDuckGo",
+
+// "Fog" (the old Vanta/three.js effect) was removed: it pulled two large
+// libraries down and was the one backdrop that could not be kept readable.
+const allBackgroundOptions = [
+  "Rain",
+  "Terminal",
+  "Grid",
+  "Dots",
+  "None",
+];
+
+// A background saved before "Fog" was retired (or any other stale value) would
+// otherwise show as the selected label while a different effect actually
+// played, so the stored value is normalised to the option list here. This sits
+// above appFolders because that reads it while the file is being evaluated.
+const storedBackground = (
+  localStorage.getItem("kermit_background") || "rain"
+).toLowerCase();
+const knownBackgrounds = allBackgroundOptions.map((option) =>
+  option.toLowerCase()
+);
+
+const appFolders = {
+  backend: localStorage.getItem("kermit_backend") || "Scramjet",
+  searchEngine: localStorage.getItem("kermit_searchEngine") || "DuckDuckGo",
   decoy: localStorage.getItem("decoy") || "None",
-  wisp: localStorage.getItem("cherri_wispUrlSelected") || "Mercury Workshop",
-  theme: localStorage.getItem("cherri_theme") || "default",
-  background: (localStorage.getItem("cherri_background") || "rain").toLowerCase(),
-  toolbarPos: localStorage.getItem("cherri_toolbarPos") || "top",
+  wisp: localStorage.getItem("kermit_wispUrlSelected") || "Mercury Workshop",
+  theme: localStorage.getItem("kermit_theme") || "default",
+  background: knownBackgrounds.indexOf(storedBackground) === -1 ? "rain" : storedBackground,
+  toolbarPos: localStorage.getItem("kermit_toolbarPos") || "bottom",
 };
 
 // A page only carries the selectors for the settings it shows. The browser page
 // is proxy-only and every other page hides the proxy controls (see
-// assets/js/settings.js), so a missing selector must be skipped instead of
+// assets/js/folders.js), so a missing selector must be skipped instead of
 // throwing and taking the rest of this file down with it.
 function wireSelector(
   selectorType,
@@ -131,8 +153,9 @@ function closeAllSelectors() {
 const defaultWispUrl = `${
   window.location.protocol === "https:" ? "wss" : "ws"
 }://${window.location.host}/w/`;
-const allBackendOptions = ["Ultraviolet", "Scramjet"];
-const allTransportOptions = ["Epoxy", "Libcurl"];
+// There is no backend or transport selector any more: the proxy is one page
+// (the GUST engine over the Wisp tunnel), so the only networking choice left to
+// make is which Wisp server to use.
 const allSearchEngineOptions = [
   "DuckDuckGo",
   "Brave",
@@ -169,15 +192,6 @@ const allWispOptions = [
   "Terbium",
 ];
 
-const allBackgroundOptions = [
-  "Rain",
-  "Fog",
-  "Terminal",
-  "Grid",
-  "Dots",
-  "None",
-];
-
 const allToolbarOptions = [
   "Top",
   "Left",
@@ -186,21 +200,12 @@ const allToolbarOptions = [
 
 const allThemeOptions = [
   "default",
-  "void",
-  "ocean",
-  "forest",
+  "aurora",
   "ember",
-  "dunes",
-  "lavendar",
-  "midnight",
-  "coral",
-  "golden",
-  "lime",
-  "magenta",
-  "neon",
-  "royal blue",
-  "sea",
-  "violet",
+  "horizon",
+  "orchid",
+  "tide",
+  "void",
 ];
 
 function createSelector(
@@ -236,11 +241,11 @@ function createSelector(
             const storageVal =
               storageKey === "backend" ||
               storageKey === "transport" ||
-              storageKey === "cherri_toolbarPos"
+              storageKey === "kermit_toolbarPos"
                 ? val.toLowerCase()
                 : val;
 
-            appSettings[storageKey] = storageVal;
+            appFolders[storageKey] = storageVal;
             localStorage.setItem(storageKey, storageVal);
             closeAllSelectors();
             if (eventName)
@@ -301,8 +306,8 @@ function applyDecoy(s) {
 wireSelector(
   "search-engine",
   allSearchEngineOptions,
-  appSettings.searchEngine,
-  "cherri_searchEngine",
+  appFolders.searchEngine,
+  "kermit_searchEngine",
   null,
   "Successfully updated Search Engine!"
 );
@@ -310,26 +315,17 @@ wireSelector(
 wireSelector(
   "decoy",
   allDecoyOptions,
-  appSettings.decoy,
+  appFolders.decoy,
   "decoy",
   "decoyUpdated",
   "Successfully updated cloak!"
 );
 
 wireSelector(
-  "backend",
-  allBackendOptions,
-  appSettings.backend,
-  "cherri_backend",
-  "backendUpdated",
-  "Successfully updated backend!"
-);
-
-wireSelector(
   "theme",
   allThemeOptions,
-  appSettings.theme,
-  "cherri_theme",
+  appFolders.theme,
+  "kermit_theme",
   "themeUpdated",
   "Successfully updated theme! Refresh to see background change."
 );
@@ -337,19 +333,27 @@ wireSelector(
 wireSelector(
   "background",
   allBackgroundOptions,
-  appSettings.background.charAt(0).toUpperCase() + appSettings.background.slice(1),
-  "cherri_background",
+  appFolders.background.charAt(0).toUpperCase() + appFolders.background.slice(1),
+  "kermit_background",
   "backgroundUpdated",
   "Successfully updated the background!"
 );
 
+// The stored position is lower case ("top"/"left"/"bottom") and the option
+// labels are capitalised, so map between the two; anything unrecognised falls
+// back to the default dock.
+const toolbarPosLabel = ["top", "left", "bottom"].includes(
+  String(appFolders.toolbarPos).toLowerCase()
+)
+  ? String(appFolders.toolbarPos).charAt(0).toUpperCase() +
+    String(appFolders.toolbarPos).slice(1).toLowerCase()
+  : "Bottom";
+
 wireSelector(
   "toolbar",
   allToolbarOptions,
-  ["left", "bottom"].includes(String(appSettings.toolbarPos).toLowerCase())
-    ? String(appSettings.toolbarPos).charAt(0).toUpperCase() + String(appSettings.toolbarPos).slice(1).toLowerCase()
-    : "Top",
-  "cherri_toolbarPos",
+  toolbarPosLabel,
+  "kermit_toolbarPos",
   "toolbarUpdated",
   "Successfully updated the toolbar position!"
 );
@@ -357,8 +361,8 @@ wireSelector(
 wireSelector(
   "wisp",
   allWispOptions,
-  appSettings.wisp,
-  "cherri_wispUrlSelected",
+  appFolders.wisp,
+  "kermit_wispUrlSelected",
   "wispUpdated",
   "Successfully updated the Wisp server! Refresh to use it."
 );
@@ -366,13 +370,20 @@ wireSelector(
 document.addEventListener("decoyUpdated", (e) => applyDecoy(e.detail));
 document.addEventListener("themeUpdated", (e) => {
   const link = document.getElementById("css-theme-link");
-  const theme = e.detail ?? "default";
+  let theme = e.detail ?? "default";
 
-  if (theme !== "default") {
-    link.href = `/assets/css/themes/${theme}.css`;
-  } else {
-    link.href = "/assets/css/colors.css";
+  // Only a theme that actually ships is applied; anything else falls back to
+  // the default palette. Keeps the stylesheet in step with the option list.
+  if (theme !== "default" && allThemeOptions.indexOf(theme) === -1) theme = "default";
+
+  if (link) {
+    link.href = theme === "default"
+      ? "/assets/css/colors.css"
+      : `/assets/css/themes/${theme}.css`;
   }
+
+  // Let the background / glow effects re-read the new accent without a reload.
+  document.dispatchEvent(new CustomEvent("themeChanged", { detail: theme }));
 });
 document.addEventListener("backgroundUpdated", (e) => {
   if (window.setBackground) window.setBackground(String(e.detail).toLowerCase());
@@ -386,7 +397,7 @@ document.addEventListener("wispUpdated", (e) => {
   const wisp = wispPresets[e.detail];
   if (!wisp) return;
 
-  localStorage.setItem("cherri_wispUrl", wisp.url);
+  localStorage.setItem("kermit_wispUrl", wisp.url);
   console.log("Wisp server set to " + wisp.url);
 });
 window.addEventListener("load", () => {

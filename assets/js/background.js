@@ -4,21 +4,23 @@
  * One place decides what the animated backdrop is, so the Settings picker can
  * offer several looks without every page having its own effects code:
  *
- *     none | fog | rain (default) | terminal | grid | dots
+ *     none | rain (default) | terminal | grid | dots
  *
- * Stored in localStorage as "cherri_background". The old on/off key
- * ("cherri_particlesOn") is kept in sync so anything still reading it agrees,
- * and "fog" reuses the Vanta/three.js fog the site already had (both libraries
- * are fetched on demand, so they never block a page's first paint).
+ * Stored in localStorage as "kermit_background". The old on/off key
+ * ("kermit_particlesOn") is kept in sync so anything still reading it agrees.
+ *
+ * Every animated mode paints behind a themed scrim (see startCanvas), so a
+ * backdrop can never wash out the text sitting on top of it.
  */
 (function () {
     "use strict";
 
-    var KEY = "cherri_background";
-    var LEGACY_KEY = "cherri_particlesOn";
+    var KEY = "kermit_background";
+    var LEGACY_KEY = "kermit_particlesOn";
     var DEFAULT_MODE = "rain";
-    var MODES = ["none", "fog", "rain", "terminal", "grid", "dots"];
+    var MODES = ["none", "rain", "terminal", "grid", "dots"];
     var CONTAINER_ID = "kermit-background";
+    var VEIL_ID = "kermit-background-veil";
     var GLYPHS = "01\u30a2\u30a4\u30a6\u30a8\u30aa\u30ab\u30ad\u30af\u30b1\u30b3\u30b5\u30b7\u30b9\u30bb\u30bd\u30bf\u30c1\u30c4\u30c6\u30c8\u30ca\u30cb\u30cc\u30cd\u30ce\u30cf\u30d2\u30d5\u30d8\u30db\u30de\u30df\u30e0\u30e1\u30e2\u30e4\u30e6\u30e8\u30e9\u30ea\u30eb\u30ec\u30ed\u30ef#$%&@*+=-<>/\\";
 
     var mode = null;
@@ -30,7 +32,7 @@
     var lastTime = 0;
     var dpr = 1;
     var accent = "99,255,147";
-    var fogEl = null;
+    var veilEl = null;
 
     function cssVar(name, fallback) {
         try {
@@ -55,11 +57,6 @@
         if (rgb) return Math.round(rgb[1]) + "," + Math.round(rgb[2]) + "," + Math.round(rgb[3]);
 
         return fallback;
-    }
-
-    function toNumber(rgb) {
-        var parts = String(rgb).split(",");
-        return (parseInt(parts[0], 10) << 16) + (parseInt(parts[1], 10) << 8) + parseInt(parts[2], 10);
     }
 
     function readMode() {
@@ -102,20 +99,20 @@
         return {
             x: Math.random() * width,
             y: anywhere ? Math.random() * height : -40 - Math.random() * height * 0.25,
-            length: 14 + Math.random() * 40,
-            speed: 140 + Math.random() * 340,
-            alpha: 0.10 + Math.random() * 0.32
+            length: 20 + Math.random() * 56,
+            speed: 150 + Math.random() * 360,
+            alpha: 0.26 + Math.random() * 0.5
         };
     }
 
     function seedRain(width, height, anywhere) {
-        var count = Math.max(40, Math.min(220, Math.round(width / 7)));
+        var count = Math.max(70, Math.min(340, Math.round(width / 4.2)));
         items = [];
         for (var i = 0; i < count; i++) items.push(newDrop(width, height, anywhere));
     }
 
     function drawRain(dt, width, height) {
-        ctx.lineWidth = 1.2;
+        ctx.lineWidth = 1.9;
         ctx.lineCap = "round";
 
         for (var i = 0; i < items.length; i++) {
@@ -134,7 +131,7 @@
     /* ── terminal (falling glyph columns) ────────────────────────────────── */
 
     function seedTerminal(width, height) {
-        var columns = Math.max(14, Math.min(90, Math.round(width / 22)));
+        var columns = Math.max(20, Math.min(130, Math.round(width / 15)));
         var step = 18;
         items = [];
 
@@ -156,7 +153,7 @@
 
     function drawTerminal(dt, width, height) {
         var tail = 14;
-        ctx.font = "14px 'Courier New', monospace";
+        ctx.font = "15px 'Courier New', monospace";
         ctx.textBaseline = "top";
 
         for (var i = 0; i < items.length; i++) {
@@ -171,7 +168,7 @@
                 var fade = 1 - row / tail;
                 ctx.fillStyle = row === 0
                     ? "rgba(255,255,255,0.75)"
-                    : "rgba(" + accent + "," + (fade * 0.42).toFixed(3) + ")";
+                    : "rgba(" + accent + "," + (fade * 0.72).toFixed(3) + ")";
 
                 var glyph = col.rows[(Math.floor(col.head / col.step) + row) % col.rows.length];
                 ctx.fillText(glyph, col.x, y);
@@ -190,8 +187,8 @@
         var gap = 64;
         scroll = (scroll + dt * 26) % gap;
 
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = "rgba(" + accent + ",0.20)";
+        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = "rgba(" + accent + ",0.42)";
         ctx.beginPath();
         for (var x = -gap + scroll; x < width + gap; x += gap) {
             ctx.moveTo(x, 0);
@@ -207,7 +204,7 @@
         var sweep = (scroll / gap) * height;
         var glow = ctx.createLinearGradient(0, sweep - 90, 0, sweep + 90);
         glow.addColorStop(0, "rgba(" + accent + ",0)");
-        glow.addColorStop(0.5, "rgba(" + accent + ",0.14)");
+        glow.addColorStop(0.5, "rgba(" + accent + ",0.28)");
         glow.addColorStop(1, "rgba(" + accent + ",0)");
         ctx.fillStyle = glow;
         ctx.fillRect(0, sweep - 90, width, 180);
@@ -216,7 +213,7 @@
     /* ── dots (drifting particles) ───────────────────────────────────────── */
 
     function seedDots(width, height) {
-        var count = Math.max(30, Math.min(160, Math.round((width * height) / 22000)));
+        var count = Math.max(45, Math.min(260, Math.round((width * height) / 13000)));
         items = [];
         for (var i = 0; i < count; i++) {
             items.push({
@@ -224,8 +221,8 @@
                 y: Math.random() * height,
                 vx: (Math.random() - 0.5) * 26,
                 vy: (Math.random() - 0.5) * 26,
-                r: 1 + Math.random() * 2.2,
-                alpha: 0.2 + Math.random() * 0.5,
+                r: 1.4 + Math.random() * 2.9,
+                alpha: 0.38 + Math.random() * 0.58,
                 twinkle: Math.random() * Math.PI * 2
             });
         }
@@ -284,11 +281,13 @@
             // themed backdrop instead of ending on a hard rectangle.
             canvas.style.cssText =
                 "position:fixed;left:0;top:0;width:100%;height:100%;" +
-                "z-index:-1;opacity:.5;pointer-events:none;" +
-                "-webkit-mask-image:radial-gradient(circle at 50% 42%, #000 34%, transparent 96%);" +
-                "mask-image:radial-gradient(circle at 50% 42%, #000 34%, transparent 96%);";
+                "z-index:-1;opacity:.7;pointer-events:none;" +
+                "-webkit-mask-image:radial-gradient(circle at 50% 46%, #000 58%, transparent 100%);" +
+                "mask-image:radial-gradient(circle at 50% 46%, #000 58%, transparent 100%);";
             ctx = canvas.getContext("2d");
         }
+
+        ensureVeil();
 
         sizeCanvas();
         lastTime = 0;
@@ -300,6 +299,35 @@
                 if (canvas && (mode === "rain" || mode === "terminal" || mode === "grid" || mode === "dots")) sizeCanvas();
             });
         }
+    }
+
+    /* A themed veil between the animation and the page.
+
+       The effect is only decoration: the text on top of it is what has to stay
+       readable, and some modes (the terminal's white glyphs) or a bright theme
+       accent can eat into that. The veil is a fixed, fully transparent-to-clicks
+       layer one z-index step above the canvas, so whatever the backdrop does,
+       there is always a consistent slab of the theme's own background colour
+       behind the copy. It lives in the same negative-z level as the canvas and
+       is appended after it, so it paints on top of the effect but still below
+       every bit of page content (negative z-index paints under the in-flow
+       layer, where the text lives). */
+    function ensureVeil() {
+        if (!veilEl) veilEl = document.getElementById(VEIL_ID);
+        if (!veilEl) {
+            veilEl = document.createElement("div");
+            veilEl.id = VEIL_ID;
+            veilEl.setAttribute("aria-hidden", "true");
+        }
+        // The rgba line is the fallback for browsers without color-mix(); where
+        // it is supported the declaration after it wins and the veil follows the
+        // active theme instead of being a fixed dark tint.
+        veilEl.style.cssText =
+            "position:fixed;inset:0;z-index:-1;pointer-events:none;" +
+            "background:rgba(4,10,7,.45);" +
+            "background:color-mix(in srgb, var(--bg, #07140b) 45%, transparent);";
+        // Always last in the body, so it stays above the canvas.
+        document.body.appendChild(veilEl);
     }
 
     function stopCanvas() {
@@ -314,63 +342,11 @@
             canvas = null;
             ctx = null;
         }
-    }
-
-    /* ── fog (Vanta / three.js, loaded on demand) ────────────────────────── */
-
-    function loadScript(src, done) {
-        var script = document.createElement("script");
-        script.src = src;
-        script.onload = done;
-        script.onerror = done;
-        document.head.appendChild(script);
-    }
-
-    function startFog() {
-        if (!window.VANTA || !window.VANTA.FOG) {
-            loadScript("/assets/js/lib/three.min.js", function () {
-                loadScript("/assets/js/lib/vanta.fog.min.js", startFog);
-            });
-            return;
-        }
-
-        if (!fogEl) {
-            fogEl = document.getElementById(CONTAINER_ID);
-            if (!fogEl) {
-                fogEl = document.createElement("div");
-                fogEl.id = CONTAINER_ID;
-                document.body.appendChild(fogEl);
-            }
-            fogEl.style.cssText =
-                "position:fixed;left:0;top:0;width:100%;height:100%;" +
-                "z-index:-1;opacity:.5;pointer-events:none;" +
-                "-webkit-mask-image:radial-gradient(circle at 50% 42%, #000 34%, transparent 96%);" +
-                "mask-image:radial-gradient(circle at 50% 42%, #000 34%, transparent 96%);";
-        }
-
-        window.VANTA.FOG({
-            el: "#" + CONTAINER_ID,
-            mouseControls: true,
-            touchControls: false,
-            gyroControls: false,
-            minHeight: 200.0,
-            minWidth: 200.0,
-            highlightColor: toNumber(toRgb(cssVar("--accent", "#63ff93"), "99,255,147")),
-            midtoneColor: toNumber(toRgb(cssVar("--bg-2", "#0b1a10"), "11,26,16")),
-            lowlightColor: toNumber(toRgb(cssVar("--bg-5", "#050e09"), "5,14,9")),
-            baseColor: toNumber(toRgb(cssVar("--bg", "#07140b"), "7,20,11")),
-            blurFactor: 0.9,
-            speed: 1
-        });
-    }
-
-    function stopFog() {
-        try {
-            if (fogEl && window.VANTA && window.VANTA.current) window.VANTA.current.destroy();
-        } catch (e) { }
-        if (fogEl) {
-            fogEl.remove();
-            fogEl = null;
+        // Both layers go together: with no animation there is nothing to veil,
+        // and leaving it behind would darken the plain themed backdrop.
+        if (veilEl) {
+            veilEl.remove();
+            veilEl = null;
         }
     }
 
@@ -380,18 +356,15 @@
         accent = toRgb(cssVar("--accent", "#63ff93"), "99,255,147");
         mode = reducedMotion() ? "none" : readMode();
 
-        if (mode === "fog") startFog();
-        else if (mode !== "none") startCanvas();
+        if (mode !== "none") startCanvas();
     }
 
     function start() {
-        if (mode === "fog") startFog();
-        else if (mode !== "none") startCanvas();
+        if (mode !== "none") startCanvas();
     }
 
     function stop() {
         stopCanvas();
-        stopFog();
     }
 
     window.setBackground = function (next) {
@@ -422,7 +395,7 @@
     // One tab changes the backdrop (or the theme that colours it): follow
     // along here without a reload. storage events only reach *other*
     // documents, so the theme also announces itself with a custom event for
-    // the document that changed it (see colors.js / account.js).
+    // the document that changed it (see colors.js / forms.js).
     function syncFromElsewhere(themeOnly) {
         accent = toRgb(cssVar("--accent", "#63ff93"), "99,255,147");
 
@@ -446,12 +419,24 @@
     window.addEventListener("storage", function (e) {
         if (!e || !e.key) return;
         if (e.key === KEY || e.key === LEGACY_KEY) syncFromElsewhere(false);
-        else if (e.key === "cherri_theme") syncFromElsewhere(true);
+        else if (e.key === "kermit_theme") syncFromElsewhere(true);
     });
 
     document.addEventListener("themeChanged", function () {
         syncFromElsewhere(true);
     });
+
+    // Swapping the theme <link> is asynchronous: the event above arrives before
+    // the new palette is actually applied, so the accent would still read as the
+    // previous theme and the backdrop would keep painting the old colour over
+    // the new one. Re-read once the new stylesheet has loaded (same trick the
+    // cursor uses), which also covers the very first paint on a themed page.
+    var themeLink = document.getElementById("css-theme-link");
+    if (themeLink) {
+        themeLink.addEventListener("load", function () {
+            syncFromElsewhere(true);
+        });
+    }
 
     if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", boot);

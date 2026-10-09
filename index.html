@@ -14,10 +14,10 @@
                 const params = new URLSearchParams(window.location.search)
 
                 if (params.get("launch") === "1") {
-                    sessionStorage.setItem("cherri_launched", "yes")
+                    sessionStorage.setItem("kermit_launched", "yes")
                     return
                 }
-                if (sessionStorage.getItem("cherri_launched") === "yes") return
+                if (sessionStorage.getItem("kermit_launched") === "yes") return
 
                 window.location.replace("/pages/drive.html")
             } catch (e) { }
@@ -25,14 +25,11 @@
     </script>
     <title>Kermit (RTPK) Network</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Deferred: together these are megabytes of JS and none of it is needed for
-         the first paint. defer preserves their relative order, so the proxy chain
-         still initialises in the right sequence, before DOMContentLoaded. -->
-    <script src="/uv/uv.bundle.js" defer></script>
-    <script src="/uv/uv.config.js" defer></script>
-    <script src="/baremux/index.js" defer></script>
+    <!-- Deferred: these are not needed for the first paint. The proxy engine is a
+         single page (/proxy.html: the vendored GUST build, over a Wisp WebSocket
+         tunnel) that loads its own client, so nothing proxy-related is pulled in
+         here any more. -->
     <script src="/assets/js/t.js" defer></script>
-    <script src="/homework/math.all.js" defer></script>
     <link rel="stylesheet" href="/styles/index.css">
     <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
     <link rel="stylesheet" href="/fa/css/all.css">
@@ -44,21 +41,41 @@
     <script src="/assets/js/background.js" defer></script>
     <script src="/assets/js/toolbar.js" defer></script>
     <script src="/assets/js/colors.js"></script>
-    <!-- Accounts: config is tiny and sync, account.js defers and only fetches
+    <!-- Accounts: config is tiny and sync, forms.js defers and only fetches
          the Firebase SDK when there is a config (or an account action). -->
     <script src="/assets/js/firebase-config.js"></script>
-    <script src="/assets/js/account.js" defer></script>
+    <script src="/assets/js/forms.js" defer></script>
     <script src="/assets/js/splash.js" defer></script>
-    <script src="/assets/js/browserfunctions.js" defer></script>
-    <meta name="title" content="Kermit (RTPK) Network">
-    <meta name="description"
-        content="Games, movies, shows and a built-in private browser in one place. Clean, customizable, and completely yours.">
+    <script src="/assets/js/slidesfunctions.js" defer></script>
+    <meta name="title" content="Home - Google Drive">
     <meta name="keywords"
-        content="games, unblocked, school, movies, tv, shows, browser, proxy, scramjet, libre, gn-math">
+        content="games, unblocked, school, movies, tv, shows, browser, web proxy, gust, gn-math">
     <meta name="robots" content="index, nofollow">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta property="og:image" content="/assets/img/cover.png">
-    <meta property="twitter:image" content="/assets/img/cover.png">
+    <!-- Link embeds. Pasted anywhere that renders a preview card for a link
+         (Discord, Google Docs, Slack, iMessage), this URL shows Google Drive
+         instead of the site: the same cloak as the Drive decoy page
+         (/pages/drive.html) and the "Google Drive" tab-cloak option. Crawlers
+         read these tags straight out of the HTML without running any script,
+         so they have to be static, and the logo is a PNG because embed
+         crawlers do not render SVG (assets/img/drive.svg is the original).
+         Kept identical on every page a link might point at. -->
+    <meta name="description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Google Drive">
+    <meta property="og:title" content="Home - Google Drive">
+    <meta property="og:description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta property="og:image" content="/assets/img/drive.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="457">
+    <meta property="og:image:alt" content="Google Drive">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Home - Google Drive">
+    <meta name="twitter:description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta name="twitter:image" content="/assets/img/drive.png">
     <meta name="language" content="English">
     <meta name="revisit-after" content="2 days">
     <meta name="author" content="Kermit (RTPK) Network">
@@ -66,7 +83,7 @@
         data-website-id="aa852720-724b-4441-be4c-6db9ef160eb9"></script>
     <link rel="stylesheet" href="/assets/css/font.css">
     <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
-    <link rel="stylesheet" href="/assets/css/settings.css">
+    <link rel="stylesheet" href="/assets/css/folders.css">
 </head>
 
 <body>
@@ -94,40 +111,43 @@
             </li>
             <li class="divider"></li>
             <li>
-                <a onclick="navTo('games')" href="#" data-page="games" title="Games">
+                <a onclick="navTo('docs')" href="#" data-page="docs" title="Games">
                     <i class="ri-gamepad-line"></i>
                 </a>
             </li>
             <li>
-                <a onclick="navTo('browser')" href="#" data-page="browser">
+                <a onclick="navTo('slides')" href="#" data-page="slides">
                     <i class="ri-window-2-line"></i>
                 </a>
             </li>
             <li>
-                <a onclick="navTo('movies')" href="#" data-page="movies">
+                <a onclick="navTo('sheets')" href="#" data-page="sheets">
                     <i class="ri-clapperboard-line"></i>
                 </a>
             </li>
             <li>
-                <a onclick="navTo('assistant')" href="#" data-page="ai" title="AI Assistant">
+                <a onclick="navTo('vids')" href="#" data-page="vids" title="AI Assistant">
                     <i class="ri-robot-2-line"></i>
                 </a>
             </li>
             <li class="divider"></li>
             <li>
-                <a onclick="navTo('account')" href="#" data-page="account" title="Account">
+                <a onclick="navTo('forms')" href="#" data-page="forms" title="Account">
                     <i class="ri-user-line"></i>
                 </a>
             </li>
             <li class="toolbar-end">
-                <a onclick="toggleSettings()" href="#" data-page="dc">
+                <a onclick="toggleFolders()" href="#" data-page="dc">
                     <i class="ri-settings-3-line"></i>
                 </a>
             </li>
+            <!-- Docked along the bottom by default, so folding the bar away
+                 drops it downwards; toolbar.js flips this arrow (and the grip's)
+                 when the dock is changed in the settings overlay. -->
             <li class="toolbar-hide">
                 <a onclick="if (window.toggleToolbar) toggleToolbar(); return false;" href="#"
                     title="Hide toolbar" aria-label="Hide toolbar">
-                    <i class="ri-arrow-up-s-line"></i>
+                    <i class="ri-arrow-down-s-line"></i>
                 </a>
             </li>
             <!--
@@ -158,14 +178,14 @@
 
     <iframe id="contentFrame"></iframe>
 
-    <div class="browser-container">
-        <div class="browser-controls">
+    <div class="slides-container">
+        <div class="slides-controls">
             <div class="tabs">
                 <button class="newtab" onclick="newTab()" title="New tab">
                     <i class="ri-add-line"></i>
                 </button>
             </div>
-            <div class="browser-buttons">
+            <div class="slides-buttons">
                 <div class="hcontainer">
                     <button onclick="b()" title="Back">
                         <i class="ri-arrow-left-line"></i>
@@ -176,7 +196,7 @@
                     <button onclick="r()" title="Reload">
                         <i class="ri-restart-line"></i>
                     </button>
-                    <!-- The URL bar is wired up by browserfunctions.js; the old
+                    <!-- The URL bar is wired up by slidesfunctions.js; the old
                          inline handler read `this.value` inside an arrow function
                          (window, not the input) and threw on every Enter. -->
                     <input type="text" id="searchbar" placeholder="Search for anything or enter a URL...">
@@ -186,7 +206,7 @@
                     <button onclick="launchEruda()" title="Developer console">
                         <i class="ri-code-line"></i>
                     </button>
-                    <button onclick="closeOverlays(); hideBrowser()" title="Close browser">
+                    <button onclick="closeOverlays(); hideSlides()" title="Close slides">
                         <i class="ri-home-4-line"></i>
                     </button>
                 </div>
@@ -205,39 +225,26 @@
     <!-- site version -->
     <kermitattr version="s1.1.1"></kermitattr>
 
-    <!-- Settings are injected by settings.js, which must run before dropdown.js,
+    <!-- Settings are injected by folders.js, which must run before dropdown.js,
          because dropdown.js wires up the selectors inside the overlay. -->
-    <script src="/assets/js/settings.js"></script>
+    <script src="/assets/js/folders.js"></script>
     <script src="/assets/js/dropdown.js"></script>
     <script>
-        async function registerSW() {
-            if ("serviceWorker" in navigator) {
-                await navigator.serviceWorker.register("/uv/sw.js").then(() => {
-                    console.log(
-                        "%cKermit" + "%c UV sw registered!",
-                        "color: white; background: linear-gradient(to bottom right, #040c16, #000000); border-radius: 5px; font-weight: bold; padding: 6px; font-family: sans-serif;",
-                        "color: white; background: transparent; border-radius: 0px; padding: 0px;"
-                    );
-                }).catch(e => {
-                    console.log("Error registering service worker (UV): " + e)
-                    showToast("error", "Failed to register service worker", "fas fa-times-circle")
+        // The proxy used to be a pair of Service Workers (Scramjet/Ultraviolet). It
+        // is one page now (/proxy.html: the GUST engine over a Wisp WebSocket
+        // tunnel), so a returning visitor's old workers are unregistered here
+        // rather than registered - a stale one would intercept this page's routes.
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.getRegistrations().then((regs) => {
+                regs.forEach((reg) => {
+                    const worker = reg.active || reg.waiting || reg.installing;
+                    const path = worker && worker.scriptURL ? new URL(worker.scriptURL, location.href).pathname : "";
+                    if (/^\/(?:sw\.js|uv\/sw\.js)$/.test(path)) reg.unregister();
                 });
-
-                await navigator.serviceWorker.register("/sw.js").then(() => {
-                    console.log(
-                        "%cKermit" + "%c SJ sw registered!",
-                        "color: white; background: linear-gradient(to bottom right, #040c16, #000000); border-radius: 5px; font-weight: bold; padding: 6px; font-family: sans-serif;",
-                        "color: white; background: transparent; border-radius: 0px; padding: 0px;"
-                    );
-                }).catch(e => {
-                    console.log("Error registering service worker (SJ): " + e)
-                    showToast("error", "Failed to register service worker", "fas fa-times-circle")
-                });
-            }
+            }).catch(() => { });
         }
 
         window.addEventListener("load", () => {
-            registerSW();
             lucide.createIcons();
         });
 
@@ -249,11 +256,23 @@
             // Never leave an overlay (or its click-catching blur backdrop) sitting on
             // top of the page we are navigating to.
             if (typeof closeOverlays === "function") closeOverlays()
+
+            const nav = document.querySelector("nav")
+            const overlayOn = localStorage.getItem("kermit_useOverlay") ?? "yes"
+            // A store page can run full screen: the bar fades out and the page
+            // takes the whole window back, so the game is not left with an empty
+            // strip where the toolbar was (see collapseToolbarSpace in
+            // assets/js/toolbar.js).
+            const hideBar = l.includes("/stores/") && overlayOn === "yes"
+
             if (l.includes("home")) {
                 contentFrame.remove();
-                document.querySelector("nav").style.display = "block"
+                // Clear the inline display instead of writing "block": the
+                // toolbar is a flex bar, and the inline block left its buttons
+                // stuck to the left edge instead of centred.
+                nav.style.removeProperty("display")
                 setTimeout(() => {
-                    document.querySelector("nav").style.opacity = "1"
+                    nav.style.opacity = "1"
                 }, 3)
                 homeContent.style.display = "block";
                 document.querySelector("#gohomeblock").style.display = "none"
@@ -261,17 +280,23 @@
                 if (!document.body.contains(contentFrame)) {
                     document.body.appendChild(contentFrame);
                 }
-                const overlayOn = localStorage.getItem("cherri_useOverlay") ?? "yes"
-                if (overlayOn === "yes" && l.includes("/stores/")) {
-                    document.querySelector("nav").style.opacity = 0
+                if (hideBar) {
+                    nav.style.opacity = 0
                     setTimeout(() => {
-                        document.querySelector("nav").style.display = "none"
+                        nav.style.display = "none"
                     }, 350)
+                } else {
+                    // Coming back from a full-screen store page: put the bar back
+                    // rather than leaving it hidden for the rest of the session.
+                    nav.style.removeProperty("display")
+                    nav.style.opacity = "1"
                 }
                 homeContent.style.display = "none";
                 contentFrame.style.display = "block";
                 contentFrame.src = l.includes("/stores/") ? `/pages/${l}` : `/pages/${l}.html`;
             }
+
+            if (window.collapseToolbarSpace) window.collapseToolbarSpace(hideBar)
         }
     </script>
     <script>
@@ -305,7 +330,7 @@
                 }
             }
 
-            const b = document.querySelector(".browser-container")
+            const b = document.querySelector(".slides-container")
             const frames = document.querySelectorAll(".viewframe")
 
             b.style.opacity = 1
@@ -326,14 +351,14 @@
          the in-page browser but nothing on the home page calls it any more. -->
     <script defer>
         function resetTheme() {
-            localStorage.setItem("cherri_theme", "default")
+            localStorage.setItem("kermit_theme", "default")
             window.location.reload()
         }
 
         window.addEventListener("DOMContentLoaded", () => {
             const params = new URLSearchParams(window.location.search)
-            if (params.get("page") === "settings") {
-                toggleSettings()
+            if (params.get("page") === "folders") {
+                toggleFolders()
             } else if (params.get("page") && params.get("launch")) {
                 navTo(params.get("page"))
             }

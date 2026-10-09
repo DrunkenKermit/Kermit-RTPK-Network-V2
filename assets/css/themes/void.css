@@ -1,17 +1,21 @@
+/* Void — black and very dark grey only.
+   Theme files carry only the core palette; the gradient, glow and shadow
+   tokens are derived from --accent / --accent-2 in elements.css and
+   styles/index.css, so this applies to every page, background and the cursor. */
 :root {
-    --bg: #0c0c0c;
-    --bg-2: #131313;
-    --bg-3: #272727;
-    --bg-4: #5252528c;
+    --bg: #000000;
+    --bg-2: #0a0a0a;
+    --bg-3: #141414;
+    --bg-4: #2323238c;
     --bg-5: #000000;
-    --border: #ebe3d5c7;
-    --border-2: #ebe3d570;
-    --border-3: #e0e0e030;
-    --border-4: #b4b4b41a;
-    --text: #c2c2c2;
+    --border: rgba(255, 255, 255, 0.78);
+    --border-2: rgba(255, 255, 255, 0.44);
+    --border-3: rgba(255, 255, 255, 0.19);
+    --border-4: rgba(255, 255, 255, 0.1);
+    --text: rgba(255, 255, 255, 0.84);
     --bright-text: #ffffff;
-    --accent: #ffffff;
-    --accent-2: #adadad;
+    --accent: #8c8c8c;
+    --accent-2: #4a4a4a;
 }
 
 #reset-theme {

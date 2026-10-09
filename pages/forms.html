@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kermit (RTPK) Network | account</title>
+    <!-- Link embeds: pasted anywhere that renders a preview card for a link
+         (Discord, Google Docs, Slack, iMessage), this URL shows Google Drive
+         instead of the site - the same cloak as the Drive decoy page
+         (/pages/drive.html) and the "Google Drive" tab-cloak option. Crawlers
+         read these tags straight out of the HTML without running any script,
+         so they have to be static, and the logo is a PNG because embed
+         crawlers do not render SVG. Kept identical on every page a link might
+         point at. -->
+    <meta name="description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Google Drive">
+    <meta property="og:title" content="Home - Google Drive">
+    <meta property="og:description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta property="og:image" content="/assets/img/drive.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="457">
+    <meta property="og:image:alt" content="Google Drive">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Home - Google Drive">
+    <meta name="twitter:description"
+        content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
+    <meta name="twitter:image" content="/assets/img/drive.png">
+    <link rel="shortcut icon" href="/assets/img/fav.png" type="image/png" id="tabIcon">
+    <script src="/assets/js/background.js" defer></script>
+    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
+    <link rel="stylesheet" href="/assets/css/elements.css">
+    <link rel="stylesheet" href="/assets/css/font.css">
+    <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
+    <link rel="stylesheet" href="/assets/css/t.css">
+    <link rel="stylesheet" href="/assets/css/dropdown.css">
+    <link rel="stylesheet" href="/assets/css/folders.css">
+    <script src="/assets/js/colors.js"></script>
+    <!-- Firebase config first, then the accounts module (it checks the config
+         on boot and only fetches the sign-in library when there is one). -->
+    <script src="/assets/js/firebase-config.js"></script>
+    <script src="/assets/js/forms.js" defer></script>
+    <style>
+        /* `hidden` has to beat the layout rules further down. An id-selector
+           rule such as `#profileEdit { display: flex }` outranks the browser's
+           own `[hidden] { display: none }`, so without this the profile editor
+           (username, picture, icons) and the sync/sign-out panel would sit on
+           screen even while signed out. */
+        [hidden] {
+            display: none !important;
+        }
+
+        .account-wrap {
+            min-height: calc(100vh - 64px);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 48px 16px 64px;
+        }
+
+        .account-card {
+            width: 100%;
+            max-width: 560px;
+            background: color-mix(in srgb, var(--bg-2, #0b1a10) 82%, transparent);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 22%, transparent);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+
+        .account-head {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            padding: 26px 26px 20px;
+            background:
+                radial-gradient(120% 140% at 0% 0%,
+                    color-mix(in srgb, var(--accent, #63ff93) 16%, transparent) 0%,
+                    transparent 55%);
+            border-bottom: 1px solid color-mix(in srgb, var(--accent, #63ff93) 14%, transparent);
+        }
+
+        .avatar {
+            width: 74px;
+            height: 74px;
+            flex: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            color: var(--accent, #63ff93);
+            background: color-mix(in srgb, var(--bg, #07140b) 70%, black 30%);
+            border: 2px solid color-mix(in srgb, var(--accent, #63ff93) 55%, transparent);
+            box-shadow: 0 0 18px color-mix(in srgb, var(--accent, #63ff93) 25%, transparent);
+        }
+
+        .account-head h1 {
+            font-size: 22px;
+            font-weight: 600;
+            margin: 0 0 4px;
+        }
+
+        .account-head .sub {
+            font-size: 13px;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 65%, transparent);
+            word-break: break-all;
+        }
+
+        .badge {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 3px 9px;
+            border-radius: 999px;
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 45%, transparent);
+            color: var(--accent, #63ff93);
+        }
+
+        .badge.local {
+            border-color: rgba(255, 196, 92, 0.55);
+            color: #ffc45c;
+        }
+
+        .account-body {
+            padding: 22px 26px 26px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .banner {
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px dashed rgba(255, 196, 92, 0.5);
+            background: rgba(255, 196, 92, 0.07);
+            color: #ffd89a;
+        }
+
+        .banner b {
+            color: #ffc45c;
+        }
+
+        .field label {
+            display: block;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 60%, transparent);
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 13px;
+            font-size: 15px;
+            color: var(--text, #d7ffe6);
+            background: color-mix(in srgb, var(--bg, #07140b) 80%, black 20%);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 25%, transparent);
+            border-radius: 9px;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .field input:focus {
+            border-color: var(--accent, #63ff93);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #63ff93) 18%, transparent);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 9px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: transform 0.12s ease, filter 0.15s ease, background 0.15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.08);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.primary {
+            width: 100%;
+            background: var(--accent, #63ff93);
+            color: #05130a;
+        }
+
+        .btn.ghost {
+            background: transparent;
+            border-color: color-mix(in srgb, var(--accent, #63ff93) 35%, transparent);
+            color: var(--accent, #63ff93);
+        }
+
+        .btn.danger {
+            background: transparent;
+            border-color: rgba(255, 110, 110, 0.45);
+            color: #ff8f8f;
+        }
+
+        .btn.google {
+            width: 100%;
+            background: #ffffff;
+            color: #1f1f1f;
+        }
+
+        .btn.google i {
+            font-size: 17px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 6px;
+            background: color-mix(in srgb, var(--bg, #07140b) 75%, black 25%);
+            padding: 4px;
+            border-radius: 10px;
+        }
+
+        .tabs button {
+            flex: 1;
+            padding: 9px 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 62%, transparent);
+            background: transparent;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+
+        .tabs button.active {
+            background: color-mix(in srgb, var(--accent, #63ff93) 18%, transparent);
+            color: var(--accent, #63ff93);
+        }
+
+        .or {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 45%, transparent);
+        }
+
+        .or::before,
+        .or::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: color-mix(in srgb, var(--accent, #63ff93) 18%, transparent);
+        }
+
+        /* Google-account style picker: a grid of round avatars, a ring on the
+           one you picked, and a larger live preview above it. */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+            gap: 10px;
+        }
+
+        .icon-grid button {
+            position: relative;
+            aspect-ratio: 1;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 72%, transparent);
+            background: color-mix(in srgb, var(--bg, #07140b) 78%, black 22%);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 16%, transparent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: border-color 0.12s ease, color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+        }
+
+        .icon-grid button img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .icon-grid button:hover {
+            transform: translateY(-2px);
+            color: var(--accent, #63ff93);
+            border-color: color-mix(in srgb, var(--accent, #63ff93) 45%, transparent);
+        }
+
+        .icon-grid button.active {
+            border-color: var(--accent, #63ff93);
+            color: var(--accent, #63ff93);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #63ff93) 85%, transparent),
+                0 0 14px color-mix(in srgb, var(--accent, #63ff93) 30%, transparent);
+        }
+
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 55%, transparent);
+            margin-bottom: 10px;
+        }
+
+        /* ── profile picture picker ─────────────────────────────────────── */
+
+        .icon-upload-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--bg, #07140b) 70%, black 30%);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 16%, transparent);
+        }
+
+        .picker-preview {
+            width: 60px;
+            height: 60px;
+            flex: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            overflow: hidden;
+            color: var(--accent, #63ff93);
+            background: color-mix(in srgb, var(--bg, #07140b) 60%, black 40%);
+            border: 2px solid color-mix(in srgb, var(--accent, #63ff93) 45%, transparent);
+            box-shadow: 0 0 16px color-mix(in srgb, var(--accent, #63ff93) 22%, transparent);
+        }
+
+        .picker-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .icon-upload-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .icon-upload-text strong {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .icon-upload-text span {
+            font-size: 12px;
+            line-height: 1.4;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 50%, transparent);
+        }
+
+        .icon-upload-row .btn {
+            flex: none;
+            padding: 9px 14px;
+        }
+
+        .icon-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .icon-group-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 50%, transparent);
+            margin-bottom: 8px;
+        }
+
+        .sync-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 70%, transparent);
+        }
+
+        .sync-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .msg {
+            min-height: 18px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .msg.ok {
+            color: var(--accent, #63ff93);
+        }
+
+        .msg.err {
+            color: #ff8f8f;
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row .btn {
+            flex: 1;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 45%, transparent);
+            line-height: 1.5;
+        }
+
+        /* ── ChromeOS-style account UI ────────────────────────────────────────
+           Everything below restyles the same selectors as above, so it wins by
+           being declared later. The page now reads like ChromeOS's own account
+           surfaces: a centred avatar tile at the top (the OS sign-in tile), a
+           Google sign-in card in Google's palette for signing in, and a
+           "Google Account" panel with Material rows once you are signed in. */
+
+        /* The tile. ChromeOS puts the whole identity in one centred stack: the
+           avatar, the name, then the account state. */
+        .account-wrap {
+            padding: 36px 16px 72px;
+        }
+
+        .account-card {
+            border-radius: 24px;
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 18%, transparent);
+        }
+
+        .account-head {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+            padding: 32px 26px 24px;
+            background:
+                radial-gradient(120% 150% at 50% 0%,
+                    color-mix(in srgb, var(--accent, #63ff93) 22%, transparent) 0%,
+                    transparent 62%);
+        }
+
+        .avatar {
+            width: 92px;
+            height: 92px;
+            font-size: 42px;
+            border-width: 3px;
+            box-shadow:
+                0 0 0 7px color-mix(in srgb, var(--accent, #63ff93) 12%, transparent),
+                0 0 26px color-mix(in srgb, var(--accent, #63ff93) 30%, transparent);
+        }
+
+        .account-head h1 {
+            font-size: 25px;
+            letter-spacing: -0.01em;
+        }
+
+        .account-head .sub {
+            font-size: 13.5px;
+        }
+
+        /* Signed in, the state chip keeps the theme accent; signed out it stays
+           amber, so the chip reads as part of the site in both states. */
+        .badge {
+            margin-top: 2px;
+            padding: 4px 11px;
+        }
+
+        .account-body {
+            gap: 18px;
+            padding: 20px 24px 26px;
+        }
+
+        /* ── Sign in / create account card ───────────────────────────────────
+           Same ChromeOS bones as before (a centred mark and heading, the
+           segmented Sign in / Create account choice, then the fields), but
+           painted in the site's own palette rather than Google's white sheet,
+           so the card reads as part of the page instead of a pasted-in embed. */
+        #authView {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 24px;
+            border-radius: 20px;
+            background:
+                radial-gradient(130% 140% at 50% 0%,
+                    color-mix(in srgb, var(--accent, #63ff93) 15%, transparent) 0%,
+                    transparent 58%),
+                color-mix(in srgb, var(--bg, #07140b) 72%, black 28%);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 24%, transparent);
+            color: var(--text, #d7ffe6);
+        }
+
+        #authView .gcard-head {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+
+        #authView .gcard-head h2 {
+            margin: 0;
+            font-size: 21px;
+            font-weight: 600;
+            color: var(--text, #d7ffe6);
+        }
+
+        #authView .gsub {
+            margin: 3px 0 0;
+            font-size: 13px;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 60%, transparent);
+        }
+
+        /* The mark on the "Sign in with Google" button. The card used to carry
+           a second, much larger copy above the heading in its own white disc;
+           that has been removed, so this one is all that is left. */
+        .gmark {
+            width: 18px;
+            height: 18px;
+            flex: none;
+            display: block;
+        }
+
+        /* The segmented Sign in / Create account choice, in the theme accent. */
+        #authView .tabs {
+            border-radius: 999px;
+            padding: 4px;
+            gap: 4px;
+            background: color-mix(in srgb, var(--bg, #07140b) 60%, black 40%);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 14%, transparent);
+        }
+
+        #authView .tabs button {
+            border-radius: 999px;
+            padding: 10px 12px;
+            font-weight: 600;
+        }
+
+        /* Same fields as the rest of the page, just a touch taller. */
+        #authView .field input {
+            border-radius: 11px;
+            padding: 12px 14px;
+        }
+
+        #authView .btn.primary {
+            border-radius: 999px;
+            padding: 13px 18px;
+        }
+
+        /* Google's button, kept as the branded pill but trimmed to the site's
+           outline style so it sits next to the accent button instead of
+           fighting it. */
+        #authView .btn.google {
+            border-radius: 999px;
+            padding: 12px 18px;
+            background: color-mix(in srgb, var(--bg, #07140b) 45%, transparent);
+            color: var(--text, #d7ffe6);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 32%, transparent);
+        }
+
+        #authView .btn.google:hover {
+            border-color: var(--accent, #63ff93);
+            filter: brightness(1.08);
+        }
+
+        .gfoot {
+            margin: 12px 0 0;
+            font-size: 11.5px;
+            line-height: 1.5;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 45%, transparent);
+        }
+
+        /* ── Google Account panel (signed in) ─────────────────────────────── */
+        #accountView {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* The account row ChromeOS shows at the top of its account surfaces. */
+        .gchip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: color-mix(in srgb, var(--bg, #07140b) 55%, transparent 45%);
+            border: 1px solid color-mix(in srgb, var(--accent, #63ff93) 20%, transparent);
+        }
+
+        .gchip-avatar {
+            width: 40px;
+            height: 40px;
+            flex: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: color-mix(in srgb, var(--accent, #63ff93) 88%, black 12%);
+            color: #05130a;
+        }
+
+        .gchip-text {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .gchip-text strong {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .gchip-text small {
+            font-size: 12.5px;
+            line-height: 1.45;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 62%, transparent);
+        }
+
+        .gcheck {
+            width: 20px;
+            height: 20px;
+            flex: none;
+        }
+
+        /* Material list rows. Plain divs, not a <ul>: the subpages style every
+           ul as the hidden nav menu (assets/css/elements.css). */
+        .glist {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glist-row {
+            display: flex;
+            gap: 14px;
+            padding: 13px 4px;
+            border-top: 1px solid color-mix(in srgb, var(--accent, #63ff93) 12%, transparent);
+        }
+
+        .glist-row:first-child {
+            border-top: none;
+            padding-top: 2px;
+        }
+
+        .glist-row > i {
+            font-size: 20px;
+            color: var(--accent, #63ff93);
+            margin-top: 1px;
+        }
+
+        .glist-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .glist-text strong {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .glist-text small {
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: color-mix(in srgb, var(--text, #d7ffe6) 58%, transparent);
+        }
+
+        /* Pill actions, the Material 3 way, pushed to the end of the row now
+           that the sync status sits in the account row above. */
+        .sync-row {
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .sync-actions {
+            gap: 8px;
+        }
+
+        .sync-actions .btn.ghost {
+            border-radius: 999px;
+            border-color: transparent;
+            background: color-mix(in srgb, var(--accent, #63ff93) 18%, transparent);
+        }
+
+        .sync-actions .btn.danger {
+            border-radius: 999px;
+        }
+
+        /* ── Profile editor, as Material rows ─────────────────────────────── */
+        #profileEdit {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            border-top: 1px solid color-mix(in srgb, var(--accent, #63ff93) 12%, transparent);
+            padding-top: 18px;
+        }
+
+        #profileEdit .field input {
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+
+        .section-title {
+            font-size: 12.5px;
+            font-weight: 600;
+        }
+
+        .icon-upload-row {
+            border-radius: 16px;
+        }
+
+        .picker-preview {
+            width: 64px;
+            height: 64px;
+            font-size: 30px;
+        }
+
+        .icon-grid {
+            grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+            gap: 12px;
+        }
+
+        .icon-grid button.active {
+            box-shadow:
+                0 0 0 2px color-mix(in srgb, var(--accent, #63ff93) 85%, transparent),
+                0 0 16px color-mix(in srgb, var(--accent, #63ff93) 32%, transparent);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <ul id="nav-ul" class="">
+            <div class="container" style="display: flex; flex-direction: row;">
+                <div class="top-nav">
+                    <li>
+                        <a href="/" target="_top">
+                            <i class="ri ri-home-4-fill"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/docs.html">
+                            <i class="ri ri-gamepad-line"></i>
+                            Games
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/slides.html">
+                            <i class="ri ri-window-2-line"></i>
+                            Slides
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/sheetframe.html">
+                            <i class="ri ri-clapperboard-line"></i>
+                            Movies
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/pages/vids.html">
+                            <i class="ri ri-robot-2-line"></i>
+                            AI
+                        </a>
+                    </li>
+                    <li>
+                        <a class="active" href="/pages/forms.html">
+                            <i class="ri ri-user-line"></i>
+                            Account
+                        </a>
+                    </li>
+                </div>
+                <div>
+                    <li>
+                        <a href="#" onclick="toggleFolders(); return false;">
+                            <i class="ri ri-settings-3-line"></i>
+                            Folders
+                        </a>
+                    </li>
+                    <li>
+                        <a style="cursor: pointer;" onclick="window.open('https://github.com/DrunkenKermit/Kermit-RTPK-Network', '_blank')">
+                            <i class="ri ri-github-line"></i>
+                            Beta 2.2
+                        </a>
+                    </li>
+                </div>
+            </div>
+        </ul>
+    </nav>
+
+    <main class="account-wrap">
+        <section class="account-card">
+            <header class="account-head">
+                <div class="avatar"><i id="avatarGlyph" class="ri-user-line"></i></div>
+                <div>
+                    <h1 id="displayName">Your profile</h1>
+                    <div class="sub" id="displaySub">Not signed in</div>
+                    <span class="badge local" id="modeBadge">On this device</span>
+                </div>
+            </header>
+
+            <div class="account-body">
+                <div class="banner" id="setupBanner" hidden>
+                    <b>Cloud accounts aren't set up yet.</b> Your username, icon, settings and game
+                    progress save on this device. To enable email &amp; Google sign-in plus syncing
+                    across devices, fill in <code>assets/js/firebase-config.js</code> (Firebase
+                    console steps are in that file).
+                </div>
+
+                <p class="hint" id="profilePrompt" hidden>
+                    Sign in or create an account below to change your username and profile icon.
+                </p>
+
+                <!-- Profile editor: only once you are signed in -->
+                <div id="profileEdit" hidden>
+                    <div class="field">
+                        <label for="usernameInput">Username</label>
+                        <div class="row">
+                            <input id="usernameInput" type="text" maxlength="24" placeholder="Pick a username"
+                                autocomplete="username">
+                            <button class="btn ghost" id="saveProfileBtn" type="button">
+                                <i class="ri-save-3-line"></i> Save
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 18px;">
+                        <div class="section-title">Profile picture</div>
+
+                        <!-- Your current picture, an upload shortcut, then the
+                             icon sets below. -->
+                        <div class="icon-upload-row">
+                            <div class="picker-preview"><i id="pickerPreview" class="ri-user-line"></i></div>
+                            <div class="icon-upload-text">
+                                <strong>Make it yours</strong>
+                                <span>Pick an icon below, or upload a photo.</span>
+                            </div>
+                            <button class="btn ghost" id="uploadIconBtn" type="button">
+                                <i class="ri-upload-2-line"></i> Upload
+                            </button>
+                            <input id="iconUpload" type="file" accept="image/*" hidden>
+                        </div>
+
+                        <div class="icon-groups">
+                            <div class="icon-group">
+                                <div class="icon-group-label">Icons</div>
+                                <div class="icon-grid" id="iconGridIcons"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Auth: shown while signed out and configured. The heading, the
+                     account it is for, the segmented choice, then the fields. -->
+                <div id="authView" hidden>
+                    <div class="gcard-head">
+                        <h2>Sign in</h2>
+                        <p class="gsub">to continue to Kermit (RTPK) Network</p>
+                    </div>
+
+                    <div class="tabs">
+                        <button type="button" id="tabLogin" class="active">Sign in</button>
+                        <button type="button" id="tabSignup">Create account</button>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px;">
+                        <div class="field">
+                            <label for="authEmail">Email</label>
+                            <input id="authEmail" type="email" placeholder="you@example.com"
+                                autocomplete="email">
+                        </div>
+                        <div class="field">
+                            <label for="authPass">Password</label>
+                            <input id="authPass" type="password" placeholder="Enter your password"
+                                autocomplete="current-password">
+                        </div>
+                        <button class="btn primary" id="authSubmit" type="button">Sign in</button>
+                        <div class="or">or</div>
+                        <button class="btn google" id="googleBtn" type="button">
+                            <svg class="gmark sm" viewBox="0 0 48 48" aria-hidden="true">
+                                <path fill="#EA4335"
+                                    d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                <path fill="#4285F4"
+                                    d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                <path fill="#FBBC05"
+                                    d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                <path fill="#34A853"
+                                    d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                            </svg>
+                            Sign in with Google
+                        </button>
+                        <p class="msg" id="authMsg"></p>
+                    </div>
+
+                    <p class="gfoot">Your settings, favourites, bookmarks and game progress
+                        follow this account on every device you sign in on.</p>
+                </div>
+
+                <!-- Account: shown while signed in. The account row plus Material
+                     rows, the way ChromeOS lays its account surfaces out. -->
+                <div id="accountView" hidden>
+                    <div class="gchip">
+                        <span class="gchip-avatar"><i class="ri-user-3-fill"></i></span>
+                        <span class="gchip-text">
+                            <strong>Google Account</strong>
+                            <small id="syncInfo">Not synced yet</small>
+                        </span>
+                        <svg class="gcheck" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="12" cy="12" r="11" fill="#1a73e8" />
+                            <path d="M10.6 16.7 6.3 12.4l1.4-1.4 2.9 2.9 6-6 1.4 1.4z" fill="#fff" />
+                        </svg>
+                    </div>
+
+                    <div class="glist">
+                        <div class="glist-row">
+                            <i class="ri-cloud-line"></i>
+                            <span class="glist-text">
+                                <strong>Sync is on</strong>
+                                <small>Settings, favourites, bookmarks and game progress are
+                                    saved to this account and restored on every device you
+                                    sign in on.</small>
+                            </span>
+                        </div>
+                        <div class="glist-row">
+                            <i class="ri-shield-check-line"></i>
+                            <span class="glist-text">
+                                <strong>Only this account can see it</strong>
+                                <small>Changes sync on their own, or press <b>Sync now</b> to do
+                                    it straight away.</small>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- The sync status now lives in the account row above, so this
+                         row is just the two actions. -->
+                    <div class="sync-row">
+                        <div class="sync-actions">
+                            <button class="btn ghost" id="syncBtn" type="button">
+                                <i class="ri-refresh-line"></i> Sync now
+                            </button>
+                            <button class="btn danger" id="signOutBtn" type="button">
+                                <i class="ri-logout-box-r-line"></i> Sign out
+                            </button>
+                        </div>
+                    </div>
+                    <p class="msg" id="syncMsg"></p>
+                </div>
+
+                <p class="hint" id="guestNote" hidden>
+                    You're browsing as a <b>guest</b>, so your settings, favourites and game
+                    progress only save on this device and this link. Sign in or create an
+                    account below to keep them on every device you use.
+                </p>
+
+                <p class="hint" id="rememberNote" hidden>
+                    Signing in remembers you on this browser and lets you set your username
+                    and profile icon, which then sync across your devices.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <div class="toast-container"></div>
+
+    <script src="/assets/js/t.js"></script>
+    <script src="/assets/js/folders.js"></script>
+    <script src="/assets/js/dropdown.js"></script>
+    <script>
+        (function () {
+            "use strict";
+
+            // Filled in init() below. Do NOT read window.KERMIT_ACCOUNT here:
+            // this inline script runs during parsing, while forms.js is
+            // loaded with `defer` and has not executed yet.
+            var A = {};
+
+            var ICONS = [
+                "ri-user-line", "ri-user-fill", "ri-ghost-fill", "ri-robot-fill", "ri-gamepad-fill",
+                "ri-fire-fill", "ri-star-fill", "ri-moon-fill", "ri-heart-fill",
+                "ri-flask-fill", "ri-leaf-fill", "ri-rocket-2-fill", "ri-plant-fill",
+                "ri-bug-fill", "ri-drop-fill", "ri-sun-fill", "ri-temp-cold-fill",
+                "ri-medal-fill", "ri-puzzle-fill", "ri-magic-fill"
+            ];
+
+            var mode = "login"; // login | signup
+            var busy = false;
+
+            function $(id) { return document.getElementById(id); }
+
+            function setMsg(el, text, ok) {
+                if (!el) return;
+                el.textContent = text || "";
+                el.className = "msg" + (text ? (ok ? " ok" : " err") : "");
+            }
+
+            function fireToast(type, message, icon) {
+                if (typeof window.showToast === "function") {
+                    window.showToast(type, message, icon || "fas fa-check-circle");
+                }
+            }
+
+            function formatTime(ts) {
+                if (!ts) return "never";
+                try {
+                    return new Date(ts).toLocaleString();
+                } catch (e) {
+                    return "just now";
+                }
+            }
+
+            function busyFor(button, isBusy, label) {
+                if (!button) return;
+                if (isBusy && !button.dataset.html) button.dataset.html = button.innerHTML;
+                button.disabled = !!isBusy;
+                if (isBusy) button.textContent = label || "Working…";
+                else if (button.dataset.html) button.innerHTML = button.dataset.html;
+            }
+
+            /* ── render from state ─────────────────────────────────────── */
+
+            function render(status) {
+                status = status || (A.status ? A.status() : null);
+                if (!status) return;
+
+                var configured = !!status.configured;
+                var signedIn = !!status.signedIn;
+                var profile = status.profile || { username: "", icon: "ri-user-fill" };
+                var email = status.user && status.user.email ? status.user.email : "";
+
+                $("setupBanner").hidden = configured;
+                $("modeBadge").textContent = signedIn
+                    ? "Signed in"
+                    : (configured ? "Signed out" : "On this device");
+                $("modeBadge").className = "badge" + (signedIn ? "" : " local");
+
+                $("displayName").textContent = profile.username || "Your profile";
+                $("displaySub").textContent = signedIn
+                    ? email + (status.user.providerData && status.user.providerData[0]
+                        ? " · " + status.user.providerData[0].providerId.replace(".com", "")
+                        : "")
+                    : "Not signed in";
+
+                var glyph = $("avatarGlyph");
+                if (A.applyIcon) A.applyIcon(glyph, profile.icon);
+                else glyph.className = profile.icon;
+
+                var preview = $("pickerPreview");
+                if (preview) {
+                    if (A.applyIcon) A.applyIcon(preview, profile.icon);
+                    else preview.className = profile.icon;
+                }
+
+                var nameInput = $("usernameInput");
+                if (document.activeElement !== nameInput) nameInput.value = profile.username || "";
+
+                // Icon grid highlight (both the icon set and the presets)
+                var chips = document.querySelectorAll(".icon-grid button");
+                for (var i = 0; i < chips.length; i++) {
+                    chips[i].classList.toggle("active", chips[i].dataset.icon === profile.icon);
+                }
+
+                // The profile editor is only reachable once you are signed in.
+                var edit = $("profileEdit");
+                if (edit) edit.hidden = !signedIn;
+                var prompt = $("profilePrompt");
+                if (prompt) prompt.hidden = signedIn || !configured;
+
+                var guest = $("guestNote");
+                if (guest) guest.hidden = signedIn || !configured;
+                var remember = $("rememberNote");
+                if (remember) remember.hidden = configured;
+
+                $("authView").hidden = signedIn || !configured;
+                $("accountView").hidden = !signedIn;
+
+                if (signedIn) {
+                    $("syncInfo").textContent = status.lastSync
+                        ? "Last synced " + formatTime(status.lastSync) +
+                          (status.savedCount ? " · " + status.savedCount + " items saved" : "")
+                        : "Not synced yet";
+                    $("syncBtn").disabled = !!status.busy;
+                    if (status.error) setMsg($("syncMsg"), status.error, false);
+                }
+            }
+
+            /* ── icon grid ─────────────────────────────────────────────── */
+
+            function makeChip(value, title, grid) {
+                var profile = A.profile ? A.profile() : { icon: "" };
+                var chip = document.createElement("button");
+                chip.type = "button";
+                chip.dataset.icon = value;
+                chip.title = title;
+                chip.className = value === profile.icon ? "active" : "";
+
+                var glyph = document.createElement("i");
+                if (A.applyIcon) A.applyIcon(glyph, value);
+                else glyph.className = value;
+                chip.appendChild(glyph);
+
+                chip.addEventListener("click", function () {
+                    if (!A.setProfile) return;
+                    A.setProfile({ icon: value });
+                    setMsg($("syncMsg"), "Icon updated.", true);
+                    fireToast("success", "Icon updated!", "fas fa-check-circle");
+                });
+
+                grid.appendChild(chip);
+            }
+
+            function buildIcons() {
+                // The plain Remixicon set.
+                var icons = $("iconGridIcons");
+                if (!icons) return;
+
+                ICONS.forEach(function (name) {
+                    makeChip(name, name.replace(/^ri-/, "").replace(/-(fill|line)$/, ""), icons);
+                });
+            }
+
+            /* ── upload your own icon ──────────────────────────────────── */
+
+            function downscaleIcon(file) {
+                return new Promise(function (resolve) {
+                    var url = URL.createObjectURL(file);
+                    var img = new Image();
+                    img.onload = function () {
+                        var size = 128;
+                        var canvas = document.createElement("canvas");
+                        canvas.width = size;
+                        canvas.height = size;
+                        var ctx = canvas.getContext("2d");
+                        var scale = Math.max(size / img.width, size / img.height);
+                        var w = img.width * scale;
+                        var h = img.height * scale;
+                        ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+                        URL.revokeObjectURL(url);
+                        // PNG normally; a photo that would be too big to store
+                        // falls back to a small JPEG.
+                        var png = canvas.toDataURL("image/png");
+                        resolve(png.length <= 100000 ? png : canvas.toDataURL("image/jpeg", 0.82));
+                    };
+                    img.onerror = function () {
+                        URL.revokeObjectURL(url);
+                        resolve(null);
+                    };
+                    img.src = url;
+                });
+            }
+
+            function wireUpload() {
+                var button = $("uploadIconBtn");
+                var input = $("iconUpload");
+                if (!button || !input) return;
+
+                button.addEventListener("click", function () { input.click(); });
+                input.addEventListener("change", function () {
+                    var file = input.files && input.files[0];
+                    input.value = "";
+                    if (!file || !A.setProfile) return;
+
+                    downscaleIcon(file).then(function (dataUrl) {
+                        if (!dataUrl) {
+                            fireToast("error", "That image could not be read.", "fas fa-times-circle");
+                            return;
+                        }
+                        A.setProfile({ icon: dataUrl });
+                        setMsg($("syncMsg"), "Icon updated.", true);
+                        fireToast("success", "Icon uploaded!", "fas fa-check-circle");
+                    });
+                });
+            }
+
+            /* ── auth controls ─────────────────────────────────────────── */
+
+            function setMode(next) {
+                mode = next;
+                $("tabLogin").classList.toggle("active", next === "login");
+                $("tabSignup").classList.toggle("active", next === "signup");                        $("authSubmit").textContent = next === "login" ? "Sign in" : "Create account";
+                $("authPass").autocomplete = next === "login" ? "current-password" : "new-password";
+                setMsg($("authMsg"), "");
+            }
+
+            function fail(err) {
+                var text = A.friendlyError ? A.friendlyError(err) : String(err && err.message || err);
+                setMsg($("authMsg"), text, false);
+                setMsg($("syncMsg"), text, false);
+            }
+
+            function submitAuth() {
+                if (busy || !A.signInEmail) return;
+                var email = $("authEmail").value.trim();
+                var pass = $("authPass").value;
+                if (!email || !pass) {
+                    setMsg($("authMsg"), "Enter your email and password.", false);
+                    return;
+                }
+
+                busy = true;
+                busyFor($("authSubmit"), true, mode === "login" ? "Signing in…" : "Creating…");
+                setMsg($("authMsg"), "");
+
+                var action = mode === "login" ? A.signInEmail(email, pass) : A.signUp(email, pass);
+
+                action.then(function () {
+                    setMsg($("authMsg"), "", true);
+                    fireToast("success", mode === "login" ? "Welcome back!" : "Account created!",
+                        "fas fa-check-circle");
+                    $("authPass").value = "";
+                }).catch(fail).finally(function () {
+                    busy = false;
+                    busyFor($("authSubmit"), false);
+                });
+            }
+
+            /* ── profile + sync controls ───────────────────────────────── */
+
+            function saveProfile() {
+                if (!A.setProfile) return;
+                A.setProfile({ username: $("usernameInput").value });
+                setMsg($("syncMsg"), "Profile saved" +
+                    (A.configured && A.configured() && A.user && A.user() ? " to your account." : " on this device."), true);
+                fireToast("success", "Profile saved!", "fas fa-check-circle");
+            }
+
+            function runSync() {
+                if (busy || !A.sync) return;
+                busy = true;
+                busyFor($("syncBtn"), true, "Syncing…");
+                setMsg($("syncMsg"), "");
+
+                A.sync().then(function (res) {
+                    var pulled = res && res.pulled ? res.pulled.applied : 0;
+                    var saved = res && res.pushed ? res.pushed.saved : 0;
+                    var skipped = res && res.pushed ? res.pushed.dropped : 0;
+                    var text = "Synced \u2014 " + saved + " item(s) uploaded" +
+                        (pulled ? ", " + pulled + " restored from the cloud." : ".") +
+                        (skipped ? " " + skipped + " item(s) were too large to sync." : "");
+                    setMsg($("syncMsg"), text, true);
+                    fireToast("success", "Sync complete!", "fas fa-check-circle");
+                }).catch(fail).finally(function () {
+                    busy = false;
+                    busyFor($("syncBtn"), false);
+                });
+            }
+
+            function signOut() {
+                if (!A.signOut) return;
+                A.signOut().then(function () {
+                    setMsg($("syncMsg"), "Signed out. Your profile stays on this device.", true);
+                    fireToast("success", "Signed out!", "fas fa-check-circle");
+                }).catch(fail);
+            }
+
+            /* ── wire up ───────────────────────────────────────────────── */
+
+            function init() {
+                // forms.js is deferred, so it is ready by the time init()
+                // runs on DOMContentLoaded - grab the API now, not at parse time.
+                A = window.KERMIT_ACCOUNT || {};
+                if (!A.on) {
+                    // forms.js failed to load; show the local-only state.
+                    $("setupBanner").hidden = false;
+                    return;
+                }
+
+                buildIcons();
+                wireUpload();
+
+                $("tabLogin").addEventListener("click", function () { setMode("login"); });
+                $("tabSignup").addEventListener("click", function () { setMode("signup"); });
+                $("authSubmit").addEventListener("click", submitAuth);
+                $("authPass").addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") submitAuth();
+                });
+                $("authEmail").addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") submitAuth();
+                });
+                $("googleBtn").addEventListener("click", function () {
+                    if (!A.signInGoogle || busy) return;
+                    busy = true;
+                    busyFor($("googleBtn"), true, "Opening Google…");
+                    setMsg($("authMsg"), "");
+                    A.signInGoogle().then(function () {
+                        fireToast("success", "Signed in with Google!", "fas fa-check-circle");
+                    }).catch(fail).finally(function () {
+                        busy = false;
+                        busyFor($("googleBtn"), false);
+                    });
+                });
+
+                $("saveProfileBtn").addEventListener("click", saveProfile);
+                $("usernameInput").addEventListener("keydown", function (e) {
+                    if (e.key === "Enter") saveProfile();
+                });
+                $("syncBtn").addEventListener("click", runSync);
+                $("signOutBtn").addEventListener("click", signOut);
+
+                setMode("login");
+                A.on(render);
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", init);
+            } else {
+                init();
+            }
+        })();
+    </script>
+</body>
+
+</html>

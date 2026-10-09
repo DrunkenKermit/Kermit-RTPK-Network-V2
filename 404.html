@@ -12,11 +12,8 @@
     <link href="https://v1.fontapi.ir/css/SFProDisplay" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="/uv/uv.bundle.js"></script>
-    <script src="/uv/uv.config.js"></script>
-    <script src="/baremux/index.js"></script>
     <link rel="stylesheet" href="/styles/index.css">
-    <link rel="stylesheet" href="/assets/css/colors.css">
+    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
     <script src="/assets/js/colors.js"></script>
     <link rel="stylesheet" href="/fa/css/all.min.css">
     <link rel="stylesheet" href="/fa/css/solid.css">
@@ -54,28 +51,21 @@
     <iframe id="contentFrame"></iframe>
 
     <script>
-        async function registerSW() {
-            if ("serviceWorker" in navigator) {
-                await navigator.serviceWorker.register("/uv/sw.js").then(() => {
-                    console.log(
-                        "%cKermit" + "%c uv sw registered!",
-                        "color: white; background: linear-gradient(to bottom right, #040c16, #000000); border-radius: 5px; font-weight: bold; padding: 6px; font-family: sans-serif;",
-                        "color: white; background: transparent; border-radius: 0px; padding: 0px;"
-                    );
+        // The proxy used to be a pair of Service Workers (Scramjet/Ultraviolet). It
+        // is one page now (/proxy.html: the GUST engine over a Wisp WebSocket
+        // tunnel), so a returning visitor's old workers are unregistered here
+        // rather than registered - a stale one would intercept this page's routes.
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.getRegistrations().then((regs) => {
+                regs.forEach((reg) => {
+                    const worker = reg.active || reg.waiting || reg.installing;
+                    const path = worker && worker.scriptURL ? new URL(worker.scriptURL, location.href).pathname : "";
+                    if (/^\/(?:sw\.js|uv\/sw\.js)$/.test(path)) reg.unregister();
                 });
-
-                await navigator.serviceWorker.register("/sw.js").then(() => {
-                    console.log(
-                        "%cKermit" + "%c sj sw registered!",
-                        "color: white; background: linear-gradient(to bottom right, #040c16, #000000); border-radius: 5px; font-weight: bold; padding: 6px; font-family: sans-serif;",
-                        "color: white; background: transparent; border-radius: 0px; padding: 0px;"
-                    );
-                });
-            }
+            }).catch(() => { });
         }
 
         window.addEventListener("load", () => {
-            registerSW();
             lucide.createIcons();
         });
 

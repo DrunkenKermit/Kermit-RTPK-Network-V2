@@ -1,22 +1,30 @@
 const splashes = [
-  "Weird-ahh site for the bored",
+  "Weird little site for the bored",
   "all hail Kermit",
   "The RTPK is strong with this one",
   "this is kermit heritage - andni",
   "Is kermit.dev ever gonna learn how to port?",
-  "Swamp gooch",
+  "Swamp vibes",
   "more customizable than a sims character",
   "kermit was here",
-  "If you read this you’re gay",
-  "Sped CENTRAL",
   "I love devvy",
   "What are you waiting for DO SOMETHING",
   "WE are not doing our work are we",
   "RTPK stands for Rebellion of The People of Kermits",
 ];
 
-const randomSplashN = Math.floor(Math.random() * splashes.length);
-const randomSplash = splashes[randomSplashN];
-
 const splashTextEl = document.getElementById("splash");
-splashTextEl.innerHTML = randomSplash;
+
+// Start on a random line, then move to a different one every 7.5 seconds.
+let splashIndex = Math.floor(Math.random() * splashes.length);
+
+function showSplash() {
+  splashTextEl.innerHTML = splashes[splashIndex];
+}
+
+showSplash();
+
+setInterval(function () {
+  splashIndex = (splashIndex + 1) % splashes.length;
+  showSplash();
+}, 7500);

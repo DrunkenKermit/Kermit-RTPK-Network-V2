@@ -20,19 +20,19 @@
     --accent: #63ff93;
     --accent-2: #0d8f3f;
 
-    /* Kermit-compatible aliases, kept in sync with --accent */
-    --current-accent: #63ff93;
-    --current-accent-contrast: #07140b;
-    --accent-soft: rgba(99, 255, 147, 0.18);
-    --accent-line: rgba(99, 255, 147, 0.42);
+    /* Kermit-compatible aliases, derived from --accent so the default palette
+       can never go stale and always matches the subpages (elements.css). */
+    --current-accent: var(--accent);
+    --current-accent-contrast: var(--bg);
+    --accent-soft: color-mix(in srgb, var(--accent) 18%, transparent);
+    --accent-line: color-mix(in srgb, var(--accent) 42%, transparent);
 
-    /* Gradients, glow, elevation and radius tokens. Theme files only carry the
-       core palette, so every theme inherits these from whichever stylesheet is
-       loaded (here, and derived-from-accent in elements.css / styles/index.css). */
-    --grad-a: #63ff93;
-    --grad-b: #0d8f3f;
-    --grad-soft: linear-gradient(135deg, rgba(99, 255, 147, 0.2), transparent 62%);
-    --glow-soft: 0 0 26px rgba(99, 255, 147, 0.2);
+    /* Gradients, glow, elevation and radius tokens. Derived from --accent so
+       every page and theme resolves them from the palette that is active. */
+    --grad-a: var(--accent);
+    --grad-b: var(--accent-2, var(--accent));
+    --grad-soft: linear-gradient(135deg, color-mix(in srgb, var(--accent) 20%, transparent), transparent 62%);
+    --glow-soft: 0 0 30px color-mix(in srgb, var(--accent) 34%, transparent);
     --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04), 0 12px 30px rgba(0, 0, 0, 0.34);
     --shadow-2: 0 24px 60px rgba(0, 0, 0, 0.45);
     --radius-sm: 10px;

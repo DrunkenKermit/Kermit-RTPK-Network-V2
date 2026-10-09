@@ -1,21 +1,21 @@
-/* Ember — red only.
+/* Horizon — orange and light red only.
    Theme files carry only the core palette; the gradient, glow and shadow
    tokens are derived from --accent / --accent-2 in elements.css and
    styles/index.css, so this applies to every page, background and the cursor. */
 :root {
-    --bg: #170808;
-    --bg-2: #260d0d;
-    --bg-3: #3b1414;
-    --bg-4: #561d1d8c;
-    --bg-5: #110505;
+    --bg: #1a0f07;
+    --bg-2: #29180c;
+    --bg-3: #402512;
+    --bg-4: #5c381c8c;
+    --bg-5: #130a05;
     --border: rgba(255, 255, 255, 0.78);
     --border-2: rgba(255, 255, 255, 0.44);
     --border-3: rgba(255, 255, 255, 0.19);
     --border-4: rgba(255, 255, 255, 0.1);
     --text: rgba(255, 255, 255, 0.84);
     --bright-text: #ffffff;
-    --accent: #ef4444;
-    --accent-2: #b91c1c;
+    --accent: #f97316;
+    --accent-2: #f87171;
 }
 
 #reset-theme {

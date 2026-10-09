@@ -4,10 +4,10 @@
  * Replaces the old DOM "blob" cursor: this builds a real CSS arrow cursor
  * as a bare outline with a soft glowing halo in the site's accent colour,
  * so it picks up whatever theme is active.
- * Storage reuses the existing "cherri_customCursor" key so the Settings
+ * Storage reuses the existing "kermit_customCursor" key so the Settings
  * toggle keeps working.
  */
-const CURSOR_KEY = "cherri_customCursor";
+const CURSOR_KEY = "kermit_customCursor";
 const DEFAULT_ACCENT = "#63ff93";
 
 function getCurrentAccent() {

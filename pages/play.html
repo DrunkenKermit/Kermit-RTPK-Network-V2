@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
     <script src="/assets/js/colors.js"></script>
     <script src="/assets/js/firebase-config.js"></script>
-    <script src="/assets/js/account.js" defer></script>
+    <script src="/assets/js/forms.js" defer></script>
 </head>
 
 <body style="background: none !important;">
@@ -182,43 +182,9 @@
     </div>
 
     <script>
-        const ul = document.getElementById("nav-ul")
-
-        document.querySelectorAll("li a").forEach(link => {
-            link.addEventListener("click", function () {
-                document.querySelectorAll("li a").forEach(l => l.classList.remove("active"));
-                this.classList.add("active");
-            });
-        });
-
-        window.addEventListener("keydown", (e) => {
-            if (e.ctrlKey && e.key === "m") {
-                console.log("Key pressed")
-                e.preventDefault()
-                if (!ul.classList.contains("active")) {
-                    ul.classList.add("active")
-                    const blurr = document.createElement("div")
-                    blurr.classList.add("bluroverlay")
-                    document.body.append(blurr)
-                    blurr.addEventListener("click", () => {
-                        blurr.remove()
-                        ul.classList.remove("active")
-                    })
-                } else {
-                    ul.classList.remove("active")
-                    const blurr = document.querySelector(".bluroverlay")
-                    blurr.remove()
-                }
-            }
-        })
-
         const gameframe = document.getElementById('gameframe');
         const urlParams = new URLSearchParams(window.location.search);
         const gameurl = urlParams.get('launch');
-        // Kept so one-time LuminSDK URLs can be re-minted on restart / pop-out
-        // (the SDK docs say getGameUrl returns a single-use token).
-        let currentLaunch = null;
-
         // Noah's Hub game pages come from githack, but a chunk of them declare a
         // <base href> pointing at a jsDelivr org that jsDelivr now blocks (403),
         // so those games render blank. githack mirrors the same GitHub repos, so
@@ -265,40 +231,24 @@
             return rewriteRemote(src);
         }
 
-        // LuminSDK games are addressed by id and resolved to a fresh one-time
-        // playable URL each time. The SDK is published as two byte-identical
-        // builds; Lightspeed Systems (lightspeedsystems.com) blanket-blocks any
-        // site that loads the build named after the SDK, so we load the
-        // identical "fonts.min.js" build from the same base URL instead.
-        const LUMIN_SDK = "https://cdn.jsdelivr.net/gh/luminsdk/script@latest/fonts.min.js";
-        const LUMIN_PREFIX = "lumin:";
-        let luminScript = null;
+        // Truffled games come from truffled.lol, which serves them as text/html
+        // and does not restrict framing, so they load as they are. (The handful
+        // of games its catalogue proxies to another host keep that host's own
+        // URL and skip this step.) A slice of its catalogue, though, sets a
+        // <base> (or loads scripts) on a jsDelivr GitHub org that jsDelivr has
+        // banned, and those pages render blank. Only those pages are rewritten,
+        // and they get the same repair as the Noah's Hub and UGS pages above;
+        // everything else stays untouched so no working game is moved off its
+        // own host.
+        const TRUFFLED_HTML = "https://truffled.lol/";
+        const TRUFFLED_BLOCKED_CDN = /cdn\.jsdelivr\.net\/gh\/(bubbls|genizy|gn-math|AndreajnRcm4|67-Factory|web-ports|Stinkalistic|fork-so-the-site-i-take-wont-be-deleted)\//;
 
-        function loadLuminScript() {
-            if (!luminScript) {
-                luminScript = new Promise((resolve, reject) => {
-                    const s = document.createElement("script");
-                    s.src = LUMIN_SDK;
-                    s.async = true;
-                    s.onload = () => resolve();
-                    s.onerror = () => reject(new Error("LuminSDK script failed to load"));
-                    document.head.appendChild(s);
-                });
-            }
-            return luminScript;
-        }
-
-        function luminSrc(src) {
-            if (!src || src.indexOf(LUMIN_PREFIX) !== 0) return Promise.resolve(src);
-            const id = src.slice(LUMIN_PREFIX.length);
-            return loadLuminScript()
-                .then(() => Lumin.init({ headless: true }))
-                .then(() => Lumin.getGameUrl(id))
-                .then(res => (res && res.url) ? res.url : src)
-                .catch(e => {
-                    console.error("Could not load this LuminSDK game:", e);
-                    return src;
-                });
+        function truffledSrc(src) {
+            if (!src || src.indexOf(TRUFFLED_HTML) !== 0) return Promise.resolve(src);
+            return fetch(src, { cache: "no-cache" })
+                .then(res => res.ok ? res.text() : null)
+                .then(html => html && TRUFFLED_BLOCKED_CDN.test(html) ? rewriteRemote(src) : src)
+                .catch(() => src);
         }
 
         function loadGame(src) {
@@ -332,7 +282,7 @@
 
         // Signed-in players get their cloud saves applied before the game
         // reads localStorage, so progress made on another device (or another
-        // link) is already there when this game starts. account.js is deferred,
+        // link) is already there when this game starts. forms.js is deferred,
         // so give it a moment to appear; local-only and unconfigured sessions
         // never wait.
         function waitForAccount(timeout = 1500) {
@@ -358,33 +308,18 @@
 
         if (gameurl) {
             const gameUrl = decodeURIComponent(gameurl)
-            currentLaunch = gameUrl
 
             if (gameUrl.startsWith("/stores/")) {
                 gameStorageReady().then(() => cloudProgressReady()).then(() => loadGame(gameUrl))
             } else {
-                cloudProgressReady().then(() => noahsHubSrc(gameUrl).then(ugsSrc).then(luminSrc).then(loadGame))
+                cloudProgressReady().then(() => noahsHubSrc(gameUrl).then(ugsSrc).then(truffledSrc).then(loadGame))
             }
         }
 
-        // LuminSDK URLs carry a single-use token (see the SDK docs), so re-assigning
-        // the same src fails the second time it is loaded. Re-resolve the game to
-        // mint a fresh URL first; every other source just reloads as-is. An empty
-        // result means resolution failed, so the current frame is left untouched
-        // rather than being pointed at an unusable "lumin:" handle.
-        function playableSrc() {
-            if (currentLaunch && currentLaunch.indexOf(LUMIN_PREFIX) === 0) {
-                return luminSrc(currentLaunch).then(src =>
-                    (src && src.indexOf(LUMIN_PREFIX) !== 0) ? src : "");
-            }
-            return Promise.resolve(gameframe.src);
-        }
-
+        // Re-assigning the current src reloads the game from its URL.
         function refreshGame() {
-            playableSrc().then(src => {
-                if (src) gameframe.src = src;
-                gameframe.focus();
-            });
+            if (gameframe.src) gameframe.src = gameframe.src;
+            gameframe.focus();
         }
 
         // Each game gets its own fullscreen toggle: the first press puts that
@@ -444,14 +379,12 @@
                 window.history.back();
                 return;
             }
-            window.location.href = "/pages/games.html";
+            window.location.href = "/pages/docs.html";
         }
 
         function popoutGame() {
-            playableSrc().then(src => {
-                if (src) window.open(src, '_blank');
-                gameframe.focus();
-            });
+            if (gameframe.src) window.open(gameframe.src, '_blank');
+            gameframe.focus();
         }
 
     </script>

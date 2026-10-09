@@ -5,7 +5,7 @@
   "outputDirectory": "dist",
   "functions": {
     "api/chat.py": {
-      "excludeFiles": "{.git/**,stores/**,assets/**,node_modules/**,dist/**,fa/**,homework/**,uv/**,baremux/**,libcurl/**,**/*.html,**/*.wasm,**/*.unityweb,**/*.pck,**/*.gz,**/*.swf,**/*.data}"
+      "excludeFiles": "{.git/**,stores/**,assets/**,node_modules/**,dist/**,fa/**,tools/**,**/*.html,**/*.wasm,**/*.unityweb,**/*.pck,**/*.gz,**/*.swf,**/*.data}"
     }
   }
 }

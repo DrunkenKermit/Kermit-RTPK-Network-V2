@@ -120,7 +120,7 @@
 <body class=" text-[var(--text)] min-h-screen p-8" x-data="app()">
     <div class="container mx-auto max-w-6xl">
         <br><br>
-<a href="/pages/movies.html" class="inline-block mb-6 text-[var(--text)] transition-all hover:text-[var(--bright-text)]">← Back to
+<a href="/pages/sheets.html" class="inline-block mb-6 text-[var(--text)] transition-all hover:text-[var(--bright-text)]">← Back to
     Browse</a>
         <div x-show="content">
             <h1 class="page-title" x-text="content?.title || content?.name"></h1>
@@ -413,8 +413,8 @@ const availableSources = [
         name: 'StreamFlix',
         isFrench: false,
         urls: {
-            movie: 'https://watch.streamflix.one/movie/{id}}/watch?server=1',
-            tv: 'https://watch.streamflix.one/tv/{id}}/watch?server=1&season={season}}&episode={episode}}'
+            movie: 'https://watch.streamflix.one/movie/{id}/watch?server=1',
+            tv: 'https://watch.streamflix.one/tv/{id}/watch?server=1&season={season}&episode={episode}'
         }
     },
     {
@@ -432,7 +432,7 @@ const availableSources = [
         isFrench: false,
         urls: {
             movie: 'https://vidjoy.pro/embed/movie/{id}',
-            tv: 'https://vidjoy.pro/embed/tv/{id}}/{season}/{episode}'
+            tv: 'https://vidjoy.pro/embed/tv/{id}/{season}/{episode}'
         }
     },
     {
