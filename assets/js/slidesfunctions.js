@@ -8,7 +8,7 @@ let bTabs = [];
    There is no BareMux, no Scramjet/Ultraviolet and no Service Worker anywhere in
    that path, so every tab frame is simply pointed at the engine and then driven
    through the small API the engine exposes to its parent. */
-const ENGINE_PATH = "/proxy.html";
+const ENGINE_PATH = "proxy.html";
 // wss://wisp.rhw.one/ (the old default) no longer resolves at all, which left the
 // browser unable to load anything. Known-dead servers are migrated on load.
 const DEAD_WISPS = ["wss://wisp.rhw.one/", "wss://wisp.rhw.one"];
@@ -122,7 +122,7 @@ function newTab() {
   // page only loads Remixicon, so the glyph rendered as nothing and the button
   // was invisible. It uses the icon font the page actually has now.
   tabElement.innerHTML = `
-        <img src="/assets/img/fav.png" id="fav" data-fav-id="${nTab.id}" width="24" alt="">
+        <img src="assets/img/fav.png" id="fav" data-fav-id="${nTab.id}" width="24" alt="">
             <span>
                 New Tab
             </span>
@@ -147,7 +147,7 @@ function newTab() {
   tabFrame.classList.add("viewframe", "slides-frame");
   tabFrame.dataset.frameId = nTab.id;
   tabFrame.setAttribute("allowfullscreen", "true");
-  tabFrame.src = "/newtab.html";
+  tabFrame.src = "newtab.html";
 
   document.body.appendChild(tabFrame);
 

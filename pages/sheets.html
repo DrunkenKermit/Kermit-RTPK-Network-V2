@@ -2,6 +2,52 @@
 <html lang="en">
 
 <head>
+<!-- kermit:portable-root - the site can be served from the domain root, a
+     sub-path (GitHub Pages project sites) or a CDN path (jsDelivr), so no page
+     hard-codes where it lives: internal links stay relative to the site root
+     and this <base> pins that root for every page depth. -->
+<base href="../">
+<script>
+    (function () {
+        // Inside science.html / science.svg this document is a srcdoc frame: the
+        // wrapper may hand over a site root for hosts that cannot serve the site
+        // tree next to the file (built with --base). Everything else is already
+        // handled by the <base> above.
+        var override = null;
+        try {
+            override = window.frameElement && window.frameElement.getAttribute("data-base");
+        } catch (e) { }
+
+        if (override) {
+            var base = document.querySelector("base");
+            if (base) {
+                try { base.href = new URL(override, document.baseURI).href; }
+                catch (e) { base.href = override; }
+            }
+        }
+
+        // Resolve a site path against the base, for the calls that must not rely
+        // on <base> (location assignments, and anything cross-document).
+        window.kermitUrl = function (path) {
+            try { return new URL(path, document.baseURI).href; }
+            catch (e) { return path; }
+        };
+
+        // A bare "#" would otherwise resolve to the base (the site root) and
+        // navigate away. The click handlers on these links still run.
+        document.addEventListener("click", function (e) {
+            var el = e.target;
+            while (el && el !== document) {
+                if (el.tagName === "A" && el.getAttribute && el.getAttribute("href") === "#") {
+                    e.preventDefault();
+                    return;
+                }
+                el = el.parentNode;
+            }
+        }, true);
+    })();
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movies &amp; Shows</title>
@@ -20,7 +66,7 @@
     <meta property="og:title" content="Home - Google Drive">
     <meta property="og:description"
         content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
-    <meta property="og:image" content="/assets/img/drive.png">
+    <meta property="og:image" content="../assets/img/drive.png">
     <meta property="og:image:width" content="512">
     <meta property="og:image:height" content="457">
     <meta property="og:image:alt" content="Google Drive">
@@ -28,18 +74,18 @@
     <meta name="twitter:title" content="Home - Google Drive">
     <meta name="twitter:description"
         content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
-    <meta name="twitter:image" content="/assets/img/drive.png">
+    <meta name="twitter:image" content="../assets/img/drive.png">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.10.3/cdn.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fdn.fontcdn.ir">
     <link rel="preconnect" href="https://v1.fontapi.ir">
     <link href="https://v1.fontapi.ir/css/SFProDisplay" rel="stylesheet">
-    <link rel="shortcut icon" href="/assets/img/fav.png" type="image/png">
-    <script src="/assets/js/background.js" defer></script>
-    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
-    <script src="/assets/js/colors.js"></script>
-    <link rel="stylesheet" href="/assets/css/font.css">
+    <link rel="shortcut icon" href="assets/img/fav.png" type="image/png">
+    <script src="assets/js/background.js" defer></script>
+    <link rel="stylesheet" href="assets/css/colors.css" id="css-theme-link">
+    <script src="assets/js/colors.js"></script>
+    <link rel="stylesheet" href="assets/css/font.css">
 </head>
 
 <style>
@@ -190,7 +236,7 @@
 
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
             <template x-for="item in content" :key="item.id">
-                <a :href="'watch.html?id=' + item.id + '&type=' + (currentTab === 'movies' ? 'movie' : 'tv')"
+                <a :href="'pages/watch.html?id=' + item.id + '&type=' + (currentTab === 'movies' ? 'movie' : 'tv')"
                     class="bg-[var(--bg-2)] rounded-3xl overflow-hidden hover:scale-[102%] transition-transform block relative group">
                     <img :src="'https://image.tmdb.org/t/p/w500' + item.poster_path" :alt="item.title || item.name"
                         class="w-full aspect-[3/2] object-cover transition-all duration-200">
@@ -332,7 +378,7 @@
     <div id="cursor-thank-you-zxs"
         style="position: fixed; top: 0px; left: 0px; width: 16px; height: 16px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 70%, white 30%); pointer-events: none; z-index: 9999; transform: translate(748px, 592px); transition: width 0.15s, height 0.15s, opacity 0.15s; mix-blend-mode: difference; opacity: 0;">
     </div>
-    <script src="/assets/js/cursor.js"></script>
+    <script src="assets/js/cursor.js"></script>
 </body>
 
 </html>

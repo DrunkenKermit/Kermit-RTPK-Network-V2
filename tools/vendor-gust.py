@@ -37,7 +37,7 @@ OUTPUT = ROOT / "proxy.html"
 
 KERMIT_TITLE = "Kermit (RTPK) Network | proxy"
 KERMIT_HEAD = (
-    '    <link rel="shortcut icon" href="/assets/img/fav.png" type="image/png">\n'
+    '    <link rel="shortcut icon" href="assets/img/fav.png" type="image/png">\n'
     '    <meta name="description" content="Kermit (RTPK) Network proxy">\n'
     '    <meta name="robots" content="noindex, nofollow">\n'
 )

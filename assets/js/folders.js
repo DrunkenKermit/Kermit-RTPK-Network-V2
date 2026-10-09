@@ -8,10 +8,10 @@
  * actually on and pick up that page's theme.
  *
  * Load order on a page that wants it:
- *   <link rel="stylesheet" href="/assets/css/folders.css">
+ *   <link rel="stylesheet" href="assets/css/folders.css">
  *   ...
- *   <script src="/assets/js/folders.js"></script>   <!-- before dropdown.js -->
- *   <script src="/assets/js/dropdown.js"></script>
+ *   <script src="assets/js/folders.js"></script>   <!-- before dropdown.js -->
+ *   <script src="assets/js/dropdown.js"></script>
  *
  * dropdown.js queries the selector markup as soon as it runs, so folders.js
  * has to inject that markup first.

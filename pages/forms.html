@@ -2,6 +2,52 @@
 <html lang="en">
 
 <head>
+<!-- kermit:portable-root - the site can be served from the domain root, a
+     sub-path (GitHub Pages project sites) or a CDN path (jsDelivr), so no page
+     hard-codes where it lives: internal links stay relative to the site root
+     and this <base> pins that root for every page depth. -->
+<base href="../">
+<script>
+    (function () {
+        // Inside science.html / science.svg this document is a srcdoc frame: the
+        // wrapper may hand over a site root for hosts that cannot serve the site
+        // tree next to the file (built with --base). Everything else is already
+        // handled by the <base> above.
+        var override = null;
+        try {
+            override = window.frameElement && window.frameElement.getAttribute("data-base");
+        } catch (e) { }
+
+        if (override) {
+            var base = document.querySelector("base");
+            if (base) {
+                try { base.href = new URL(override, document.baseURI).href; }
+                catch (e) { base.href = override; }
+            }
+        }
+
+        // Resolve a site path against the base, for the calls that must not rely
+        // on <base> (location assignments, and anything cross-document).
+        window.kermitUrl = function (path) {
+            try { return new URL(path, document.baseURI).href; }
+            catch (e) { return path; }
+        };
+
+        // A bare "#" would otherwise resolve to the base (the site root) and
+        // navigate away. The click handlers on these links still run.
+        document.addEventListener("click", function (e) {
+            var el = e.target;
+            while (el && el !== document) {
+                if (el.tagName === "A" && el.getAttribute && el.getAttribute("href") === "#") {
+                    e.preventDefault();
+                    return;
+                }
+                el = el.parentNode;
+            }
+        }, true);
+    })();
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kermit (RTPK) Network | account</title>
@@ -20,7 +66,7 @@
     <meta property="og:title" content="Home - Google Drive">
     <meta property="og:description"
         content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
-    <meta property="og:image" content="/assets/img/drive.png">
+    <meta property="og:image" content="../assets/img/drive.png">
     <meta property="og:image:width" content="512">
     <meta property="og:image:height" content="457">
     <meta property="og:image:alt" content="Google Drive">
@@ -28,21 +74,21 @@
     <meta name="twitter:title" content="Home - Google Drive">
     <meta name="twitter:description"
         content="Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).">
-    <meta name="twitter:image" content="/assets/img/drive.png">
-    <link rel="shortcut icon" href="/assets/img/fav.png" type="image/png" id="tabIcon">
-    <script src="/assets/js/background.js" defer></script>
-    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
-    <link rel="stylesheet" href="/assets/css/elements.css">
-    <link rel="stylesheet" href="/assets/css/font.css">
-    <link rel="stylesheet" href="/assets/icons/fonts/remixicon.css">
-    <link rel="stylesheet" href="/assets/css/t.css">
-    <link rel="stylesheet" href="/assets/css/dropdown.css">
-    <link rel="stylesheet" href="/assets/css/folders.css">
-    <script src="/assets/js/colors.js"></script>
+    <meta name="twitter:image" content="../assets/img/drive.png">
+    <link rel="shortcut icon" href="assets/img/fav.png" type="image/png" id="tabIcon">
+    <script src="assets/js/background.js" defer></script>
+    <link rel="stylesheet" href="assets/css/colors.css" id="css-theme-link">
+    <link rel="stylesheet" href="assets/css/elements.css">
+    <link rel="stylesheet" href="assets/css/font.css">
+    <link rel="stylesheet" href="assets/icons/fonts/remixicon.css">
+    <link rel="stylesheet" href="assets/css/t.css">
+    <link rel="stylesheet" href="assets/css/dropdown.css">
+    <link rel="stylesheet" href="assets/css/folders.css">
+    <script src="assets/js/colors.js"></script>
     <!-- Firebase config first, then the accounts module (it checks the config
          on boot and only fetches the sign-in library when there is one). -->
-    <script src="/assets/js/firebase-config.js"></script>
-    <script src="/assets/js/forms.js" defer></script>
+    <script src="assets/js/firebase-config.js"></script>
+    <script src="assets/js/forms.js" defer></script>
     <style>
         /* `hidden` has to beat the layout rules further down. An id-selector
            rule such as `#profileEdit { display: flex }` outranks the browser's
@@ -777,37 +823,37 @@
             <div class="container" style="display: flex; flex-direction: row;">
                 <div class="top-nav">
                     <li>
-                        <a href="/" target="_top">
+                        <a href="./" target="_top">
                             <i class="ri ri-home-4-fill"></i>
                             Home
                         </a>
                     </li>
                     <li>
-                        <a href="/pages/docs.html">
+                        <a href="pages/docs.html">
                             <i class="ri ri-gamepad-line"></i>
                             Games
                         </a>
                     </li>
                     <li>
-                        <a href="/pages/slides.html">
+                        <a href="pages/slides.html">
                             <i class="ri ri-window-2-line"></i>
                             Slides
                         </a>
                     </li>
                     <li>
-                        <a href="/pages/sheetframe.html">
+                        <a href="pages/sheetframe.html">
                             <i class="ri ri-clapperboard-line"></i>
                             Movies
                         </a>
                     </li>
                     <li>
-                        <a href="/pages/vids.html">
+                        <a href="pages/vids.html">
                             <i class="ri ri-robot-2-line"></i>
                             AI
                         </a>
                     </li>
                     <li>
-                        <a class="active" href="/pages/forms.html">
+                        <a class="active" href="pages/forms.html">
                             <i class="ri ri-user-line"></i>
                             Account
                         </a>
@@ -1005,9 +1051,9 @@
 
     <div class="toast-container"></div>
 
-    <script src="/assets/js/t.js"></script>
-    <script src="/assets/js/folders.js"></script>
-    <script src="/assets/js/dropdown.js"></script>
+    <script src="assets/js/t.js"></script>
+    <script src="assets/js/folders.js"></script>
+    <script src="assets/js/dropdown.js"></script>
     <script>
         (function () {
             "use strict";

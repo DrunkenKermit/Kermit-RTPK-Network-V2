@@ -2,21 +2,67 @@
 <html lang="en">
 
 <head>
+<!-- kermit:portable-root - the site can be served from the domain root, a
+     sub-path (GitHub Pages project sites) or a CDN path (jsDelivr), so no page
+     hard-codes where it lives: internal links stay relative to the site root
+     and this <base> pins that root for every page depth. -->
+<base href="./">
+<script>
+    (function () {
+        // Inside science.html / science.svg this document is a srcdoc frame: the
+        // wrapper may hand over a site root for hosts that cannot serve the site
+        // tree next to the file (built with --base). Everything else is already
+        // handled by the <base> above.
+        var override = null;
+        try {
+            override = window.frameElement && window.frameElement.getAttribute("data-base");
+        } catch (e) { }
+
+        if (override) {
+            var base = document.querySelector("base");
+            if (base) {
+                try { base.href = new URL(override, document.baseURI).href; }
+                catch (e) { base.href = override; }
+            }
+        }
+
+        // Resolve a site path against the base, for the calls that must not rely
+        // on <base> (location assignments, and anything cross-document).
+        window.kermitUrl = function (path) {
+            try { return new URL(path, document.baseURI).href; }
+            catch (e) { return path; }
+        };
+
+        // A bare "#" would otherwise resolve to the base (the site root) and
+        // navigate away. The click handlers on these links still run.
+        document.addEventListener("click", function (e) {
+            var el = e.target;
+            while (el && el !== document) {
+                if (el.tagName === "A" && el.getAttribute && el.getAttribute("href") === "#") {
+                    e.preventDefault();
+                    return;
+                }
+                el = el.parentNode;
+            }
+        }, true);
+    })();
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
-    <link rel="icon" type="image/png" href="/assets/img/fav.png">
-    <script src="/assets/js/background.js" defer></script>
+    <link rel="icon" type="image/png" href="assets/img/fav.png">
+    <script src="assets/js/background.js" defer></script>
     <title>404 | Kermit (RTPK) Network</title>
     <link rel="preconnect" href="https://fdn.fontcdn.ir">
     <link rel="preconnect" href="https://v1.fontapi.ir">
     <link href="https://v1.fontapi.ir/css/SFProDisplay" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="/styles/index.css">
-    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
-    <script src="/assets/js/colors.js"></script>
-    <link rel="stylesheet" href="/fa/css/all.min.css">
-    <link rel="stylesheet" href="/fa/css/solid.css">
+    <link rel="stylesheet" href="styles/index.css">
+    <link rel="stylesheet" href="assets/css/colors.css" id="css-theme-link">
+    <script src="assets/js/colors.js"></script>
+    <link rel="stylesheet" href="fa/css/all.min.css">
+    <link rel="stylesheet" href="fa/css/solid.css">
 </head>
 
 <body>
@@ -26,7 +72,7 @@
         <h1 class="text-8xl text-[var(--bright-text)] font-bold">404</h1>
         <p class="text-[var(--text)]">not found.</p>
         <br>
-        <a href="/" class="text-[var(--text)] opacity-50 underline underline-offset-3 hover:opacity-100 transition-all">back home</a>
+        <a href="./" class="text-[var(--text)] opacity-50 underline underline-offset-3 hover:opacity-100 transition-all">back home</a>
     </div>
 
     
@@ -80,7 +126,7 @@
             } else {
                 homeContent.style.display = "none"
                 contentFrame.style.display = "block"
-                contentFrame.src = `/pages/${l}.html`
+                contentFrame.src = `pages/${l}.html`
             }
         }
 
@@ -98,7 +144,7 @@
 
             homeContent.classList.add('hidden');
             contentFrame.classList.add('active');
-            contentFrame.src = "/pages/embed.html?launch=" + encodeURIComponent(url);
+            contentFrame.src = "pages/embed.html?launch=" + encodeURIComponent(url);
             location.href = "#?launch=" + encodeURIComponent(url)
         }
 

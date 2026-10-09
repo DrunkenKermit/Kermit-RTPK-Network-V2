@@ -4,16 +4,78 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kermit (RTPK) Network</title>
-<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}iframe{border:0;width:100%;height:100%;display:block}</style>
+<style>html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#000}iframe{border:0;width:100%;height:100%;display:block}</style>
+<script>
+    (function () {
+        // A single file is meant to open straight into the site. The site's own
+        // decoy (index.html -> pages/drive.html) exists for links pasted into
+        // chat apps; here it would hand the frame off to another URL, so the
+        // gate index.html?launch=1 would set is set up front instead. Add
+        // ?decoy=1 to this file's URL for the decoy-first behaviour.
+        // sessionStorage is per-origin and shared with the frame, which is what
+        // makes this reach across the document boundary.
+        try {
+            if (!/[?&]decoy=1\b/.test(location.search)) {
+                sessionStorage.setItem("kermit_launched", "yes");
+            }
+        } catch (e) { }
+    })();
+</script>
 </head>
 <body>
 <iframe title="Kermit (RTPK) Network" allowfullscreen allow="fullscreen; autoplay; clipboard-write; encrypted-media; picture-in-picture" srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 
 &lt;head&gt;
+&lt;!-- kermit:portable-root - the site can be served from the domain root, a
+     sub-path (GitHub Pages project sites) or a CDN path (jsDelivr), so no page
+     hard-codes where it lives: internal links stay relative to the site root
+     and this &lt;base&gt; pins that root for every page depth. --&gt;
+&lt;base href=&quot;./&quot;&gt;
+&lt;script&gt;
+    (function () {
+        // Inside science.html / science.svg this document is a srcdoc frame: the
+        // wrapper may hand over a site root for hosts that cannot serve the site
+        // tree next to the file (built with --base). Everything else is already
+        // handled by the &lt;base&gt; above.
+        var override = null;
+        try {
+            override = window.frameElement &amp;&amp; window.frameElement.getAttribute(&quot;data-base&quot;);
+        } catch (e) { }
+
+        if (override) {
+            var base = document.querySelector(&quot;base&quot;);
+            if (base) {
+                try { base.href = new URL(override, document.baseURI).href; }
+                catch (e) { base.href = override; }
+            }
+        }
+
+        // Resolve a site path against the base, for the calls that must not rely
+        // on &lt;base&gt; (location assignments, and anything cross-document).
+        window.kermitUrl = function (path) {
+            try { return new URL(path, document.baseURI).href; }
+            catch (e) { return path; }
+        };
+
+        // A bare &quot;#&quot; would otherwise resolve to the base (the site root) and
+        // navigate away. The click handlers on these links still run.
+        document.addEventListener(&quot;click&quot;, function (e) {
+            var el = e.target;
+            while (el &amp;&amp; el !== document) {
+                if (el.tagName === &quot;A&quot; &amp;&amp; el.getAttribute &amp;&amp; el.getAttribute(&quot;href&quot;) === &quot;#&quot;) {
+                    e.preventDefault();
+                    return;
+                }
+                el = el.parentNode;
+            }
+        }, true);
+    })();
+&lt;/script&gt;
+
     &lt;meta charset=&quot;UTF-8&quot;&gt;
     &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;
-    &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;/assets/img/fav.png&quot;&gt;
+    &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;assets/img/fav.png&quot;&gt;
     &lt;script&gt;
         // Cloaking entry: the first visit of a session lands on the Drive decoy
         // page, which hands over to the real site after 10 seconds. The flag keeps
@@ -28,7 +90,7 @@
                 }
                 if (sessionStorage.getItem(&quot;kermit_launched&quot;) === &quot;yes&quot;) return
 
-                window.location.replace(&quot;/pages/drive.html&quot;)
+                window.location.replace(window.kermitUrl(&quot;pages/drive.html&quot;))
             } catch (e) { }
         })()
     &lt;/script&gt;
@@ -38,24 +100,24 @@
          single page (/proxy.html: the vendored GUST build, over a Wisp WebSocket
          tunnel) that loads its own client, so nothing proxy-related is pulled in
          here any more. --&gt;
-    &lt;script src=&quot;/assets/js/t.js&quot; defer&gt;&lt;/script&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/styles/index.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/assets/css/colors.css&quot; id=&quot;css-theme-link&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/fa/css/all.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/fa/css/all.min.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/fa/css/solid.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/assets/css/t.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/assets/css/dropdown.css&quot;&gt;
-    &lt;script src=&quot;/assets/js/cursor.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;/assets/js/background.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;/assets/js/toolbar.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;/assets/js/colors.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/t.js&quot; defer&gt;&lt;/script&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;styles/index.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/colors.css&quot; id=&quot;css-theme-link&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;fa/css/all.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;fa/css/all.min.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;fa/css/solid.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/t.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/dropdown.css&quot;&gt;
+    &lt;script src=&quot;assets/js/cursor.js&quot; defer&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/background.js&quot; defer&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/toolbar.js&quot; defer&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/colors.js&quot;&gt;&lt;/script&gt;
     &lt;!-- Accounts: config is tiny and sync, forms.js defers and only fetches
          the Firebase SDK when there is a config (or an account action). --&gt;
-    &lt;script src=&quot;/assets/js/firebase-config.js&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;/assets/js/forms.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;/assets/js/splash.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;/assets/js/slidesfunctions.js&quot; defer&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/firebase-config.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/forms.js&quot; defer&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/splash.js&quot; defer&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/slidesfunctions.js&quot; defer&gt;&lt;/script&gt;
     &lt;meta name=&quot;title&quot; content=&quot;Home - Google Drive&quot;&gt;
     &lt;meta name=&quot;keywords&quot;
         content=&quot;games, unblocked, school, movies, tv, shows, browser, web proxy, gust, gn-math&quot;&gt;
@@ -76,7 +138,7 @@
     &lt;meta property=&quot;og:title&quot; content=&quot;Home - Google Drive&quot;&gt;
     &lt;meta property=&quot;og:description&quot;
         content=&quot;Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).&quot;&gt;
-    &lt;meta property=&quot;og:image&quot; content=&quot;/assets/img/drive.png&quot;&gt;
+    &lt;meta property=&quot;og:image&quot; content=&quot;assets/img/drive.png&quot;&gt;
     &lt;meta property=&quot;og:image:width&quot; content=&quot;512&quot;&gt;
     &lt;meta property=&quot;og:image:height&quot; content=&quot;457&quot;&gt;
     &lt;meta property=&quot;og:image:alt&quot; content=&quot;Google Drive&quot;&gt;
@@ -84,15 +146,15 @@
     &lt;meta name=&quot;twitter:title&quot; content=&quot;Home - Google Drive&quot;&gt;
     &lt;meta name=&quot;twitter:description&quot;
         content=&quot;Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).&quot;&gt;
-    &lt;meta name=&quot;twitter:image&quot; content=&quot;/assets/img/drive.png&quot;&gt;
+    &lt;meta name=&quot;twitter:image&quot; content=&quot;assets/img/drive.png&quot;&gt;
     &lt;meta name=&quot;language&quot; content=&quot;English&quot;&gt;
     &lt;meta name=&quot;revisit-after&quot; content=&quot;2 days&quot;&gt;
     &lt;meta name=&quot;author&quot; content=&quot;Kermit (RTPK) Network&quot;&gt;
     &lt;script defer src=&quot;https://cloud.umami.is/script.js&quot;
         data-website-id=&quot;aa852720-724b-4441-be4c-6db9ef160eb9&quot;&gt;&lt;/script&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/assets/css/font.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/assets/icons/fonts/remixicon.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;/assets/css/folders.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/font.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/icons/fonts/remixicon.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/folders.css&quot;&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
@@ -236,8 +298,8 @@
 
     &lt;!-- Settings are injected by folders.js, which must run before dropdown.js,
          because dropdown.js wires up the selectors inside the overlay. --&gt;
-    &lt;script src=&quot;/assets/js/folders.js&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;/assets/js/dropdown.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/folders.js&quot;&gt;&lt;/script&gt;
+    &lt;script src=&quot;assets/js/dropdown.js&quot;&gt;&lt;/script&gt;
     &lt;script&gt;
         // The proxy used to be a pair of Service Workers (Scramjet/Ultraviolet). It
         // is one page now (/proxy.html: the GUST engine over a Wisp WebSocket
@@ -272,7 +334,7 @@
             // takes the whole window back, so the game is not left with an empty
             // strip where the toolbar was (see collapseToolbarSpace in
             // assets/js/toolbar.js).
-            const hideBar = l.includes(&quot;/stores/&quot;) &amp;&amp; overlayOn === &quot;yes&quot;
+            const hideBar = l.includes(&quot;stores/&quot;) &amp;&amp; overlayOn === &quot;yes&quot;
 
             if (l.includes(&quot;home&quot;)) {
                 contentFrame.remove();
@@ -302,7 +364,7 @@
                 }
                 homeContent.style.display = &quot;none&quot;;
                 contentFrame.style.display = &quot;block&quot;;
-                contentFrame.src = l.includes(&quot;/stores/&quot;) ? `/pages/${l}` : `/pages/${l}.html`;
+                contentFrame.src = l.includes(&quot;stores/&quot;) ? `pages/${l}` : `pages/${l}.html`;
             }
 
             if (window.collapseToolbarSpace) window.collapseToolbarSpace(hideBar)

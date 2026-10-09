@@ -245,7 +245,12 @@ self.addEventListener("fetch", (event) => {
 
     if (request.mode !== "navigate") return;
     if (url.origin !== self.location.origin) return;
-    if (!url.pathname.startsWith("/stores/")) return;
+    // The worker can be registered from any URL prefix (a sub-path deploy
+    // or a CDN path), so the store directory comes from its own scope.
+    var storeScope = (self.registration && self.registration.scope)
+        ? new URL(self.registration.scope).pathname
+        : "/stores/";
+    if (!url.pathname.startsWith(storeScope)) return;
     if (!/\.html?$/i.test(url.pathname)) return;
 
     event.respondWith(withShim(request));

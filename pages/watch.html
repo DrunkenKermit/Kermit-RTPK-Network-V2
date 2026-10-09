@@ -2,6 +2,52 @@
 <html lang="en">
 
 <head>
+<!-- kermit:portable-root - the site can be served from the domain root, a
+     sub-path (GitHub Pages project sites) or a CDN path (jsDelivr), so no page
+     hard-codes where it lives: internal links stay relative to the site root
+     and this <base> pins that root for every page depth. -->
+<base href="../">
+<script>
+    (function () {
+        // Inside science.html / science.svg this document is a srcdoc frame: the
+        // wrapper may hand over a site root for hosts that cannot serve the site
+        // tree next to the file (built with --base). Everything else is already
+        // handled by the <base> above.
+        var override = null;
+        try {
+            override = window.frameElement && window.frameElement.getAttribute("data-base");
+        } catch (e) { }
+
+        if (override) {
+            var base = document.querySelector("base");
+            if (base) {
+                try { base.href = new URL(override, document.baseURI).href; }
+                catch (e) { base.href = override; }
+            }
+        }
+
+        // Resolve a site path against the base, for the calls that must not rely
+        // on <base> (location assignments, and anything cross-document).
+        window.kermitUrl = function (path) {
+            try { return new URL(path, document.baseURI).href; }
+            catch (e) { return path; }
+        };
+
+        // A bare "#" would otherwise resolve to the base (the site root) and
+        // navigate away. The click handlers on these links still run.
+        document.addEventListener("click", function (e) {
+            var el = e.target;
+            while (el && el !== document) {
+                if (el.tagName === "A" && el.getAttribute && el.getAttribute("href") === "#") {
+                    e.preventDefault();
+                    return;
+                }
+                el = el.parentNode;
+            }
+        }, true);
+    })();
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Watch</title>
@@ -10,13 +56,13 @@
     <link rel="preconnect" href="https://fdn.fontcdn.ir">
     <link rel="preconnect" href="https://v1.fontapi.ir">
     <link href="https://v1.fontapi.ir/css/SFProDisplay" rel="stylesheet">
-    <link rel="stylesheet" href="/fa/css/all.min.css">
-    <link rel="stylesheet" href="/fa/css/solid.css">
-    <link rel="shortcut icon" href="/assets/img/fav.png" type="image/png">
-    <script src="/assets/js/background.js" defer></script>
-    <link rel="stylesheet" href="/assets/css/colors.css" id="css-theme-link">
-    <script src="/assets/js/colors.js"></script>
-    <link rel="stylesheet" href="/assets/css/font.css">
+    <link rel="stylesheet" href="fa/css/all.min.css">
+    <link rel="stylesheet" href="fa/css/solid.css">
+    <link rel="shortcut icon" href="assets/img/fav.png" type="image/png">
+    <script src="assets/js/background.js" defer></script>
+    <link rel="stylesheet" href="assets/css/colors.css" id="css-theme-link">
+    <script src="assets/js/colors.js"></script>
+    <link rel="stylesheet" href="assets/css/font.css">
 </head>
 
 <style>
@@ -120,7 +166,7 @@
 <body class=" text-[var(--text)] min-h-screen p-8" x-data="app()">
     <div class="container mx-auto max-w-6xl">
         <br><br>
-<a href="/pages/sheets.html" class="inline-block mb-6 text-[var(--text)] transition-all hover:text-[var(--bright-text)]">← Back to
+<a href="pages/sheets.html" class="inline-block mb-6 text-[var(--text)] transition-all hover:text-[var(--bright-text)]">← Back to
     Browse</a>
         <div x-show="content">
             <h1 class="page-title" x-text="content?.title || content?.name"></h1>
@@ -562,7 +608,7 @@ const availableSources = [
     <div id="cursor-thank-you-zxs"
         style="position: fixed; top: 0px; left: 0px; width: 16px; height: 16px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 70%, white 30%); pointer-events: none; z-index: 9999; transform: translate(748px, 592px); transition: width 0.15s, height 0.15s, opacity 0.15s; mix-blend-mode: difference; opacity: 0;">
     </div>
-    <script src="/assets/js/cursor.js"></script>
+    <script src="assets/js/cursor.js"></script>
 </body>
 
 </html>

@@ -330,8 +330,8 @@
         if (!link) return;
         if (theme !== "default" && KNOWN_THEMES.indexOf(theme) === -1) theme = "default";
         link.href = (theme === "default")
-            ? "/assets/css/colors.css"
-            : "/assets/css/themes/" + theme + ".css";
+            ? "assets/css/colors.css"
+            : "assets/css/themes/" + theme + ".css";
         document.dispatchEvent(new CustomEvent("themeChanged", { detail: theme }));
     }
 

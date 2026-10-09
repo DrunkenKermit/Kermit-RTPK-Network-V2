@@ -7,8 +7,8 @@
     <!-- Drive Home: this is what the tab says for the ten seconds the decoy is
          on screen, together with Drive's own logo as the icon. -->
     <title>Home - Google Drive</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/img/drive.svg">
-    <link rel="shortcut icon" type="image/svg+xml" href="/assets/img/drive.svg">
+    <link rel="icon" type="image/svg+xml" href="../assets/img/drive.svg">
+    <link rel="shortcut icon" type="image/svg+xml" href="../assets/img/drive.svg">
     <style>
         /* A self-contained tab decoy: no Google CSS, no external requests (fonts
            included), so it renders identically offline and can never be blocked
@@ -757,7 +757,7 @@
 
     <header class="topbar">
         <a class="brand" href="#">
-            <img src="/assets/img/drive.svg" alt="Google Drive">
+            <img src="../assets/img/drive.svg" alt="Google Drive">
             <span>Drive</span>
         </a>
         <div class="spacer"></div>
@@ -1127,7 +1127,7 @@
             setTimeout(function () {
                 // "?launch=1" is the site's own flag for "already past the decoy",
                 // so the hand-off cannot loop even if sessionStorage is blocked.
-                window.location.replace(window.location.origin + "/?launch=1")
+                window.location.replace(new URL("../index.html?launch=1", document.baseURI).href)
             }, 10000)
         })
 

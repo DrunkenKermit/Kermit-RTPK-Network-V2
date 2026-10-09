@@ -13,8 +13,8 @@ function applyTheme(theme) {
 
     if (link) {
         link.href = theme === 'default'
-            ? '/assets/css/colors.css'
-            : `/assets/css/themes/${theme}.css`;
+            ? 'assets/css/colors.css'
+            : `assets/css/themes/${theme}.css`;
     }
 
     // Lets the background (assets/js/background.js) re-read its accent colour

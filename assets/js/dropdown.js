@@ -74,7 +74,7 @@ const decoyPresets = {
   "Google Drive": {
     title: "Home - Google Drive",
     // Local copy of the Drive logo, so the tab cloaking works without a network.
-    icon: "/assets/img/drive.svg",
+    icon: "assets/img/drive.svg",
   },
   "Khan Acadamy": {
     title: "Khan Academy | Free Online Courses",
@@ -275,7 +275,7 @@ function createSelector(
 // restores the page's own title/icon instead of blanking it out.
 const originalTitle = document.title;
 const originalIconLink = document.querySelector("link[rel*='icon']");
-const originalIcon = originalIconLink ? originalIconLink.href : "/assets/img/fav.png";
+const originalIcon = originalIconLink ? originalIconLink.href : "assets/img/fav.png";
 
 function applyDecoy(s) {
   const selected = decoyPresets[s];
@@ -378,8 +378,8 @@ document.addEventListener("themeUpdated", (e) => {
 
   if (link) {
     link.href = theme === "default"
-      ? "/assets/css/colors.css"
-      : `/assets/css/themes/${theme}.css`;
+      ? "assets/css/colors.css"
+      : `assets/css/themes/${theme}.css`;
   }
 
   // Let the background / glow effects re-read the new accent without a reload.
