@@ -9,6 +9,30 @@
     <title>Home - Google Drive</title>
     <link rel="icon" type="image/svg+xml" href="../assets/img/drive.svg">
     <link rel="shortcut icon" type="image/svg+xml" href="../assets/img/drive.svg">
+    <script>
+        // Tab cloak in a frame. Opened through a single-file copy (science.svg /
+        // science.html) this page sits inside the wrapper's frame, and a frame
+        // cannot set the tab. When the site is on another origin the wrapper
+        // cannot read this document's title either, so announce it and let the
+        // wrapper mirror it into the tab: that is what makes the tab say "Home -
+        // Google Drive" for as long as this decoy is on screen.
+        (function () {
+            if (window.parent === window) return;
+
+            var announced = null;
+
+            function announce() {
+                if (document.title === announced) return;
+                announced = document.title;
+                try {
+                    window.parent.postMessage({ kermitTitle: announced }, "*");
+                } catch (e) { }
+            }
+
+            document.addEventListener("DOMContentLoaded", announce);
+            window.addEventListener("load", announce);
+        })();
+    </script>
     <style>
         /* A self-contained tab decoy: no Google CSS, no external requests (fonts
            included), so it renders identically offline and can never be blocked

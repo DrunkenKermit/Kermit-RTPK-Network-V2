@@ -5,436 +5,68 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Kermit (RTPK) Network</title>
 <style>html,body{margin:0;padding:0;height:100%;overflow:hidden;background:#000}iframe{border:0;width:100%;height:100%;display:block}</style>
-<script>
-    (function () {
-        // A single file is meant to open straight into the site. The site's own
-        // decoy (index.html -> pages/drive.html) exists for links pasted into
-        // chat apps; here it would hand the frame off to another URL, so the
-        // gate index.html?launch=1 would set is set up front instead. Add
-        // ?decoy=1 to this file's URL for the decoy-first behaviour.
-        // sessionStorage is per-origin and shared with the frame, which is what
-        // makes this reach across the document boundary.
-        try {
-            if (!/[?&]decoy=1\b/.test(location.search)) {
-                sessionStorage.setItem("kermit_launched", "yes");
-            }
-        } catch (e) { }
-    })();
-</script>
 </head>
 <body>
-<iframe title="Kermit (RTPK) Network" allowfullscreen allow="fullscreen; autoplay; clipboard-write; encrypted-media; picture-in-picture" srcdoc="&lt;!DOCTYPE html&gt;
-&lt;html lang=&quot;en&quot;&gt;
-
-&lt;head&gt;
-&lt;!-- kermit:portable-root - the site can be served from the domain root, a
-     sub-path (GitHub Pages project sites) or a CDN path (jsDelivr), so no page
-     hard-codes where it lives: internal links stay relative to the site root
-     and this &lt;base&gt; pins that root for every page depth. --&gt;
-&lt;base href=&quot;./&quot;&gt;
-&lt;script&gt;
+<iframe id="kermit-frame" title="Kermit (RTPK) Network" allowfullscreen allow="fullscreen; autoplay; clipboard-write; encrypted-media; picture-in-picture" data-base="https://kermitrtpknetwork.freebuff.app/"></iframe>
+<script>
     (function () {
-        // Inside science.html / science.svg this document is a srcdoc frame: the
-        // wrapper may hand over a site root for hosts that cannot serve the site
-        // tree next to the file (built with --base). Everything else is already
-        // handled by the &lt;base&gt; above.
-        var override = null;
+        "use strict";
+
+        var frame = document.getElementById("kermit-frame");
+        if (!frame) return;
+
+        // The site root: baked in at build time (data-base), or this file's own
+        // directory when the site tree was deployed beside it.
+        var root = frame.getAttribute("data-base") || "";
         try {
-            override = window.frameElement &amp;&amp; window.frameElement.getAttribute(&quot;data-base&quot;);
-        } catch (e) { }
-
-        if (override) {
-            var base = document.querySelector(&quot;base&quot;);
-            if (base) {
-                try { base.href = new URL(override, document.baseURI).href; }
-                catch (e) { base.href = override; }
-            }
+            root = new URL(root || ".", location.href).href;
+        } catch (e) {
+            root = "./";
         }
 
-        // Resolve a site path against the base, for the calls that must not rely
-        // on &lt;base&gt; (location assignments, and anything cross-document).
-        window.kermitUrl = function (path) {
-            try { return new URL(path, document.baseURI).href; }
-            catch (e) { return path; }
-        };
+        // ?app=1 (also ?launch=1) skips the decoy and opens the app directly.
+        // The default is the decoy, exactly as a first visit to the site is:
+        // that is the cloak this file is meant to show.
+        var skipDecoy = /[?&](?:app|launch)=1\b/.test(location.search);
 
-        // A bare &quot;#&quot; would otherwise resolve to the base (the site root) and
-        // navigate away. The click handlers on these links still run.
-        document.addEventListener(&quot;click&quot;, function (e) {
-            var el = e.target;
-            while (el &amp;&amp; el !== document) {
-                if (el.tagName === &quot;A&quot; &amp;&amp; el.getAttribute &amp;&amp; el.getAttribute(&quot;href&quot;) === &quot;#&quot;) {
-                    e.preventDefault();
-                    return;
-                }
-                el = el.parentNode;
-            }
-        }, true);
-    })();
-&lt;/script&gt;
+        // One navigation, into the site's own index.html. The host serves it as
+        // a document, so the cloak shows and every page after it is the site's
+        // own - there is nothing to probe and nothing to repair.
+        frame.src = root + "index.html" + (skipDecoy ? "?launch=1" : "");
 
-    &lt;meta charset=&quot;UTF-8&quot;&gt;
-    &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width&quot;&gt;
-    &lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; href=&quot;assets/img/fav.png&quot;&gt;
-    &lt;script&gt;
-        // Cloaking entry: the first visit of a session lands on the Drive decoy
-        // page, which hands over to the real site after 10 seconds. The flag keeps
-        // our own links (and the Home button) from bouncing straight back.
-        (function () {
-            try {
-                const params = new URLSearchParams(window.location.search)
+        // ── keeping the tab honest ──────────────────────────────────────────
+        // The cloak - the Drive decoy, and the settings' "Tab Cloak" - is a tab
+        // label, and a frame cannot set the tab. Mirroring the frame's title up
+        // here is what makes the file look like Google Drive in the tab strip
+        // while the decoy is on screen.
+        var shownTitle = "";
 
-                if (params.get(&quot;launch&quot;) === &quot;1&quot;) {
-                    sessionStorage.setItem(&quot;kermit_launched&quot;, &quot;yes&quot;)
-                    return
-                }
-                if (sessionStorage.getItem(&quot;kermit_launched&quot;) === &quot;yes&quot;) return
-
-                window.location.replace(window.kermitUrl(&quot;pages/drive.html&quot;))
-            } catch (e) { }
-        })()
-    &lt;/script&gt;
-    &lt;title&gt;Kermit (RTPK) Network&lt;/title&gt;
-    &lt;script src=&quot;https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4&quot;&gt;&lt;/script&gt;
-    &lt;!-- Deferred: these are not needed for the first paint. The proxy engine is a
-         single page (/proxy.html: the vendored GUST build, over a Wisp WebSocket
-         tunnel) that loads its own client, so nothing proxy-related is pulled in
-         here any more. --&gt;
-    &lt;script src=&quot;assets/js/t.js&quot; defer&gt;&lt;/script&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;styles/index.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/colors.css&quot; id=&quot;css-theme-link&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;fa/css/all.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;fa/css/all.min.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;fa/css/solid.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/t.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/dropdown.css&quot;&gt;
-    &lt;script src=&quot;assets/js/cursor.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;assets/js/background.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;assets/js/toolbar.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;assets/js/colors.js&quot;&gt;&lt;/script&gt;
-    &lt;!-- Accounts: config is tiny and sync, forms.js defers and only fetches
-         the Firebase SDK when there is a config (or an account action). --&gt;
-    &lt;script src=&quot;assets/js/firebase-config.js&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;assets/js/forms.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;assets/js/splash.js&quot; defer&gt;&lt;/script&gt;
-    &lt;script src=&quot;assets/js/slidesfunctions.js&quot; defer&gt;&lt;/script&gt;
-    &lt;meta name=&quot;title&quot; content=&quot;Home - Google Drive&quot;&gt;
-    &lt;meta name=&quot;keywords&quot;
-        content=&quot;games, unblocked, school, movies, tv, shows, browser, web proxy, gust, gn-math&quot;&gt;
-    &lt;meta name=&quot;robots&quot; content=&quot;index, nofollow&quot;&gt;
-    &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
-    &lt;!-- Link embeds. Pasted anywhere that renders a preview card for a link
-         (Discord, Google Docs, Slack, iMessage), this URL shows Google Drive
-         instead of the site: the same cloak as the Drive decoy page
-         (/pages/drive.html) and the &quot;Google Drive&quot; tab-cloak option. Crawlers
-         read these tags straight out of the HTML without running any script,
-         so they have to be static, and the logo is a PNG because embed
-         crawlers do not render SVG (assets/img/drive.svg is the original).
-         Kept identical on every page a link might point at. --&gt;
-    &lt;meta name=&quot;description&quot;
-        content=&quot;Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).&quot;&gt;
-    &lt;meta property=&quot;og:type&quot; content=&quot;website&quot;&gt;
-    &lt;meta property=&quot;og:site_name&quot; content=&quot;Google Drive&quot;&gt;
-    &lt;meta property=&quot;og:title&quot; content=&quot;Home - Google Drive&quot;&gt;
-    &lt;meta property=&quot;og:description&quot;
-        content=&quot;Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).&quot;&gt;
-    &lt;meta property=&quot;og:image&quot; content=&quot;assets/img/drive.png&quot;&gt;
-    &lt;meta property=&quot;og:image:width&quot; content=&quot;512&quot;&gt;
-    &lt;meta property=&quot;og:image:height&quot; content=&quot;457&quot;&gt;
-    &lt;meta property=&quot;og:image:alt&quot; content=&quot;Google Drive&quot;&gt;
-    &lt;meta name=&quot;twitter:card&quot; content=&quot;summary&quot;&gt;
-    &lt;meta name=&quot;twitter:title&quot; content=&quot;Home - Google Drive&quot;&gt;
-    &lt;meta name=&quot;twitter:description&quot;
-        content=&quot;Access Google Drive with a Google Account (for personal use) or Google Workspace account (for business use).&quot;&gt;
-    &lt;meta name=&quot;twitter:image&quot; content=&quot;assets/img/drive.png&quot;&gt;
-    &lt;meta name=&quot;language&quot; content=&quot;English&quot;&gt;
-    &lt;meta name=&quot;revisit-after&quot; content=&quot;2 days&quot;&gt;
-    &lt;meta name=&quot;author&quot; content=&quot;Kermit (RTPK) Network&quot;&gt;
-    &lt;script defer src=&quot;https://cloud.umami.is/script.js&quot;
-        data-website-id=&quot;aa852720-724b-4441-be4c-6db9ef160eb9&quot;&gt;&lt;/script&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/font.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/icons/fonts/remixicon.css&quot;&gt;
-    &lt;link rel=&quot;stylesheet&quot; href=&quot;assets/css/folders.css&quot;&gt;
-&lt;/head&gt;
-
-&lt;body&gt;
-    &lt;button id=&quot;gohomeblock&quot; onclick=&quot;navTo(&#x27;home?launch=1&#x27;)&quot;&gt;
-        &lt;i class=&quot;ri-home-4-fill&quot;&gt;&lt;/i&gt;
-    &lt;/button&gt;
-    &lt;nav data-toolbar=&quot;main&quot;&gt;
-        &lt;ul&gt;
-            &lt;li class=&quot;toolbar-logo&quot;&gt;
-                &lt;a onclick=&quot;navTo(&#x27;home?launch=1&#x27;)&quot; href=&quot;#&quot; data-page=&quot;home&quot;&gt;
-                    &lt;pre class=&quot;kermit-art&quot; aria-hidden=&quot;true&quot;&gt;⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠀⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠔⠒⡶⡷⠀⠁⠵⡄⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠠⢶⣶⣦⡄⢀⠤⢔⠘⠓⠉⠀⠀⠑⠦⠤⠤⠞⠪⡂⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⡰⠁⠀⠉⠛⠿⣆⣽⠶⠤⣄⣀⣀⠀⠀⠀⠀⠀⠀⠀⠈⢢⠀⠀⠀⠀⠀
-⠀⠀⠀⠰⠁⠀⠀⠀⠀⠠⠃⠈⢧⠠⠠⣦⣍⣍⣝⠛⠾⠾⢂⣤⣤⣾⡆⠀⠀⠀⠀
-⠀⠀⠀⡆⠀⠀⠀⠀⡐⠁⠀⠀⠀⠱⡀⠀⠀⠀⣀⣠⣤⣾⣿⣿⣿⣿⡇⠀⠀⠀⠀
-⠀⠀⠀⡗⢤⡀⡠⠊⠀⠀⠀⠀⠀⠀⠈⠢⡀⠙⠻⠛⠛⣟⣿⣿⣿⣿⡇⠀⠀⠀⠀
-⠀⠀⠀⠀⣸⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢟⣤⢠⣄⡔⡊⠛⠻⣿⣿⡇⠀⠀⠀⠀
-⠀⠀⢀⢀⣾⠻⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣮⣆⠻⣿⣿⣧⣤⣌⣻⡇⠀⠀⠀⠀
-⠀⠀⢸⡸⣿⠨⡀⠀⠀⠀⠀⠀⠀⠀⢀⡠⡮⠋⠉⠻⡓⠮⠛⠛⠻⠿⢧⡀⠀⠀⠀
-⠀⠀⠀⢷⡞⠓⠒⠬⠥⠤⠄⠤⠠⢝⣆⡾⠃⣠⣾⠀⠀⣰⡀⠀⠀⣆⠀⢻⣦⠀⠀
-⣿⣿⣿⣿⣶⣤⡤⣄⣀⣐⣀⣤⣮⢊⢀⡼⠋⠀⠀⡰⠁⣇⠀⡸⢹⣇⠀⣿⣧⣤
-⠽⢿⠿⠿⢿⣿⣿⣿⣿⣿⣿⡟⠁⣤⠎⠀⠀⡄⡼⠃⠀⢺⣠⣷⣄⣈⠁⠻⣿⠛&lt;/pre&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
-            &lt;li&gt;
-                &lt;a onclick=&quot;navTo(&#x27;docs&#x27;)&quot; href=&quot;#&quot; data-page=&quot;docs&quot; title=&quot;Games&quot;&gt;
-                    &lt;i class=&quot;ri-gamepad-line&quot;&gt;&lt;/i&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;li&gt;
-                &lt;a onclick=&quot;navTo(&#x27;slides&#x27;)&quot; href=&quot;#&quot; data-page=&quot;slides&quot;&gt;
-                    &lt;i class=&quot;ri-window-2-line&quot;&gt;&lt;/i&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;li&gt;
-                &lt;a onclick=&quot;navTo(&#x27;sheets&#x27;)&quot; href=&quot;#&quot; data-page=&quot;sheets&quot;&gt;
-                    &lt;i class=&quot;ri-clapperboard-line&quot;&gt;&lt;/i&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;li&gt;
-                &lt;a onclick=&quot;navTo(&#x27;vids&#x27;)&quot; href=&quot;#&quot; data-page=&quot;vids&quot; title=&quot;AI Assistant&quot;&gt;
-                    &lt;i class=&quot;ri-robot-2-line&quot;&gt;&lt;/i&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
-            &lt;li&gt;
-                &lt;a onclick=&quot;navTo(&#x27;forms&#x27;)&quot; href=&quot;#&quot; data-page=&quot;forms&quot; title=&quot;Account&quot;&gt;
-                    &lt;i class=&quot;ri-user-line&quot;&gt;&lt;/i&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;li class=&quot;toolbar-end&quot;&gt;
-                &lt;a onclick=&quot;toggleFolders()&quot; href=&quot;#&quot; data-page=&quot;dc&quot;&gt;
-                    &lt;i class=&quot;ri-settings-3-line&quot;&gt;&lt;/i&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;!-- Docked along the bottom by default, so folding the bar away
-                 drops it downwards; toolbar.js flips this arrow (and the grip&#x27;s)
-                 when the dock is changed in the settings overlay. --&gt;
-            &lt;li class=&quot;toolbar-hide&quot;&gt;
-                &lt;a onclick=&quot;if (window.toggleToolbar) toggleToolbar(); return false;&quot; href=&quot;#&quot;
-                    title=&quot;Hide toolbar&quot; aria-label=&quot;Hide toolbar&quot;&gt;
-                    &lt;i class=&quot;ri-arrow-down-s-line&quot;&gt;&lt;/i&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            &lt;!--
-            &lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
-            &lt;li style=&quot;width: 85px&quot;&gt;
-                &lt;a onclick=&quot;navTo(&#x27;gmbl&#x27;); showToast(&#x27;warning&#x27;, &#x27;Kermit (RTPK) Network in NO WAY encourages gambling, betting, or any actions of the kind. This is just a joke.&#x27;, &#x27;fas fa-exclamation-triangle&#x27;)&quot;
-                    href=&quot;#&quot; data-page=&quot;gmbl&quot;&gt;
-                    &lt;i class=&quot;far fa-slot-machine&quot;
-                        style=&quot;font-size: 17px; transform: translateY(40%); left: 10px;&quot;&gt;&lt;/i&gt;&lt;span
-                        class=&quot;new&quot;&gt;NEW&lt;/span&gt;
-                &lt;/a&gt;
-            &lt;/li&gt;
-            --&gt;
-        &lt;/ul&gt;
-    &lt;/nav&gt;
-    &lt;div id=&quot;homeContent&quot;&gt;
-        &lt;h1 class=&quot;text-7xl font-medium home-gradient&quot;&gt;
-            Kermit (RTPK) Network&lt;/h1&gt;
-        &lt;p id=&quot;splash&quot; class=&quot;text-medium font-light text-white/50&quot;&gt;
-            wsp
-        &lt;/p&gt;
-    &lt;/div&gt;
-
-    &lt;div class=&quot;toast-container fixed right-4 top-4 w-1/4&quot;&gt;
-    &lt;/div&gt;
-
-    &lt;div class=&quot;toast-container&quot;&gt;&lt;/div&gt;
-
-    &lt;iframe id=&quot;contentFrame&quot;&gt;&lt;/iframe&gt;
-
-    &lt;div class=&quot;slides-container&quot;&gt;
-        &lt;div class=&quot;slides-controls&quot;&gt;
-            &lt;div class=&quot;tabs&quot;&gt;
-                &lt;button class=&quot;newtab&quot; onclick=&quot;newTab()&quot; title=&quot;New tab&quot;&gt;
-                    &lt;i class=&quot;ri-add-line&quot;&gt;&lt;/i&gt;
-                &lt;/button&gt;
-            &lt;/div&gt;
-            &lt;div class=&quot;slides-buttons&quot;&gt;
-                &lt;div class=&quot;hcontainer&quot;&gt;
-                    &lt;button onclick=&quot;b()&quot; title=&quot;Back&quot;&gt;
-                        &lt;i class=&quot;ri-arrow-left-line&quot;&gt;&lt;/i&gt;
-                    &lt;/button&gt;
-                    &lt;button onclick=&quot;f()&quot; title=&quot;Forward&quot;&gt;
-                        &lt;i class=&quot;ri-arrow-right-line&quot;&gt;&lt;/i&gt;
-                    &lt;/button&gt;
-                    &lt;button onclick=&quot;r()&quot; title=&quot;Reload&quot;&gt;
-                        &lt;i class=&quot;ri-restart-line&quot;&gt;&lt;/i&gt;
-                    &lt;/button&gt;
-                    &lt;!-- The URL bar is wired up by slidesfunctions.js; the old
-                         inline handler read `this.value` inside an arrow function
-                         (window, not the input) and threw on every Enter. --&gt;
-                    &lt;input type=&quot;text&quot; id=&quot;searchbar&quot; placeholder=&quot;Search for anything or enter a URL...&quot;&gt;
-                    &lt;button onclick=&quot;full()&quot; title=&quot;Fullscreen&quot;&gt;
-                        &lt;i class=&quot;ri-fullscreen-line&quot;&gt;&lt;/i&gt;
-                    &lt;/button&gt;
-                    &lt;button onclick=&quot;launchEruda()&quot; title=&quot;Developer console&quot;&gt;
-                        &lt;i class=&quot;ri-code-line&quot;&gt;&lt;/i&gt;
-                    &lt;/button&gt;
-                    &lt;button onclick=&quot;closeOverlays(); hideSlides()&quot; title=&quot;Close slides&quot;&gt;
-                        &lt;i class=&quot;ri-home-4-line&quot;&gt;&lt;/i&gt;
-                    &lt;/button&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;!--&lt;div id=&quot;particles-container&quot;&gt;&lt;/div&gt;--&gt;
-
-    &lt;div id=&quot;cursor-thank-you-zxs&quot;
-        style=&quot;position: fixed; top: 0px; left: 0px; width: 16px; height: 16px; border-radius: 50%; background: color-mix(in srgb, var(--accent) 70%, white 30%); pointer-events: none; z-index: 9999; transform: translate(748px, 592px); transition: width 0.15s, height 0.15s, opacity 0.15s; mix-blend-mode: difference; opacity: 0;&quot;&gt;
-    &lt;/div&gt;
-
-    &lt;button id=&quot;reset-theme&quot; onclick=&quot;resetTheme()&quot;&gt;CLICK HERE TO RESET YOUR THEME!&lt;/button&gt;
-
-    &lt;!-- site version --&gt;
-    &lt;kermitattr version=&quot;s1.1.1&quot;&gt;&lt;/kermitattr&gt;
-
-    &lt;!-- Settings are injected by folders.js, which must run before dropdown.js,
-         because dropdown.js wires up the selectors inside the overlay. --&gt;
-    &lt;script src=&quot;assets/js/folders.js&quot;&gt;&lt;/script&gt;
-    &lt;script src=&quot;assets/js/dropdown.js&quot;&gt;&lt;/script&gt;
-    &lt;script&gt;
-        // The proxy used to be a pair of Service Workers (Scramjet/Ultraviolet). It
-        // is one page now (/proxy.html: the GUST engine over a Wisp WebSocket
-        // tunnel), so a returning visitor&#x27;s old workers are unregistered here
-        // rather than registered - a stale one would intercept this page&#x27;s routes.
-        if (&quot;serviceWorker&quot; in navigator) {
-            navigator.serviceWorker.getRegistrations().then((regs) =&gt; {
-                regs.forEach((reg) =&gt; {
-                    const worker = reg.active || reg.waiting || reg.installing;
-                    const path = worker &amp;&amp; worker.scriptURL ? new URL(worker.scriptURL, location.href).pathname : &quot;&quot;;
-                    if (/^\/(?:sw\.js|uv\/sw\.js)$/.test(path)) reg.unregister();
-                });
-            }).catch(() =&gt; { });
+        function showTitle(title) {
+            if (!title || title === shownTitle) return;
+            shownTitle = title;
+            document.title = title;
         }
 
-        window.addEventListener(&quot;load&quot;, () =&gt; {
-            lucide.createIcons();
+        // Where the site is on another origin the frame's document cannot be
+        // read, so the framed page announces its title instead. Only the site
+        // in the frame may rename this tab.
+        window.addEventListener("message", function (event) {
+            if (event.source !== frame.contentWindow) return;
+            var data = event.data;
+            if (!data || typeof data.kermitTitle !== "string") return;
+            showTitle(data.kermitTitle);
         });
 
-        const contentFrame = document.getElementById(&#x27;contentFrame&#x27;);
-        const homeContent = document.getElementById(&#x27;homeContent&#x27;);
-        const navLinks = document.querySelectorAll(&#x27;nav a[data-page]&#x27;);
+        setInterval(function () {
+            var doc = null;
+            try {
+                doc = frame.contentDocument;
+            } catch (e) { }
 
-        function navTo(l) {
-            // Never leave an overlay (or its click-catching blur backdrop) sitting on
-            // top of the page we are navigating to.
-            if (typeof closeOverlays === &quot;function&quot;) closeOverlays()
-
-            const nav = document.querySelector(&quot;nav&quot;)
-            const overlayOn = localStorage.getItem(&quot;kermit_useOverlay&quot;) ?? &quot;yes&quot;
-            // A store page can run full screen: the bar fades out and the page
-            // takes the whole window back, so the game is not left with an empty
-            // strip where the toolbar was (see collapseToolbarSpace in
-            // assets/js/toolbar.js).
-            const hideBar = l.includes(&quot;stores/&quot;) &amp;&amp; overlayOn === &quot;yes&quot;
-
-            if (l.includes(&quot;home&quot;)) {
-                contentFrame.remove();
-                // Clear the inline display instead of writing &quot;block&quot;: the
-                // toolbar is a flex bar, and the inline block left its buttons
-                // stuck to the left edge instead of centred.
-                nav.style.removeProperty(&quot;display&quot;)
-                setTimeout(() =&gt; {
-                    nav.style.opacity = &quot;1&quot;
-                }, 3)
-                homeContent.style.display = &quot;block&quot;;
-                document.querySelector(&quot;#gohomeblock&quot;).style.display = &quot;none&quot;
-            } else {
-                if (!document.body.contains(contentFrame)) {
-                    document.body.appendChild(contentFrame);
-                }
-                if (hideBar) {
-                    nav.style.opacity = 0
-                    setTimeout(() =&gt; {
-                        nav.style.display = &quot;none&quot;
-                    }, 350)
-                } else {
-                    // Coming back from a full-screen store page: put the bar back
-                    // rather than leaving it hidden for the rest of the session.
-                    nav.style.removeProperty(&quot;display&quot;)
-                    nav.style.opacity = &quot;1&quot;
-                }
-                homeContent.style.display = &quot;none&quot;;
-                contentFrame.style.display = &quot;block&quot;;
-                contentFrame.src = l.includes(&quot;stores/&quot;) ? `pages/${l}` : `pages/${l}.html`;
-            }
-
-            if (window.collapseToolbarSpace) window.collapseToolbarSpace(hideBar)
-        }
-    &lt;/script&gt;
-    &lt;script&gt;
-        const inp = document.getElementById(&quot;searchbar&quot;)
-
-        inp.addEventListener(&quot;keydown&quot;, e =&gt; {
-            if (e.key === &quot;Enter&quot;) {
-                nav(inp.value)
-                console.log(&quot;i&quot;)
-            }
-        })
-    &lt;/script&gt;
-    &lt;script defer&gt;
-        window.addEventListener(&quot;load&quot;, () =&gt; {
-            const frames = document.querySelectorAll(&quot;.viewframe&quot;)
-            const activeFrames = document.querySelectorAll(&quot;.active&quot;)
-
-            activeFrames.forEach(frame =&gt; {
-                frame.classList.remove(&quot;active&quot;)
-            })
-        })
-    &lt;/script&gt;
-    &lt;script&gt;
-        function rSearch(input) {
-            let url = input;
-            if (!url.includes(&quot;.&quot;) || url.includes(&quot; &quot;)) {
-                url = url;
-            } else {
-                if (!url.startsWith(&quot;http://&quot;) &amp;&amp; !url.startsWith(&quot;https://&quot;)) {
-                    url = &quot;https://&quot; + url;
-                }
-            }
-
-            const b = document.querySelector(&quot;.slides-container&quot;)
-            const frames = document.querySelectorAll(&quot;.viewframe&quot;)
-
-            b.style.opacity = 1
-            b.style.pointerEvents = &quot;all&quot;
-
-            frames.forEach(frame =&gt; {
-                frame.style.opacity = 1
-                frame.style.pointerEvents = &quot;all&quot;
-            })
-
-            console.log(&quot;rSearch&quot;)
-            newTab()
-            nav(url)
-            switchTab(aTab)
-        }
-    &lt;/script&gt;
-    &lt;!-- The home search box was removed from this page; rSearch() is kept for
-         the in-page browser but nothing on the home page calls it any more. --&gt;
-    &lt;script defer&gt;
-        function resetTheme() {
-            localStorage.setItem(&quot;kermit_theme&quot;, &quot;default&quot;)
-            window.location.reload()
-        }
-
-        window.addEventListener(&quot;DOMContentLoaded&quot;, () =&gt; {
-            const params = new URLSearchParams(window.location.search)
-            if (params.get(&quot;page&quot;) === &quot;folders&quot;) {
-                toggleFolders()
-            } else if (params.get(&quot;page&quot;) &amp;&amp; params.get(&quot;launch&quot;)) {
-                navTo(params.get(&quot;page&quot;))
-            }
-        })
-    &lt;/script&gt;
-&lt;/body&gt;"></iframe>
+            if (!doc || !doc.title) return;
+            showTitle(doc.title);
+        }, 400);
+    })();
+</script>
 </body>
 </html>

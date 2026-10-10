@@ -70,6 +70,38 @@
         })()
     </script>
     <title>Kermit (RTPK) Network</title>
+    <script>
+        // Tab cloak in a frame. Opened through a single-file copy (science.svg /
+        // science.html) this page sits inside the wrapper's frame, and a frame
+        // cannot set the tab. When the site is on another origin the wrapper
+        // cannot read this document's title either, so announce it and let the
+        // wrapper mirror it into the tab: without this the tab reads "Kermit
+        // (RTPK) Network" while the screen shows a Google Drive login.
+        (function () {
+            if (window.parent === window) return;
+
+            var announced = null;
+
+            function announce() {
+                if (document.title === announced) return;
+                announced = document.title;
+                try {
+                    window.parent.postMessage({ kermitTitle: announced }, "*");
+                } catch (e) { }
+            }
+
+            // The tab-cloak settings rewrite document.title, which replaces the
+            // title element's text as far as this observer is concerned.
+            if (window.MutationObserver && document.head) {
+                new MutationObserver(announce).observe(document.head, {
+                    childList: true, subtree: true, characterData: true
+                });
+            }
+
+            document.addEventListener("DOMContentLoaded", announce);
+            window.addEventListener("load", announce);
+        })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Deferred: these are not needed for the first paint. The proxy engine is a
          single page (/proxy.html: the vendored GUST build, over a Wisp WebSocket

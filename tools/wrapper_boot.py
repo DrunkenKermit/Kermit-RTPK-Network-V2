@@ -1,12 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-  <title>Kermit (RTPK) Network</title>
-  <foreignObject x="0" y="0" width="100%" height="100%">
-    <div xmlns="http://www.w3.org/1999/xhtml" style="width:100%;height:100%;margin:0;padding:0;background:#000">
-      <iframe id="kermit-frame" title="Kermit (RTPK) Network" allowfullscreen="allowfullscreen" allow="fullscreen; autoplay; clipboard-write; encrypted-media; picture-in-picture" data-base="https://kermitrtpknetwork.freebuff.app/" style="border:0;width:100%;height:100%;display:block;background:#000"></iframe>
-    </div>
-  </foreignObject>
-  <script>    (function () {
+#!/usr/bin/env python3
+"""The script both single-file wrappers (science.svg, science.html) boot with.
+
+Kept in one place because the two wrappers are the same product in two
+containers: they must open the site the same way and mirror the tab the same
+way, or one of them quietly becomes the broken one.
+
+What the script does, in order:
+
+1. Points the frame at the site's own ``index.html`` on a host that serves the
+   site's pages as real HTML (``SITE_BASE`` below, baked in with ``--base``).
+   That is what makes the file behave like the site - the Drive decoy (the
+   cloak) shows first, and every page after it is the site's own page, at its
+   own URL, with its own history and storage.
+2. Mirrors the frame's title into the wrapper document. The app runs in a frame
+   here and a frame cannot retitle the tab, and the cloak is a tab-label
+   feature - so without this the tab reads "Kermit (RTPK) Network" while the
+   screen shows a Google Drive login. Read straight from the frame when the
+   site is on this origin; otherwise the framed page announces its title (see
+   the kermitTitle beacon in index.html and pages/drive.html).
+
+There is deliberately no service worker here. A worker was only ever needed
+because a CDN that serves ``.html`` as ``text/plain`` (jsDelivr, statically.io)
+turns the site's own pages into source code, and a document served that way
+cannot repair itself. The answer to that is the site being *hosted* on a real
+HTML host and this file opening it there, which works from any origin the
+wrapper itself is served from.
+
+The two wrappers only differ in the attribute that carries the site root (an
+XML attribute in the SVG, an HTML one in the .html file); the script reads it
+either way.
+"""
+
+# The copy of the site that serves its pages as real HTML. Both generators bake
+# this in unless another root is passed with --base, so the single-file exports
+# always open the site at a URL where every page is a document and not a wall of
+# source. Pass "--base ." to build the mirror layout instead (site tree sitting
+# beside the file), or any other host that serves the site with correct types.
+SITE_BASE = "https://kermitrtpknetwork.freebuff.app/"
+
+BOOT_SCRIPT = r"""    (function () {
         "use strict";
 
         var frame = document.getElementById("kermit-frame");
@@ -24,7 +56,7 @@
         // ?app=1 (also ?launch=1) skips the decoy and opens the app directly.
         // The default is the decoy, exactly as a first visit to the site is:
         // that is the cloak this file is meant to show.
-        var skipDecoy = /[?&amp;](?:app|launch)=1\b/.test(location.search);
+        var skipDecoy = /[?&](?:app|launch)=1\b/.test(location.search);
 
         // One navigation, into the site's own index.html. The host serves it as
         // a document, so the cloak shows and every page after it is the site's
@@ -63,5 +95,4 @@
             if (!doc || !doc.title) return;
             showTitle(doc.title);
         }, 400);
-    })();</script>
-</svg>
+    })();"""
